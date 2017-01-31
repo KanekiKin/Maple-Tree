@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,33 +16,21 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using MapleSeedL.Models;
-using MapleSeedL.Models.Settings;
-using MapleSeedL.Models.XInput;
-using XInputDotNetPure;
+using MapleSeedU.Models;
+using MapleSeedU.Models.Settings;
+using MapleSeedU.Models.XInput;
 
 #endregion
 
-namespace MapleSeedL.ViewModels
+namespace MapleSeedU.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         public static MainWindowViewModel Instance;
 
-        // Polling worker for game controller
-        private static readonly BackgroundWorker PollingWorker = new BackgroundWorker();
-
-        // Game Controller reporter
-        private readonly ReporterState _reporterState = new ReporterState();
-
-        // DateTime var storing last input time (debouncing)
-        private DateTime _lastInput = DateTime.Now;
+        private readonly XInputController _xInput;
 
         public readonly string DbFile = Path.Combine(Path.GetTempPath(), "MapleTree.json");
-
-        private readonly FaceButton launchButton = FaceButton.A;
-
-        private bool _isClosing;
 
         private string _status = "Github.com/Tsume/Maple-Tree";
 
@@ -51,18 +38,19 @@ namespace MapleSeedL.ViewModels
 
         public MainWindowViewModel()
         {
+            if (Instance == null)
+                Instance = this;
+
+            _xInput = new XInputController();
+
             new DispatcherTimer(TimeSpan.Zero,
                 DispatcherPriority.ApplicationIdle, OnLoadComplete,
                 Application.Current.Dispatcher);
 
-            if (Instance == null)
-                Instance = this;
-
-            PollingWorker.WorkerSupportsCancellation = true;
-            PollingWorker.DoWork += pollingWorker_DoWork;
-
             UpdateDatabase();
         }
+
+        public bool IsClosing { get; private set; }
 
         public string Status
         {
@@ -131,73 +119,8 @@ namespace MapleSeedL.ViewModels
 
         public void OnWindowClosing(object sender, CancelEventArgs e)
         {
-            _isClosing = true;
-            PollingWorker.CancelAsync();
-        }
-
-        private void pollingWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            while (!e.Cancel && !_isClosing)
-                if (_reporterState.Poll()) Application.Current.Dispatcher.Invoke(UpdateState);
-        }
-
-        private void UpdateState()
-        {
-            var state = _reporterState.LastActiveState;
-
-            // 250ms debouncing for controller inputs
-            if ((DateTime.Now - _lastInput).Milliseconds > 250)
-            {
-                if (state.DPad.Up == ButtonState.Pressed) DPadButtonPress(DpadButton.Up);
-                if (state.DPad.Down == ButtonState.Pressed) DPadButtonPress(DpadButton.Down);
-                if (state.DPad.Left == ButtonState.Pressed) DPadButtonPress(DpadButton.Left);
-                if (state.DPad.Right == ButtonState.Pressed) DPadButtonPress(DpadButton.Right);
-
-                if (state.Buttons.A == ButtonState.Pressed) FaceButtonPress(FaceButton.A);
-                if (state.Buttons.B == ButtonState.Pressed) FaceButtonPress(FaceButton.B);
-                if (state.Buttons.X == ButtonState.Pressed) FaceButtonPress(FaceButton.X);
-                if (state.Buttons.Y == ButtonState.Pressed) FaceButtonPress(FaceButton.Y);
-
-                // use this to exit Cemu, it's the "Xbox" button on a XBone controller
-                if (state.Buttons.Guide == ButtonState.Pressed) FaceButtonPress(FaceButton.Guide);
-                if (state.Buttons.Start == ButtonState.Pressed) FaceButtonPress(FaceButton.Start);
-                if (state.Buttons.Back == ButtonState.Pressed) FaceButtonPress(FaceButton.Back);
-
-                if (state.Buttons.LeftStick == ButtonState.Pressed) FaceButtonPress(FaceButton.LeftStick);
-                if (state.Buttons.RightStick == ButtonState.Pressed) FaceButtonPress(FaceButton.RightStick);
-                if (state.Buttons.LeftShoulder == ButtonState.Pressed) FaceButtonPress(FaceButton.LeftShoulder);
-                if (state.Buttons.RightShoulder == ButtonState.Pressed) FaceButtonPress(FaceButton.RightShoulder);
-            }
-        }
-
-        private void DPadButtonPress(DpadButton button)
-        {
-            var idx = TitleInfoEntries.IndexOf(TitleInfoEntry);
-
-            if (button == DpadButton.Down)
-                if (idx < TitleInfoEntries.Count - 1)
-                    TitleInfoEntry = TitleInfoEntries[idx + 1];
-            if (button == DpadButton.Up)
-                if (idx > 0)
-                    TitleInfoEntry = TitleInfoEntries[idx - 1];
-
-            RaisePropertyChangedEvent("TitleInfoEntry");
-
-            _lastInput = DateTime.Now;
-        }
-
-        private void FaceButtonPress(FaceButton button)
-        {
-            if (button == launchButton)
-                PlayTitle();
-
-            if (button == FaceButton.Guide)
-            {
-                var fileName = Path.GetFileName(CemuPath.GetPath())?.Replace(".exe", "");
-                foreach (var cemuProcess in Process.GetProcessesByName(fileName)) cemuProcess.Kill();
-            }
-
-            _lastInput = DateTime.Now;
+            IsClosing = true;
+            //_pollingWorker.CancelAsync(); //TODO: Look at me!!
         }
 
         private void Reset()
@@ -223,7 +146,7 @@ namespace MapleSeedL.ViewModels
         {
             (sender as DispatcherTimer)?.Stop();
 
-            PollingWorker.RunWorkerAsync();
+            Instance._xInput.Start();
 
             await Instance.ThemeUpdate();
         }
@@ -246,7 +169,7 @@ namespace MapleSeedL.ViewModels
             Instance.RaisePropertyChangedEvent("LogText");
         }
 
-        private void PlayTitle()
+        internal void PlayTitle()
         {
             TitleInfoEntry.PlayTitle();
         }
@@ -294,7 +217,17 @@ namespace MapleSeedL.ViewModels
             ProgressBarCurrent = 0;
             LockControls();
 
-            var files = Directory.GetFiles(LibraryPath.GetPath(), "*.rpx", SearchOption.AllDirectories);
+            string[] files;
+
+            string tempPath;
+            if (Directory.Exists(tempPath = Path.Combine(Path.GetTempPath(), "MapleTree")))
+            {
+                files = Directory.GetFiles(tempPath, "*.*", SearchOption.AllDirectories);
+                foreach (var file in files)
+                    File.Delete(file);
+            }
+
+            files = Directory.GetFiles(LibraryPath.GetPath(), "*.rpx", SearchOption.AllDirectories);
 
             await Task.Run(() =>
             {
@@ -327,29 +260,6 @@ namespace MapleSeedL.ViewModels
             UnlockControls();
 
             Status = $"Library Path = {LibraryPath.GetPath()}";
-        }
-
-        private enum DpadButton
-        {
-            Up,
-            Down,
-            Left,
-            Right
-        }
-
-        private enum FaceButton
-        {
-            A,
-            B,
-            X,
-            Y,
-            Guide,
-            Start,
-            Back,
-            LeftStick,
-            RightStick,
-            LeftShoulder,
-            RightShoulder
         }
     }
 }

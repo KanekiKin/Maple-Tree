@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6D7C0F83-5C98-492F-B683-32335BD45065}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>MapleSeedL</RootNamespace>
-    <AssemblyName>MapleSeedL</AssemblyName>
+    <RootNamespace>MapleSeedU</RootNamespace>
+    <AssemblyName>MapleSeedU</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -59,7 +59,7 @@
     <ApplicationIcon>Seed.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>MapleSeedL.App</StartupObject>
+    <StartupObject>MapleSeedU.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MahApps.Metro, Version=1.4.1.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
@@ -117,6 +117,7 @@
     <Compile Include="Models\TitleInfoEntry.cs" />
     <Compile Include="Models\WiiUTitle.cs" />
     <Compile Include="Models\XInput\ReporterState.cs" />
+    <Compile Include="Models\XInput\XInputController.cs" />
     <Compile Include="ThirdParty\Newtonsoft.Json\Bson\BsonBinaryType.cs" />
     <Compile Include="ThirdParty\Newtonsoft.Json\Bson\BsonBinaryWriter.cs" />
     <Compile Include="ThirdParty\Newtonsoft.Json\Bson\BsonObjectId.cs" />
@@ -387,9 +388,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\XInputDotNetPure.dll" />
-    <Content Include="Resources\XInputInterface.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\XInputInterface.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.28.3\build\Fody.targets" Condition="Exists('..\packages\Fody.1.28.3\build\Fody.targets')" />

@@ -3,9 +3,9 @@
 // Updated By: Scott Stamp <scott@hypermine.com>
 // Updated On: 01/30/2017
 
-using MapleSeedL.ViewModels;
+using MapleSeedU.ViewModels;
 
-namespace MapleSeedL.Views
+namespace MapleSeedU.Views
 {
     /// <summary>
     ///     Interaction logic for MainWindow.xaml

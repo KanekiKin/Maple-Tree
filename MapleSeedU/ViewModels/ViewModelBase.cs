@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 #endregion
 
-namespace MapleSeedL.ViewModels
+namespace MapleSeedU.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
@@ -23,7 +23,7 @@ namespace MapleSeedL.ViewModels
 
         #endregion
 
-        protected void RaisePropertyChangedEvent(string propertyName)
+        protected internal void RaisePropertyChangedEvent(string propertyName)
         {
             var handler = PropertyChanged;
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));

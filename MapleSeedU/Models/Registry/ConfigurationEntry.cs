@@ -3,7 +3,7 @@
 // Updated By: Jared
 // 
 
-namespace MapleSeedL.Models
+namespace MapleSeedU.Models
 {
     public class ConfigurationEntry : RegistryKeyEntry
     {

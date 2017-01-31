@@ -16,13 +16,13 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using System.Xml;
-using MapleSeedL.ViewModels;
+using MapleSeedU.ViewModels;
 using Newtonsoft.Json;
 using TgaLib;
 
 #endregion
 
-namespace MapleSeedL.Models
+namespace MapleSeedU.Models
 {
     [Serializable]
     public class TitleInfoEntry
@@ -40,7 +40,7 @@ namespace MapleSeedL.Models
             if (Root == null) return;
             Name = new DirectoryInfo(Root).Name;
 
-            SetTitleID();
+            SetTitleId();
             SetTitleKey();
         }
 
@@ -51,7 +51,7 @@ namespace MapleSeedL.Models
         public string Name { get; }
         private string Root { get; }
         private string BootFile { get; }
-        private string TitleID { get; set; }
+        private string TitleId { get; set; }
         private string TitleKey { get; set; }
         private string Region { get; set; }
         private string Version { get; set; }
@@ -85,7 +85,7 @@ namespace MapleSeedL.Models
         {
             if (!Directory.Exists(CacheLocation)) Directory.CreateDirectory(CacheLocation);
             using (
-                Stream stream = new FileStream(Path.Combine(CacheLocation, TitleID), FileMode.Create, FileAccess.Write,
+                Stream stream = new FileStream(Path.Combine(CacheLocation, TitleId), FileMode.Create, FileAccess.Write,
                     FileShare.Read)) {
                 IFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(stream, this);
@@ -128,7 +128,7 @@ namespace MapleSeedL.Models
             }
         }
 
-        private void SetTitleID()
+        private void SetTitleId()
         {
             var metaxml = Path.Combine(Root, "meta", "meta.xml");
             if (!File.Exists(metaxml)) return;
@@ -139,7 +139,7 @@ namespace MapleSeedL.Models
             var titleVersionTag = xml.GetElementsByTagName("title_version");
 
             if (titleIdTag.Count > 0)
-                TitleID = titleIdTag[0].InnerText;
+                TitleId = titleIdTag[0].InnerText;
 
             if (titleVersionTag.Count > 0)
                 Version = titleVersionTag[0].InnerText;
@@ -149,7 +149,7 @@ namespace MapleSeedL.Models
         {
             var json = File.ReadAllText(MainWindowViewModel.Instance.DbFile);
             var list = JsonConvert.DeserializeObject<List<WiiUTitle>>(json);
-            var title = list.Find(t => string.Equals(t.TitleID, TitleID, StringComparison.CurrentCultureIgnoreCase));
+            var title = list.Find(t => string.Equals(t.TitleID, TitleId, StringComparison.CurrentCultureIgnoreCase));
             TitleKey = title.TitleKey;
         }
 
@@ -163,10 +163,10 @@ namespace MapleSeedL.Models
         private void SetBootTex()
         {
             if (BootTex == null) {
-                var bootTvTexTGA = Path.Combine(Root, "meta//bootTvTex.tga");
-                if (!File.Exists(bootTvTexTGA)) return;
+                var bootTvTexTga = Path.Combine(Root, "meta//bootTvTex.tga");
+                if (!File.Exists(bootTvTexTga)) return;
 
-                using (var fs = new FileStream(bootTvTexTGA, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var fs = new FileStream(bootTvTexTga, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var reader = new BinaryReader(fs)) {
                     var tga = new TgaImage(reader);
                     BootTex = tga.GetBitmap().ToBytes();

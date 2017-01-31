@@ -1,11 +1,13 @@
-﻿// Project: MapleSeedU
+﻿// Project: MapleSeedL
 // File: ReporterState.cs
+// Updated By: Scott Stamp <scott@hypermine.com>
+// Created On: 01/30/2017
 // Updated By: Scott Stamp <scott@hypermine.com>
 // Updated On: 01/30/2017
 
 using XInputDotNetPure;
 
-namespace MapleSeedL.Models.XInput
+namespace MapleSeedU.Models.XInput
 {
     public class ReporterState
     {

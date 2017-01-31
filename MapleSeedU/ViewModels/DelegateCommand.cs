@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 #endregion
 
-namespace MapleSeedL.ViewModels
+namespace MapleSeedU.ViewModels
 {
     public class DelegateCommand : ICommand
     {
