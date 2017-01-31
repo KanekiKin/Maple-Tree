@@ -1,50 +1,34 @@
 ﻿// Project: MapleSeedU
 // File: CemuPath.cs
-// Updated By: Jared
-// 
+// Created By: Tsumes <github@tsumes.com>
+// Created On: 01/30/2017 6:40 PM
 
 using System.IO;
 using System.Windows.Forms;
 
 namespace MapleSeedU.Models.Settings
 {
-    public class CemuPath
+    public class CemuPath : ConfigEntry
     {
-        public CemuPath()
+        public CemuPath() : base("CemuPath")
         {
-            ConfigEntry = new ConfigurationEntry("CemuPath");
         }
 
-        private ConfigurationEntry ConfigEntry { get; }
-
-        public string GetPath()
+        protected override string SetValue()
         {
-            if (string.IsNullOrEmpty(ConfigEntry.Value)
-                   || !File.Exists(ConfigEntry.Value)) {
-                return SetPath();
-            }
-            return ConfigEntry.Value;
+            return SetFilePath(@"Cemu Executable", @"Cemu Executable (cemu.exe) | cemu.exe");
         }
 
-        private string SetPath()
+        private string SetFilePath(string title, string filter)
         {
-            var diaglog = new OpenFileDialog
-            {
-                Title = @"Cemu Executable",
-                Filter = @"Cemu Executable (cemu.exe) | cemu.exe"
-            };
+            var diaglog = new OpenFileDialog { Title = title, Filter = filter };
 
             var result = diaglog.ShowDialog();
 
             if (result == DialogResult.OK)
-                ConfigEntry.Value = Path.GetFullPath(diaglog.FileName);
+                _configEntry.Value = Path.GetFullPath(diaglog.FileName);
 
-            return ConfigEntry.Value;
-        }
-
-        public void ResetPath()
-        {
-            ConfigEntry.DeleteKey("CemuPath");
+            return _configEntry.Value;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace MapleSeedU.Models.XInput
 
             if (button == FaceButton.Guide)
             {
-                var fileName = Path.GetFileName(MainWindowViewModel.Instance.CemuPath.GetPath())?.Replace(".exe", "");
+                var fileName = Path.GetFileName(MainWindowViewModel.Instance.CemuPath.GetValue())?.Replace(".exe", "");
                 foreach (var cemuProcess in Process.GetProcessesByName(fileName)) cemuProcess.Kill();
             }
 

@@ -1,4 +1,6 @@
-﻿namespace MapleSeedU.Models
+﻿using MapleSeedU.Models.Tools;
+
+namespace MapleSeedU.Models
 {
     public struct WiiUTitle
     {

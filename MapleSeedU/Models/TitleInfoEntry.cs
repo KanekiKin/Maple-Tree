@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using System.Xml;
+using MapleSeedU.Models.Tools;
 using MapleSeedU.ViewModels;
 using Newtonsoft.Json;
 using TgaLib;
@@ -95,10 +96,11 @@ namespace MapleSeedU.Models
         public async void PlayTitle()
         {
             try {
-                var cemuPath = MainWindowViewModel.Instance.CemuPath.GetPath();
+                var cemuPath = MainWindowViewModel.Instance.CemuPath.GetValue();
                 var workingDir = Path.GetDirectoryName(cemuPath);
+                
+                var fs = MainWindowViewModel.Instance.FullScreen ? "-f" : "";
 
-                var o1 = true ? "-f" : "";
                 if (workingDir == null) return;
 
                 var process = new Process
@@ -106,7 +108,7 @@ namespace MapleSeedU.Models
                     StartInfo =
                     {
                         FileName = cemuPath,
-                        Arguments = $"{o1} -g \"{BootFile}\"",
+                        Arguments = $"{fs} -g \"{BootFile}\"",
                         WorkingDirectory = workingDir,
                         RedirectStandardInput = true,
                         RedirectStandardOutput = true,

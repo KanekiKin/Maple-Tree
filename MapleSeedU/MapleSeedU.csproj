@@ -107,6 +107,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\Settings\ConfigEntry.cs" />
+    <Compile Include="Models\Settings\FullScreenMode.cs" />
     <Compile Include="Models\Tools\Helper.cs" />
     <Compile Include="Models\Settings\CemuPath.cs" />
     <Compile Include="Models\Registry\ConfigurationEntry.cs" />

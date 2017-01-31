@@ -50,6 +50,18 @@ namespace MapleSeedU.ViewModels
             UpdateDatabase();
         }
 
+        public bool FullScreen
+        {
+            get { return FullScreenMode.Value; }
+            set
+            {
+                FullScreenMode.SetValue(value);
+                RaisePropertyChangedEvent("FullScreen");
+            }
+        }
+
+        private FullScreenMode FullScreenMode { get; } = new FullScreenMode();
+
         public bool IsClosing { get; private set; }
 
         public string Status
@@ -125,8 +137,8 @@ namespace MapleSeedU.ViewModels
 
         private void Reset()
         {
-            CemuPath.ResetPath();
-            LibraryPath.ResetPath();
+            CemuPath.ResetValue();
+            LibraryPath.ResetValue();
         }
 
         private void LockControls()
@@ -176,90 +188,107 @@ namespace MapleSeedU.ViewModels
 
         private async Task LoadCache()
         {
-            ProgressBarCurrent = 0;
-            LockControls();
-
-            string tempPath;
-            if (!Directory.Exists(tempPath = Path.Combine(Path.GetTempPath(), "MapleTree")))
-                Directory.CreateDirectory(tempPath);
-
-            await Task.Run(() =>
+            try
             {
-                var files = Directory.GetFiles(tempPath);
-                ProgressBarMax = files.Length;
+                ProgressBarCurrent = 0;
+                LockControls();
 
-                var list = new TitleInfoEntry[ProgressBarMax = files.Length];
+                string tempPath;
+                if (!Directory.Exists(tempPath = Path.Combine(Path.GetTempPath(), "MapleTree")))
+                    Directory.CreateDirectory(tempPath);
 
-                for (var i = 0; i < files.Length; i++)
-                    try
-                    {
-                        var file = files[i];
-                        list[i] = TitleInfoEntry.LoadCache(file, true);
-                        list[i].IsCached = true;
-                        ProgressBarCurrent++;
-                    }
-                    catch (Exception e)
-                    {
-                        WriteLine(e.StackTrace);
-                    }
+                await Task.Run(() =>
+                {
+                    var files = Directory.GetFiles(tempPath);
+                    ProgressBarMax = files.Length;
 
-                TitleInfoEntry.Entries = new List<TitleInfoEntry>(list);
-                TitleInfoEntry.Entries.Sort((t1, t2) => string.Compare(t1.Name, t2.Name, StringComparison.Ordinal));
-            });
+                    var list = new TitleInfoEntry[ProgressBarMax = files.Length];
 
-            UnlockControls();
+                    for (var i = 0; i < files.Length; i++)
+                        try
+                        {
+                            var file = files[i];
+                            list[i] = TitleInfoEntry.LoadCache(file, true);
+                            list[i].IsCached = true;
+                            ProgressBarCurrent++;
+                        }
+                        catch (Exception e)
+                        {
+                            WriteLine(e.StackTrace);
+                        }
+
+                    TitleInfoEntry.Entries = new List<TitleInfoEntry>(list);
+                    TitleInfoEntry.Entries.Sort((t1, t2) => string.Compare(t1.Name, t2.Name, StringComparison.Ordinal));
+                });
+
+                UnlockControls();
+            }
+            catch (Exception e)
+            {
+                WriteLine(e.StackTrace);
+            }
         }
 
         private async Task ThemeUpdate(bool forceUpdate = false)
         {
-            await Instance.LoadCache();
-
-            ProgressBarCurrent = 0;
-            LockControls();
-
-            string[] files;
-
-            string tempPath;
-            if (Directory.Exists(tempPath = Path.Combine(Path.GetTempPath(), "MapleTree")))
+            try
             {
-                files = Directory.GetFiles(tempPath, "*.*", SearchOption.AllDirectories);
-                foreach (var file in files)
-                    File.Delete(file);
-            }
-
-            files = Directory.GetFiles(LibraryPath.GetPath(), "*.rpx", SearchOption.AllDirectories);
-
-            await Task.Run(() =>
-            {
-                var list = new TitleInfoEntry[ProgressBarMax = files.Length];
-
-                for (var i = 0; i < files.Length; i++)
-                {
-                    var file = files[i];
-
-                    if (TitleInfoEntry.Entries == null) continue;
-                    var entries = TitleInfoEntry.Entries.FindAll(entry => entry.Raw == file).Count;
-                    if (entries > 0) continue;
-
-                    list[i] = TitleInfoEntry.LoadCache(file, false);
-                    TitleInfoEntry.Entries?.Add(list[i]);
-
-                    ProgressBarCurrent++;
-                }
+                await Instance.LoadCache();
 
                 ProgressBarCurrent = 0;
-                if (TitleInfoEntry.Entries == null) return;
-                foreach (var t in TitleInfoEntry.Entries)
+                LockControls();
+
+                string[] files;
+
+                if (forceUpdate)
                 {
-                    if (forceUpdate) t.CacheTheme(true);
-                    ProgressBarCurrent++;
+                    string tempPath;
+                    if (Directory.Exists(tempPath = Path.Combine(Path.GetTempPath(), "MapleTree")))
+                    {
+                        files = Directory.GetFiles(tempPath, "*.*", SearchOption.AllDirectories);
+                        foreach (var file in files)
+                            File.Delete(file);
+                    }
                 }
-            });
 
-            TitleInfoEntry = TitleInfoEntry.Entries[0];
-            UnlockControls();
+                files = Directory.GetFiles(LibraryPath.GetValue(), "*.rpx", SearchOption.AllDirectories);
 
-            Status = $"Library Path = {LibraryPath.GetPath()}";
+                await Task.Run(() =>
+                {
+                    var list = new TitleInfoEntry[ProgressBarMax = files.Length];
+
+                    for (var i = 0; i < files.Length; i++)
+                    {
+                        var file = files[i];
+
+                        if (TitleInfoEntry.Entries == null) continue;
+                        var entries = TitleInfoEntry.Entries.FindAll(entry => entry.Raw == file).Count;
+                        if (entries > 0) continue;
+
+                        list[i] = TitleInfoEntry.LoadCache(file, false);
+                        TitleInfoEntry.Entries?.Add(list[i]);
+
+                        ProgressBarCurrent++;
+                    }
+
+                    ProgressBarCurrent = 0;
+                    if (TitleInfoEntry.Entries == null) return;
+                    foreach (var t in TitleInfoEntry.Entries)
+                    {
+                        t.CacheTheme(true);
+                        ProgressBarCurrent++;
+                    }
+                });
+
+                TitleInfoEntry = TitleInfoEntry.Entries[0];
+                UnlockControls();
+
+                Status = $"Library Path = {LibraryPath.GetValue()}";
+            }
+            catch (Exception e)
+            {
+                WriteLine(e.StackTrace);
+            }
         }
     }
 }

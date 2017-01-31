@@ -9,13 +9,19 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using MapleSeedU.ViewModels;
 
 #endregion
 
-namespace MapleSeedU
+namespace MapleSeedU.Models.Tools
 {
     public static class Helper
     {
+        public static bool FileOrDirectoryExists(this string name)
+        {
+            return (Directory.Exists(name) || File.Exists(name));
+        }
+
         public static UInt32 generateHashFromRawRPXData(byte[] rpxData, Int32 size)
         {
             UInt32 h = 0x3416DCBF;
@@ -61,13 +67,15 @@ namespace MapleSeedU
         {
             cemuPath = Path.GetFullPath(cemuPath);
             var workingDir = Path.GetDirectoryName(cemuPath);
+            
+            string fs = MainWindowViewModel.Instance.FullScreen ? "-f" : "";
 
             var process = new Process
             {
                 StartInfo =
                 {
                     FileName = cemuPath,
-                    Arguments = $"{cemuPath} -g \"{target}\"",
+                    Arguments = $"{cemuPath} {fs} -g \"{target}\"",
                     WorkingDirectory = workingDir,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,

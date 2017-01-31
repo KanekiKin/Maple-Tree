@@ -29,7 +29,7 @@
         </RichTextBox>
 
         <Rectangle Fill="#26000000" Height="auto" Width="auto" Margin="0,0,0,58"/>
-        
+
         <ProgressBar Maximum="{Binding ProgressBarMax, UpdateSourceTrigger=PropertyChanged}" Value="{Binding ProgressBarCurrent, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Height="28" VerticalAlignment="Bottom" Background="{x:Null}" BorderBrush="{x:Null}"/>
         <Label Content="{Binding Status, UpdateSourceTrigger=PropertyChanged}" Foreground="Gray" HorizontalAlignment="Left" Margin="0,0,0,4" VerticalAlignment="Bottom"/>
         <ComboBox x:Name="cmbGames" ItemsSource="{Binding TitleInfoEntries, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding TitleInfoEntry}" SelectedIndex="0" HorizontalAlignment="Left" Margin="10,0,0,63" VerticalAlignment="Bottom" IsEditable="True" Width="300" Foreground="#FFAAAAAA" FontWeight="Bold">
@@ -41,6 +41,7 @@
         <Button Content="Update" Margin="0,0,82,63" VerticalAlignment="Bottom" Width="64" Height="26" HorizontalAlignment="Right" IsEnabled="False"/>
         <Button Command="{Binding CacheUpdateCommand}" IsEnabled="{Binding CacheUpdateEnabled, UpdateSourceTrigger=PropertyChanged}" Content="ReCache" HorizontalAlignment="Right" Margin="0,0,10,2" VerticalAlignment="Bottom" Width="67" Height="12" FontWeight="Bold"/>
         <Button Command="{Binding ResetCommand}" Content="Reset" HorizontalAlignment="Right" Margin="0,0,80,2" VerticalAlignment="Bottom" Width="67" Height="12" FontWeight="Bold"/>
+        <CheckBox IsChecked="{Binding FullScreen}" Content="Full Screen" HorizontalAlignment="Left" Margin="10,406,0,0" VerticalAlignment="Top" Height="28" Width="92"/>
 
     </Grid>
 </Controls:MetroWindow>

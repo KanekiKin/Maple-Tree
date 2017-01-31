@@ -1,49 +1,33 @@
 ﻿// Project: MapleSeedU
 // File: LibraryPath.cs
-// Updated By: Jared
-// 
-
-#region usings
+// Created By: Tsumes <github@tsumes.com>
+// Created On: 01/30/2017 6:40 PM
 
 using System.IO;
 using System.Windows.Forms;
 
-#endregion
-
 namespace MapleSeedU.Models.Settings
 {
-    public class LibraryPath
+    public class LibraryPath : ConfigEntry
     {
-        public LibraryPath()
+        public LibraryPath() : base("LibraryPath")
         {
-            ConfigEntry = new ConfigurationEntry("LibraryPath");
         }
 
-        private ConfigurationEntry ConfigEntry { get; }
-
-        public string GetPath()
+        protected override string SetValue()
         {
-            if (string.IsNullOrEmpty(ConfigEntry.Value) 
-                || !Directory.Exists(ConfigEntry.Value)) {
-                return SetPath();
-            }
-            return ConfigEntry.Value;
+            return SetDirectoryPath(@"Cemu Library Path (Root folder of Wii U Games)");
         }
 
-        private string SetPath()
+        private string SetDirectoryPath(string description)
         {
-            var diaglog = new FolderBrowserDialog {Description = @"Cemu Library Path (Root folder of Wii U Games)"};
+            var diaglog = new FolderBrowserDialog { Description = description };
             var result = diaglog.ShowDialog();
 
             if (result == DialogResult.OK)
-                ConfigEntry.Value = Path.GetFullPath(diaglog.SelectedPath);
+                _configEntry.Value = Path.GetFullPath(diaglog.SelectedPath);
 
-            return ConfigEntry.Value;
-        }
-
-        public void ResetPath()
-        {
-            ConfigEntry.DeleteKey("LibraryPath");
+            return _configEntry.Value;
         }
     }
 }
