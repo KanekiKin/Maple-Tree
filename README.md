@@ -1,13 +1,10 @@
-# Maple-Tree
+# Maple Seed Lite
 
-A small application with a feature set aimed to make Wii U title management easier.
+A small application that makes launching Cemu games a little easier.
 
-***Maple Seed Lite***
 
 ![Screenshot](https://pixxy.in/ISL2199.gif)
 
-
-***Maple Seed Lite***
 
 ***Working Features***
 - Launching WiiU Titles
