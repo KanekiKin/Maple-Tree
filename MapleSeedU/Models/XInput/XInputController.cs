@@ -17,7 +17,6 @@ namespace MapleSeedU.Models.XInput
     public class XInputController
     {
         // Polling worker for game controller
-        private static BackgroundWorker _pollingWorker;
         private static Task _pollingWorkerTask;
 
         // Game Controller reporter
@@ -26,27 +25,27 @@ namespace MapleSeedU.Models.XInput
         // DateTime var storing last input time (debouncing)
         private DateTime _lastInput = DateTime.Now;
 
-        public XInputController()
-        {
-            _pollingWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            _pollingWorker.DoWork += pollingWorker_DoWork;
-
-            _pollingWorkerTask = new Task(() =>
-            {
-                while (true)
-                {
-                    UpdateState();
-                    Task.Delay(1);
-                }
-            });
-        }
-
         private FaceButton launchButton { get; } = FaceButton.A;
 
         public void Start()
         {
-            //_pollingWorker.RunWorkerAsync();
-            _pollingWorkerTask.Start();
+            _pollingWorkerTask = Task.Run(async () =>
+            {
+                while (!MainWindowViewModel.Instance.IsClosing)
+                {
+                    if (_reporterState.Poll())
+                        Application.Current.Dispatcher.Invoke(UpdateState);
+
+                    await Task.Delay(1);
+                }
+            });
+        }
+
+        private static bool _cemuRunning()
+        {
+            var instance = MainWindowViewModel.Instance;
+            var fileName = Path.GetFileName(instance.CemuPath.GetValue())?.Replace(".exe", "");
+            return Process.GetProcessesByName(fileName).Length > 0;
         }
 
         private void UpdateState()
@@ -80,38 +79,40 @@ namespace MapleSeedU.Models.XInput
 
         private void DPadButtonPress(DpadButton button)
         {
-            var idx = MainWindowViewModel.Instance.TitleInfoEntries.IndexOf(MainWindowViewModel.Instance.TitleInfoEntry);
+            var instance = MainWindowViewModel.Instance;
+            var entries = instance.TitleInfoEntries;
+            if (entries == null) return;
+
+            var idx = entries.IndexOf(instance.TitleInfoEntry);
 
             if (button == DpadButton.Down)
-                if (idx < MainWindowViewModel.Instance.TitleInfoEntries.Count - 1)
-                    MainWindowViewModel.Instance.TitleInfoEntry = MainWindowViewModel.Instance.TitleInfoEntries[idx + 1];
+                if (idx < instance.TitleInfoEntries.Count - 1)
+                    instance.TitleInfoEntry = entries[idx + 1];
             if (button == DpadButton.Up)
                 if (idx > 0)
-                    MainWindowViewModel.Instance.TitleInfoEntry = MainWindowViewModel.Instance.TitleInfoEntries[idx - 1];
+                    instance.TitleInfoEntry = entries[idx - 1];
 
-            MainWindowViewModel.Instance.RaisePropertyChangedEvent("TitleInfoEntry");
+            instance.RaisePropertyChangedEvent("TitleInfoEntry");
 
             _lastInput = DateTime.Now;
         }
 
         private void FaceButtonPress(FaceButton button)
         {
-            if (button == launchButton)
-                MainWindowViewModel.Instance.PlayTitle();
+            var instance = MainWindowViewModel.Instance;
+            var entries = instance.TitleInfoEntries;
+            if (entries == null) return;
 
-            if (button == FaceButton.Guide)
+            if (button == launchButton)
+                instance.PlayTitle();
+
+            if (button == FaceButton.Guide && !_cemuRunning())
             {
-                var fileName = Path.GetFileName(MainWindowViewModel.Instance.CemuPath.GetValue())?.Replace(".exe", "");
+                var fileName = Path.GetFileName(instance.CemuPath.GetValue())?.Replace(".exe", "");
                 foreach (var cemuProcess in Process.GetProcessesByName(fileName)) cemuProcess.Kill();
             }
 
             _lastInput = DateTime.Now;
-        }
-
-        private void pollingWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            while (!e.Cancel && !MainWindowViewModel.Instance.IsClosing)
-                if (_reporterState.Poll()) Application.Current.Dispatcher.Invoke(UpdateState);
         }
 
         private enum FaceButton
