@@ -7,32 +7,13 @@ A small application with a feature set aimed to make Wii U title management easi
 ![Screenshot](https://pixxy.in/ISL2199.gif)
 
 
-***Maple Seed***
+***Maple Seed Lite***
 
 ***Working Features***
-- Game Launching
-- Game Title Updating
-- Full Title Downloads (/dl titleid)
-- Upload/Download Graphic Packs
-- Upload/Download TransCache
-- Chat feature
-- Search by file name
-- Multi Selection title updates
-- Confirmation for file editing tasks
-- Multi Selection title updates
-- Download progress bar
-- /dl <titleID> command
-- Library Auto Updates
+- Launching WiiU Titles
+- Dynamically Themed UI
+- Inital Controller Support (Credit: scottstamp)
+
 
 ***Work In Progress***
-- Add /help command
-- Add /repair command to fix broken titles
-- Add /search command to find title ids by game name
-- Add title checking to the Play! button
-- Add launching support for wud/wux files.
-- Typing while uploading
-- word cemu folder selection better.(people selecting main cemu folder)
-- Add & remove games from library
-- delete, rename, and transfer(to another user) uploaded files.
-- A sync repository like Dropbox / Google Drive shared folders.
-- Cheats section
+- Title Updates
