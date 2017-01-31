@@ -7,6 +7,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using MapleSeedU.ViewModels;
 using XInputDotNetPure;
@@ -17,6 +18,7 @@ namespace MapleSeedU.Models.XInput
     {
         // Polling worker for game controller
         private static BackgroundWorker _pollingWorker;
+        private static Task _pollingWorkerTask;
 
         // Game Controller reporter
         private readonly ReporterState _reporterState = new ReporterState();
@@ -27,15 +29,24 @@ namespace MapleSeedU.Models.XInput
         public XInputController()
         {
             _pollingWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-
             _pollingWorker.DoWork += pollingWorker_DoWork;
+
+            _pollingWorkerTask = new Task(() =>
+            {
+                while (true)
+                {
+                    UpdateState();
+                    Task.Delay(1);
+                }
+            });
         }
 
         private FaceButton launchButton { get; } = FaceButton.A;
 
         public void Start()
         {
-            _pollingWorker.RunWorkerAsync();
+            //_pollingWorker.RunWorkerAsync();
+            _pollingWorkerTask.Start();
         }
 
         private void UpdateState()
