@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:ViewModels="clr-namespace:MapleSeedU.ViewModels" x:Class="MapleSeedU.Views.MainWindow"
-    mc:Ignorable="d" Width="823" Height="552" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="/MapleSeedU;component/Seed.ico" Title="Maple Seed Lite" IsMaxRestoreButtonEnabled="False" SaveWindowPosition="True" ShowMaxRestoreButton="False" BorderBrush="Black">
+    mc:Ignorable="d" IgnoreTaskbarOnMaximize="True" Width="823" Height="552" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" Icon="/MapleSeedU;component/Seed.ico" Title="Maple Seed Lite" SaveWindowPosition="True" BorderBrush="Black">
 
     <Controls:MetroWindow.DataContext>
         <ViewModels:MainWindowViewModel/>
@@ -15,7 +15,7 @@
         <Grid.Background>
             <ImageBrush/>
         </Grid.Background>
-        <Image Source="{Binding BackgroundImage}" Height="auto" Width="auto" Margin="0,0,0,58"/>
+        <Image Source="{Binding BackgroundImage}" Height="auto" Width="auto" Margin="0,0,0,58" Stretch="UniformToFill"/>
 
         <RichTextBox HorizontalAlignment="Left" Height="415" Margin="10,10,0,0" VerticalAlignment="Top" Width="795" Background="{x:Null}" BorderThickness="0" IsReadOnly="True" Cursor="Arrow">
             <RichTextBox.BorderBrush>
@@ -41,7 +41,7 @@
         <Button Content="Update" Margin="0,0,82,63" VerticalAlignment="Bottom" Width="64" Height="26" HorizontalAlignment="Right" IsEnabled="False"/>
         <Button Command="{Binding CacheUpdateCommand}" IsEnabled="{Binding CacheUpdateEnabled, UpdateSourceTrigger=PropertyChanged}" Content="ReCache" HorizontalAlignment="Right" Margin="0,0,10,2" VerticalAlignment="Bottom" Width="67" Height="12" FontWeight="Bold"/>
         <Button Command="{Binding ResetCommand}" Content="Reset" HorizontalAlignment="Right" Margin="0,0,80,2" VerticalAlignment="Bottom" Width="67" Height="12" FontWeight="Bold"/>
-        <CheckBox IsChecked="{Binding FullScreen}" Content="Full Screen" HorizontalAlignment="Left" Margin="10,406,0,0" VerticalAlignment="Top" Height="28" Width="92"/>
+        <CheckBox IsChecked="{Binding FullScreen}" Content="Full Screen" HorizontalAlignment="Left" Margin="10,0,2,100" VerticalAlignment="Bottom" Height="28" Width="92"/>
 
     </Grid>
 </Controls:MetroWindow>
