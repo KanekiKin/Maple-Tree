@@ -16,7 +16,7 @@ namespace MapleSeedU.Models.XInput
     public class XInputController
     {
         // Polling worker for game controller
-        private static Task _pollingWorkerTask;
+        private Task _pollingWorkerTask;
 
         // Game Controller reporter
         private readonly ReporterState _reporterState = new ReporterState();
@@ -28,7 +28,7 @@ namespace MapleSeedU.Models.XInput
 
         public void Start()
         {
-            _pollingWorkerTask = Task.Run(async () =>
+            _pollingWorkerTask  = Task.Run(async () =>
             {
                 while (!MainWindowViewModel.Instance.IsClosing)
                 {
@@ -100,12 +100,12 @@ namespace MapleSeedU.Models.XInput
         {
             var instance = MainWindowViewModel.Instance;
             var entries = instance.TitleInfoEntries;
-            if (entries == null) return;
+            if (entries == null || instance == null) return;
 
-            if (button == launchButton)
+            if (button == launchButton && !_cemuRunning())
                 instance.PlayTitle();
 
-            if (button == FaceButton.Guide && !_cemuRunning())
+            if (button == FaceButton.Guide && _cemuRunning())
             {
                 var fileName = Path.GetFileName(instance.CemuPath.GetValue())?.Replace(".exe", "");
                 foreach (var cemuProcess in Process.GetProcessesByName(fileName)) cemuProcess.Kill();

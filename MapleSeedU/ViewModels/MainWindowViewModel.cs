@@ -132,7 +132,6 @@ namespace MapleSeedU.ViewModels
         public void OnWindowClosing(object sender, CancelEventArgs e)
         {
             IsClosing = true;
-            //_pollingWorker.CancelAsync(); //TODO: Look at me!!
         }
 
         private void Reset()
