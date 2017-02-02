@@ -30,28 +30,16 @@ namespace MapleSeedU.Models
     {
         private TitleInfoEntry(string fullPath)
         {
-            if (Entries == null)
-                Entries = new List<TitleInfoEntry>();
-
-            Raw = fullPath;
-
-            var folder = Path.GetDirectoryName(BootFile = fullPath);
-            Root = Path.GetDirectoryName(folder); //get parent
-
-            if (Root == null) return;
-            Name = new DirectoryInfo(Root).Name;
-
-            SetTitleId();
-            SetTitleKey();
+            Init(fullPath);
         }
 
         public static List<TitleInfoEntry> Entries { get; set; }
 
         public byte[] BootTex { get; private set; }
-        public string Raw { get; }
-        public string Name { get; }
-        private string Root { get; }
-        private string BootFile { get; }
+        public string Raw { get; private set; }
+        public string Name { get; private set; }
+        private string Root { get; set; }
+        private string BootFile { get; set; }
         private string TitleId { get; set; }
         private string TitleKey { get; set; }
         private string Region { get; set; }
@@ -82,12 +70,32 @@ namespace MapleSeedU.Models
             }
         }
 
+        public void Init(string fullPath)
+        {
+            if (Entries == null)
+                Entries = new List<TitleInfoEntry>();
+
+            Raw = fullPath;
+
+            var folder = Path.GetDirectoryName(BootFile = fullPath);
+            Root = Path.GetDirectoryName(folder); //get parent
+
+            if (Root == null) return;
+            Name = new DirectoryInfo(Root).Name;
+
+            SetTitleId();
+            SetTitleKey();
+        }
+
         private void Save()
         {
-            if (!Directory.Exists(CacheLocation)) Directory.CreateDirectory(CacheLocation);
+            if (!Directory.Exists(CacheLocation))
+                Directory.CreateDirectory(CacheLocation);
+
             using (
                 Stream stream = new FileStream(Path.Combine(CacheLocation, TitleId), FileMode.Create, FileAccess.Write,
-                    FileShare.Read)) {
+                    FileShare.Read))
+            {
                 IFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(stream, this);
             }

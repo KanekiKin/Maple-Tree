@@ -274,6 +274,7 @@ namespace MapleSeedU.ViewModels
                     if (TitleInfoEntry.Entries == null) return;
                     foreach (var t in TitleInfoEntry.Entries)
                     {
+                        t.Init(t.Raw);
                         t.CacheTheme(true);
                         ProgressBarCurrent++;
                     }
