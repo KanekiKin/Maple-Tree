@@ -50,7 +50,7 @@ namespace MapleSeed
             get {
                 var value = GetKeyValue("CemuDirectory");
 
-                if (!string.IsNullOrEmpty(value) && File.Exists(value)) return value;
+                if (!string.IsNullOrEmpty(value) && File.Exists(Path.Combine(value,"cemu.exe"))) return value;
                 var ofd = new OpenFileDialog
                 {
                     CheckFileExists = true,
