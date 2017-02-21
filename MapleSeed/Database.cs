@@ -97,10 +97,18 @@ namespace MapleSeed
             return new WiiUTitle {Name = "NULL"};
         }
 
+        public static IEnumerable<WiiUTitle> FindTitles(string game_name)
+        {
+            if (game_name == null) return new List<WiiUTitle>();
+
+            var titles = DbObject.FindAll(t => t.Name.ToLower().Contains(game_name.ToLower()));
+
+            return new List<WiiUTitle>(titles);
+        }
+
         public static WiiUTitle FindByTitleId(string titleId)
         {
             var title = DbObject.Find(t => string.Equals(t.TitleID, titleId, StringComparison.CurrentCultureIgnoreCase));
-            ;
 
             return titleId.IsNullOrEmpty() || title.ToString().IsNullOrEmpty() ? new WiiUTitle() : title;
         }

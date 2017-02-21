@@ -195,7 +195,7 @@ namespace MapleSeed
                 }
             }
             catch (Exception e) {
-                MessageBox.Show(e.Message + "\n" + e.StackTrace);
+                MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace);
             }
         }
 
@@ -343,7 +343,7 @@ namespace MapleSeed
                 }
             }
             catch (Exception ex) {
-                MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
             }
 
             updateBtn.Enabled = true;
@@ -477,6 +477,12 @@ namespace MapleSeed
                 var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
                 if (title.TitleID.IsNullOrEmpty()) return;
                 await Toolbelt.Database.UpdateGame(titleId, fullPath, false);
+            }
+            else if (s.StartsWith("/find")) {
+                var titleStr = s.Substring(5).Trim();
+                var titles = Database.FindTitles(titleStr);
+                foreach(var title in titles)
+                    AppendChat($"{title} - {title.TitleID}");
             }
             else if (s.StartsWith("/help")) {
                 AppendChat("This function is still a work in progress.");

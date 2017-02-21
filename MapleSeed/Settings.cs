@@ -28,12 +28,17 @@ namespace MapleSeed
             get {
                 var value = GetKeyValue("TitleDirectory");
 
-                if (!string.IsNullOrEmpty(value)) return value;
-                var fbd = new FolderBrowserDialog {Description = @"Please select your Cemu Game Directory"};
+                if (!string.IsNullOrEmpty(value) && Directory.Exists(value)) return value;
+                var fbd = new FolderBrowserDialog
+                {
+                    Description = @"Cemu Title Directory" + Environment.NewLine + @"(Where you store games)"
+                };
                 var result = fbd.ShowDialog();
 
-                if (string.IsNullOrWhiteSpace(fbd.SelectedPath) || result != DialogResult.OK)
+                if (string.IsNullOrWhiteSpace(fbd.SelectedPath) || result == DialogResult.Cancel) {
+                    MessageBox.Show(@"Title Directory is required. Shutting down.");
                     Application.Exit();
+                }
 
                 value = fbd.SelectedPath;
                 WriteKeyValue("TitleDirectory", value);
@@ -45,7 +50,7 @@ namespace MapleSeed
             get {
                 var value = GetKeyValue("CemuDirectory");
 
-                if (!string.IsNullOrEmpty(value)) return value;
+                if (!string.IsNullOrEmpty(value) && File.Exists(value)) return value;
                 var ofd = new OpenFileDialog
                 {
                     CheckFileExists = true,
@@ -54,8 +59,10 @@ namespace MapleSeed
                 var result = DialogResult.Cancel;
                 Toolbelt.Form1.Invoke(new Action(() => result = ofd.ShowDialog()));
 
-                if (string.IsNullOrWhiteSpace(ofd.FileName) || result != DialogResult.OK)
+                if (string.IsNullOrWhiteSpace(ofd.FileName) || result != DialogResult.OK) {
+                    MessageBox.Show(@"Cemu Directory is required. Shutting down.");
                     Application.Exit();
+                }
 
                 value = Path.GetDirectoryName(ofd.FileName);
                 WriteKeyValue("CemuDirectory", value);
