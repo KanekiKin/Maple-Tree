@@ -66,7 +66,9 @@ namespace MapleSeed
             Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
             GlobalTimer_Elapsed(null, null);
 
-
+            chatbox.Text += @"Welcome to Maple Tree." + Environment.NewLine;
+            chatbox.Text += @"Enter /help for a list of poossible commands.";
+            chatbox.Text += Environment.NewLine;
             AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
         }
 
@@ -485,7 +487,10 @@ namespace MapleSeed
                     AppendChat($"{title} - {title.TitleID}");
             }
             else if (s.StartsWith("/help")) {
-                AppendChat("This function is still a work in progress.");
+                AppendChat("------------------------------------------");
+                AppendChat("/dl <title id> - Download the specified title ID from NUS.");
+                AppendChat("/find <title name> - Searches for Title ID based on Title Name. (/find zelda");
+                AppendChat("------------------------------------------");
             }
         }
     }
