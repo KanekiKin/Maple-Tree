@@ -485,15 +485,18 @@ namespace MapleSeed
                 var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
                 if (title.TitleID.IsNullOrEmpty()) return false;
                 await Toolbelt.Database.UpdateGame(titleId, fullPath, false);
+                return true;
             }
             else if (s.StartsWith("/find")) {
                 var titleStr = s.Substring(5).Trim();
                 var titles = Database.FindTitles(titleStr);
                 foreach (var title in titles)
                     AppendChat($"{title}, TitleID: {title.TitleID}, [{title.GetTypeAttribute}]\n");
+                return true;
             }
             else if (s.StartsWith("/clear")) {
                 chatbox.Text = string.Empty;
+                return true;
             }
             else if (s.StartsWith("/help")) {
                 AppendChat("------------------------------------------");
@@ -501,9 +504,10 @@ namespace MapleSeed
                 AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
                 AppendChat("/clear - Clears the current chat log.");
                 AppendChat("------------------------------------------");
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }
