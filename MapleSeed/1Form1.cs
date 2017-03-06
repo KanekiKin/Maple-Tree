@@ -457,7 +457,7 @@ namespace MapleSeed
 
             var title = Path.GetFileNameWithoutExtension(wiiuTitle);
 
-            var msg = $"[{DateTime.Now:T}][{Client.UserData.Username}] Has started playing {title}!";
+            var msg = $"[{DateTime.UtcNow:T}][{Client.UserData.Username}] Has started playing {title}!";
             Client.Send(msg, MessageType.ChatMessage);
             AppendLog(msg);
         }
@@ -490,7 +490,7 @@ namespace MapleSeed
             }
             else {
                 if (Client.NetClient.ServerConnection == null) return;
-                Client.Send($"[{DateTime.Now:T}][{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
+                Client.Send($"[{DateTime.UtcNow:T}][{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
                 chatInput.Text = string.Empty;
             }
         }
