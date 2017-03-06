@@ -104,7 +104,8 @@ namespace MapleSeed
         }
 
         public static Settings Instance => Toolbelt.Settings;
-        private static string ConfigFile => "configuration.ini";
+        private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private static string ConfigFile => Path.Combine(AppFolder, "MapleSeed.ini");
         private static string ConfigName => "MapleTree";
 
         private string GetKeyValue(string key)
