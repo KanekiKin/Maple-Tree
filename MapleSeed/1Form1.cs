@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using Lidgren.Network;
@@ -462,36 +463,47 @@ namespace MapleSeed
                 Client.Send(search.Text, MessageType.RequestSearch);
         }
 
-        private void sendChat_Click(object sender, EventArgs e)
+        private async void sendChat_Click(object sender, EventArgs e)
         {
             if (chatInput.Text.IsNullOrEmpty()) return;
-            CheckForCommandInput(chatInput.Text);
-            if (Client.NetClient.ServerConnection == null) return;
-            Client.Send($"[{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
-            chatInput.Text = string.Empty;
+
+            if (await CheckForCommandInput(chatInput.Text)) {
+                chatInput.Text = string.Empty;
+            }
+            else {
+                if (Client.NetClient.ServerConnection == null) return;
+                Client.Send($"[{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
+                chatInput.Text = string.Empty;
+            }
         }
 
-        private async void CheckForCommandInput(string s)
+        private async Task<bool> CheckForCommandInput(string s)
         {
             if (s.StartsWith("/dl")) {
                 var titleId = s.Substring(3).Trim();
                 var title = Database.FindByTitleId(titleId);
                 var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
-                if (title.TitleID.IsNullOrEmpty()) return;
+                if (title.TitleID.IsNullOrEmpty()) return false;
                 await Toolbelt.Database.UpdateGame(titleId, fullPath, false);
             }
             else if (s.StartsWith("/find")) {
                 var titleStr = s.Substring(5).Trim();
                 var titles = Database.FindTitles(titleStr);
-                foreach(var title in titles)
-                    AppendChat($"{title} - {title.TitleID}");
+                foreach (var title in titles)
+                    AppendChat($"{title}, TitleID: {title.TitleID}, [{title.GetTypeAttribute}]\n");
+            }
+            else if (s.StartsWith("/clear")) {
+                chatbox.Text = string.Empty;
             }
             else if (s.StartsWith("/help")) {
                 AppendChat("------------------------------------------");
                 AppendChat("/dl <title id> - Download the specified title ID from NUS.");
-                AppendChat("/find <title name> - Searches for Title ID based on Title Name. (/find zelda");
+                AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
+                AppendChat("/clear - Clears the current chat log.");
                 AppendChat("------------------------------------------");
             }
+
+            return true;
         }
     }
 }

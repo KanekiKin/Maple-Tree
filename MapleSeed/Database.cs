@@ -12,9 +12,9 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 using libWiiSharp;
-using MaryJane.Structs;
-using Newtonsoft.Json;
 using MapleLib.Common;
+using MapleSeed.Structs;
+using Newtonsoft.Json;
 
 #endregion
 
@@ -101,7 +101,7 @@ namespace MapleSeed
         {
             if (game_name == null) return new List<WiiUTitle>();
 
-            var titles = DbObject.FindAll(t => t.Name.ToLower().Contains(game_name.ToLower()));
+            var titles = DbObject.FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
 
             return new List<WiiUTitle>(titles);
         }

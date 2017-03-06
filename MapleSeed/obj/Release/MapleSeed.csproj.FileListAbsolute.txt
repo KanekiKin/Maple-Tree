@@ -1,0 +1,8 @@
+E:\Projects\MapleTree\bin\Release\MapleSeed.exe
+E:\Projects\MapleTree\bin\Release\MapleSeed.pdb
+E:\Projects\MapleTree\MapleSeed\obj\Release\MapleSeed.csprojResolveAssemblyReference.cache
+E:\Projects\MapleTree\MapleSeed\obj\Release\MapleSeed.Form1.resources
+E:\Projects\MapleTree\MapleSeed\obj\Release\MapleSeed.Properties.Resources.resources
+E:\Projects\MapleTree\MapleSeed\obj\Release\MapleSeed.csproj.GenerateResource.Cache
+E:\Projects\MapleTree\MapleSeed\obj\Release\MapleSeed.exe
+E:\Projects\MapleTree\MapleSeed\obj\Release\MapleSeed.pdb

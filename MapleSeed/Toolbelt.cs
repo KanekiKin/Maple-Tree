@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using libWiiSharp;
 using MapleSeed.Properties;
-using MaryJane;
 using NUS_Downloader;
 
 #endregion
@@ -31,9 +30,11 @@ namespace MapleSeed
 
         public static void LaunchCemu(string game)
         {
-            string rpx = null, gamePath = null;
+            string rpx = null, gamePath;
 
-            if (game != null) gamePath = Path.Combine(Settings.TitleDirectory, game);
+            if (game != null) {
+                gamePath = Path.Combine(Settings.TitleDirectory, game);
+            }
             else {
                 RunCemu(Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe"), "");
                 return;
@@ -58,8 +59,8 @@ namespace MapleSeed
         {
             return
                 Path.GetInvalidPathChars()
-                    .Aggregate(str, (current, c) => current.Replace(c.ToString(), "-"))
-                    .Replace(':', ' ');
+                    .Aggregate(str, (current, c) => current.Replace(c.ToString(), " "))
+                    .Replace(':', ' ').Replace("(", "").Replace(")", "");
         }
 
         public static async void AppendLog(string msg, Color color = default(Color))
@@ -68,7 +69,9 @@ namespace MapleSeed
             try {
                 //Logger.log(msg);
             }
-            catch {}
+            catch {
+                // ignored
+            }
 #endif
             if (Form1 != null)
                 await Task.Run(() => Form1?.AppendLog(msg, color));
@@ -101,7 +104,7 @@ namespace MapleSeed
             return (ulong) new FileInfo(contentFile).Length == content.Size;
         }
 
-        public static void RunCemu(string cemuPath, string rpx)
+        private static void RunCemu(string cemuPath, string rpx)
         {
             try {
                 var workingDir = Path.GetDirectoryName(cemuPath);
