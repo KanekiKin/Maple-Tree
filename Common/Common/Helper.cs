@@ -4,6 +4,7 @@
 // 
 
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace MapleLib.Common
@@ -21,6 +22,11 @@ namespace MapleLib.Common
                     return Assembly.Load(assemblyData);
                 }
             };
+        }
+
+        public static bool IsFolder(string file)
+        {
+            return Directory.Exists(file);
         }
     }
 }

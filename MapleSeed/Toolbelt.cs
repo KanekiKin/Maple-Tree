@@ -40,9 +40,17 @@ namespace MapleSeed
                 return;
             }
 
-            var files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
-            if (files.Length > 0) rpx = files[0];
+            string[] files;
+            var fi = new FileInfo(game);
 
+            if (fi.Extension == ".wud" || fi.Extension == ".wux") {
+                files = new[] { gamePath };
+            }
+            else {
+                files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
+            }
+
+            if (files.Length > 0) rpx = files[0];
             var cemuPath = Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe");
             if (File.Exists(cemuPath) && File.Exists(rpx))
                 RunCemu(cemuPath, rpx);

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -78,10 +79,24 @@ namespace MapleSeed
             var dir = Toolbelt.Settings.TitleDirectory;
             if (dir.IsNullOrEmpty()) return;
 
-            Library = new List<string>(Directory.GetDirectories(dir));
+            Library = new List<string>(Directory.GetFileSystemEntries(dir));
             foreach (var item in Library) {
-                var name = new FileInfo(item).Name;
-                if (!titleList.Items.Contains(name)) ListBoxAddItem(name);
+                var fi = new FileInfo(item);
+
+                if (fi.Attributes.HasFlag(FileAttributes.Directory)) {
+                    if (!File.Exists(Path.Combine(item, "meta", "meta.xml")))
+                        continue;
+
+                    if (!titleList.Items.Contains(fi.Name))
+                        ListBoxAddItem(fi.Name);
+                }
+                else if (fi.Attributes.HasFlag(FileAttributes.Archive))
+                {
+                    if (fi.Extension == ".wud" || fi.Extension == ".wux") {
+                        if (!titleList.Items.Contains(fi.Name))
+                            ListBoxAddItem(fi.Name);
+                    }
+                }
             }
 
             var cache = new object[titleList.Items.Count];
@@ -89,7 +104,7 @@ namespace MapleSeed
 
             foreach (var item in cache) {
                 var path = Path.Combine(dir, item.ToString());
-                if (!Directory.Exists(path))
+                if (!Directory.Exists(path) && !File.Exists(path))
                     titleList.Invoke(new Action(() => titleList.Items.Remove(item)));
             }
         }
@@ -355,7 +370,7 @@ namespace MapleSeed
 
         private void listBox1_DoubleClick(object sender, EventArgs e)
         {
-            updateBtn_Click(null, null);
+            playBtn_Click(null, null);
         }
 
         private void fullTitle_CheckedChanged(object sender, EventArgs e)
@@ -437,9 +452,12 @@ namespace MapleSeed
 
         private void playBtn_Click(object sender, EventArgs e)
         {
-            var title = titleList.SelectedItem as string;
-            Toolbelt.LaunchCemu(title);
-            var msg = $"[{Client.UserData.Username}] Has started playing {title}!";
+            var wiiuTitle = titleList.SelectedItem as string;
+            Toolbelt.LaunchCemu(wiiuTitle);
+
+            var title = Path.GetFileNameWithoutExtension(wiiuTitle);
+
+            var msg = $"[{DateTime.Now:T}][{Client.UserData.Username}] Has started playing {title}!";
             Client.Send(msg, MessageType.ChatMessage);
             AppendLog(msg);
         }
@@ -472,8 +490,7 @@ namespace MapleSeed
             }
             else {
                 if (Client.NetClient.ServerConnection == null) return;
-                var time = DateTime.Now.ToString("T");
-                Client.Send($"[{time}][{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
+                Client.Send($"[{DateTime.Now:T}][{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
                 chatInput.Text = string.Empty;
             }
         }
