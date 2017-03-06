@@ -472,7 +472,8 @@ namespace MapleSeed
             }
             else {
                 if (Client.NetClient.ServerConnection == null) return;
-                Client.Send($"[{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
+                var time = DateTime.Now.ToString("T");
+                Client.Send($"[{time}][{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
                 chatInput.Text = string.Empty;
             }
         }
