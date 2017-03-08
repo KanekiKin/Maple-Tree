@@ -1,6 +1,0 @@
-E:\Projects\MapleTree\bin\Release\MapleLib.dll
-E:\Projects\MapleTree\bin\Release\MapleLib.pdb
-E:\Projects\MapleTree\Common\obj\Release\MapleLib.Properties.Resources.resources
-E:\Projects\MapleTree\Common\obj\Release\MapleLib.csproj.GenerateResource.Cache
-E:\Projects\MapleTree\Common\obj\Release\MapleLib.dll
-E:\Projects\MapleTree\Common\obj\Release\MapleLib.pdb

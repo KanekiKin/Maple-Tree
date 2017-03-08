@@ -1,8 +1,0 @@
-E:\Projects\MapleTree\MapleTree\bin\Release\MapleTree.exe.config
-E:\Projects\MapleTree\MapleTree\bin\Release\MapleTree.exe
-E:\Projects\MapleTree\MapleTree\bin\Release\MapleTree.pdb
-E:\Projects\MapleTree\MapleTree\bin\Release\MapleLib.dll
-E:\Projects\MapleTree\MapleTree\bin\Release\MapleLib.pdb
-E:\Projects\MapleTree\MapleTree\obj\Release\MapleTree.csprojResolveAssemblyReference.cache
-E:\Projects\MapleTree\MapleTree\obj\Release\MapleTree.exe
-E:\Projects\MapleTree\MapleTree\obj\Release\MapleTree.pdb
