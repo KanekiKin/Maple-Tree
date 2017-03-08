@@ -46,6 +46,8 @@ namespace MapleSeed
         {
             await Database.Initialize();
 
+            Network.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
+
             if (Client == null) {
                 Client = MapleClient.Create();
                 Client.OnMessageReceived += ClientOnMessageReceived;
@@ -192,6 +194,16 @@ namespace MapleSeed
             }
         }
 
+        private void Network_DownloadProgressChangedEvent(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        {
+            Invoke(new Action(() => { progressBar.Value = e?.ProgressPercentage ?? 0; }));
+
+            var received = Toolbelt.SizeSuffix(e?.BytesReceived ?? 0);
+            var toReceive = Toolbelt.SizeSuffix(e?.TotalBytesToReceive ?? 0);
+
+            progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
+        }
+
         private void HandleChatMessage(byte[] data)
         {
             var msg = Encoding.UTF8.GetString(data);
@@ -278,16 +290,6 @@ namespace MapleSeed
             if (!IsLive) Client.Start(Toolbelt.Settings.Hub);
             else Client.Stop();
             IsLive = !IsLive;
-        }
-
-        public void UpdateProgress(int percentage, long recvd, long toRecv)
-        {
-            Invoke(new Action(() => { progressBar.Value = percentage; }));
-
-            var received = Toolbelt.SizeSuffix(recvd);
-            var toReceive = Toolbelt.SizeSuffix(toRecv);
-
-            progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

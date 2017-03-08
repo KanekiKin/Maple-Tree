@@ -250,7 +250,7 @@ namespace MapleSeed
                 Toolbelt.SetStatus($"Downloading Title '{wiiUTitle}' Failed.", Color.DarkRed);
             }
 
-            Toolbelt.Form1.UpdateProgress(0, 0, 0);
+            Network.ResetDownloadProgressChanged();
         }
     }
 }

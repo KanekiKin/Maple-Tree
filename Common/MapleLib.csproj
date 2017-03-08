@@ -518,6 +518,7 @@
     <Content Include="ThirdParty\Lidgren.Network\Documentation\TODO.txt" />
     <Content Include="ThirdParty\Lidgren.Network\Documentation\Tutorial.html" />
     <Content Include="ThirdParty\protobuf-net\Web\TODO.txt" />
+    <Content Include="version.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Network\Web\" />

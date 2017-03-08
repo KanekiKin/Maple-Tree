@@ -6,6 +6,7 @@
 #region usings
 
 using System;
+using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -16,6 +17,8 @@ namespace MapleSeed
     public static class Network
     {
         private const string WII_USER_AGENT = "wii libnup/1.0";
+
+        public static event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChangedEvent;
 
         public static async Task DownloadFileAsync(string url, string saveTo)
         {
@@ -40,9 +43,14 @@ namespace MapleSeed
             }
         }
 
+        public static void ResetDownloadProgressChanged()
+        {
+            DownloadProgressChangedEvent?.Invoke(null, null);
+        }
+
         private static void DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            Toolbelt.Form1?.UpdateProgress(e.ProgressPercentage, e.BytesReceived, e.TotalBytesToReceive);
+            DownloadProgressChangedEvent?.Invoke(sender, e);
         }
 
         private static void DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
