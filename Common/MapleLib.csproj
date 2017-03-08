@@ -51,7 +51,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>MapleSeed_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -481,7 +482,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\MapleClient.cs" />
-    <None Include="MapleSeed_TemporaryKey.pfx" />
     <None Include="ThirdParty\IniFileParser\Model\IniData.cs.rej" />
     <None Include="ThirdParty\Newtonsoft.Json\Dynamic.snk" />
     <None Include="ThirdParty\Newtonsoft.Json\Newtonsoft.Json.Dotnet.xproj" />

@@ -46,7 +46,7 @@ namespace MapleSeed
         {
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
-            TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler; 
+            TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
             Network.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
 
             await Database.Initialize();
@@ -238,15 +238,13 @@ namespace MapleSeed
 
         private void StatusLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
         {
-            if (status.InvokeRequired)
-            {
+            if (status.InvokeRequired) {
                 status.BeginInvoke(new Action(() => {
                     status.Text = e.Entry;
                     status.ForeColor = e.Color;
                 }));
             }
-            else
-            {
+            else {
                 status.Text = e.Entry;
                 status.ForeColor = e.Color;
             }
