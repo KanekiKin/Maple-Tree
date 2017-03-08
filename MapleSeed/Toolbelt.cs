@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using libWiiSharp;
 using MapleLib;
@@ -44,12 +43,8 @@ namespace MapleSeed
             string[] files;
             var fi = new FileInfo(game);
 
-            if (fi.Extension == ".wud" || fi.Extension == ".wux") {
-                files = new[] { gamePath };
-            }
-            else {
-                files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
-            }
+            if (fi.Extension == ".wud" || fi.Extension == ".wux") files = new[] {gamePath};
+            else files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
 
             if (files.Length > 0) rpx = files[0];
             var cemuPath = Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe");
@@ -74,14 +69,12 @@ namespace MapleSeed
 
         public static void AppendLog(string msg, Color color = default(Color))
         {
-            //if (Form1 != null) await Task.Run(() => Form1?.AppendLog(msg, color));
-            
             TextLog.MesgLog.NewLine(msg + '\n', color);
         }
 
         public static void SetStatus(string msg, Color color = default(Color))
         {
-            Form1?.SetStatus(msg, color);
+            TextLog.StatusLog.NewLine(msg, color);
         }
 
         public static string SizeSuffix(long bytes)

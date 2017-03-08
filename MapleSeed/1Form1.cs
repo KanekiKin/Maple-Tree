@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -45,6 +45,8 @@ namespace MapleSeed
         private async void Form1_Load(object sender, EventArgs e)
         {
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
+            TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
+            TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler; 
             Network.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
 
             await Database.Initialize();
@@ -77,22 +79,6 @@ namespace MapleSeed
             AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
         }
 
-        private void MesgLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
-        {
-            if (richTextBox1.InvokeRequired)
-            {
-                richTextBox1.BeginInvoke(new Action(() => {
-                    richTextBox1.AppendText(e.Entry, e.Color);
-                    richTextBox1.ScrollToCaret();
-                }));
-            }
-            else
-            {
-                richTextBox1.AppendText(e.Entry, e.Color);
-                richTextBox1.ScrollToCaret();
-            }
-        }
-
         private void ReadLibrary()
         {
             var dir = Toolbelt.Settings.TitleDirectory;
@@ -109,12 +95,10 @@ namespace MapleSeed
                     if (!titleList.Items.Contains(fi.Name))
                         ListBoxAddItem(fi.Name);
                 }
-                else if (fi.Attributes.HasFlag(FileAttributes.Archive))
-                {
-                    if (fi.Extension == ".wud" || fi.Extension == ".wux") {
+                else if (fi.Attributes.HasFlag(FileAttributes.Archive)) {
+                    if (fi.Extension == ".wud" || fi.Extension == ".wux")
                         if (!titleList.Items.Contains(fi.Name))
                             ListBoxAddItem(fi.Name);
-                    }
                 }
             }
 
@@ -211,7 +195,7 @@ namespace MapleSeed
             }
         }
 
-        private void Network_DownloadProgressChangedEvent(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
             try {
                 Invoke(new Action(() => { progressBar.Value = e?.ProgressPercentage ?? 0; }));
@@ -221,7 +205,51 @@ namespace MapleSeed
 
                 progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
             }
-            catch { }
+            catch {}
+        }
+
+        private void MesgLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        {
+            if (richTextBox1.InvokeRequired) {
+                richTextBox1.BeginInvoke(new Action(() => {
+                    richTextBox1.AppendText(e.Entry, e.Color);
+                    richTextBox1.ScrollToCaret();
+                }));
+            }
+            else {
+                richTextBox1.AppendText(e.Entry, e.Color);
+                richTextBox1.ScrollToCaret();
+            }
+        }
+
+        private void ChatLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        {
+            if (chatbox.InvokeRequired) {
+                chatbox.BeginInvoke(new Action(() => {
+                    chatbox.AppendText(e.Entry, e.Color);
+                    chatbox.ScrollToCaret();
+                }));
+            }
+            else {
+                chatbox.AppendText(e.Entry, e.Color);
+                chatbox.ScrollToCaret();
+            }
+        }
+
+        private void StatusLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        {
+            if (status.InvokeRequired)
+            {
+                status.BeginInvoke(new Action(() => {
+                    status.Text = e.Entry;
+                    status.ForeColor = e.Color;
+                }));
+            }
+            else
+            {
+                status.Text = e.Entry;
+                status.ForeColor = e.Color;
+            }
         }
 
         private void HandleChatMessage(byte[] data)
@@ -319,48 +347,17 @@ namespace MapleSeed
 
         private void AppendChat(string msg, Color color = default(Color))
         {
-            msg += '\n';
-            if (chatbox.InvokeRequired) {
-                chatbox.BeginInvoke(new Action(() => {
-                    chatbox.AppendText(msg, color);
-                    chatbox.ScrollToCaret();
-                }));
-            }
-            else {
-                chatbox.AppendText(msg, color);
-                chatbox.ScrollToCaret();
-            }
+            TextLog.ChatLog.NewLine(msg + '\n', color);
         }
 
-        public void AppendLog(string msg, Color color = default(Color))
+        private void AppendLog(string msg, Color color = default(Color))
         {
             TextLog.MesgLog.NewLine(msg + '\n', color);
-            /*
-            if (richTextBox1.InvokeRequired) {
-                richTextBox1.BeginInvoke(new Action(() => {
-                    richTextBox1.AppendText(msg, color);
-                    richTextBox1.ScrollToCaret();
-                }));
-            }
-            else {
-                richTextBox1.AppendText(msg, color);
-                richTextBox1.ScrollToCaret();
-            }*/
         }
 
         public void SetStatus(string msg, Color color = default(Color))
         {
-            msg += '\n';
-            if (status.InvokeRequired) {
-                status.BeginInvoke(new Action(() => {
-                    status.Text = msg;
-                    status.ForeColor = color;
-                }));
-            }
-            else {
-                status.Text = msg;
-                status.ForeColor = color;
-            }
+            TextLog.StatusLog.NewLine(msg);
         }
 
         private async void updateBtn_Click(object sender, EventArgs e)
@@ -528,18 +525,18 @@ namespace MapleSeed
                 await Toolbelt.Database.UpdateGame(titleId, fullPath, false);
                 return true;
             }
-            else if (s.StartsWith("/find")) {
+            if (s.StartsWith("/find")) {
                 var titleStr = s.Substring(5).Trim();
                 var titles = Database.FindTitles(titleStr);
                 foreach (var title in titles)
                     AppendChat($"{title}, TitleID: {title.TitleID}, [{title.GetTypeAttribute}]\n");
                 return true;
             }
-            else if (s.StartsWith("/clear")) {
+            if (s.StartsWith("/clear")) {
                 chatbox.Text = string.Empty;
                 return true;
             }
-            else if (s.StartsWith("/help")) {
+            if (s.StartsWith("/help")) {
                 AppendChat("------------------------------------------");
                 AppendChat("/dl <title id> - Download the specified title ID from NUS.");
                 AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");

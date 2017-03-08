@@ -12,6 +12,8 @@ namespace MapleLib
     public sealed class TextLog
     {
         public static TextLog MesgLog { get; set; } = new TextLog();
+        public static TextLog ChatLog { get; set; } = new TextLog();
+        public static TextLog StatusLog { get; set; } = new TextLog();
 
         private StringBuilder LogBuilder { get; set; } = new StringBuilder();
 
