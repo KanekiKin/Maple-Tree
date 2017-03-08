@@ -26,32 +26,42 @@ namespace MapleSeed
         public static string Serial => Settings.Serial;
         public static Database Database { get; internal set; }
         public static Settings Settings { get; internal set; }
-        public static Form1 Form1 { get; set; }
 
-        public static void LaunchCemu(string game)
+        public static bool LaunchCemu(string game)
         {
-            string rpx = null, gamePath;
+            try {
+                string rpx = null, gamePath;
+                string dir = Settings.Instance.CemuDirectory;
 
-            if (game != null) {
-                gamePath = Path.Combine(Settings.TitleDirectory, game);
+                if (string.IsNullOrEmpty(dir))
+                    return false;
+
+                if (game != null) {
+                    gamePath = Path.Combine(Settings.TitleDirectory, game);
+                }
+                else {
+                    RunCemu(Path.Combine(dir, "cemu.exe"), "");
+                    return true;
+                }
+
+                string[] files;
+                var fi = new FileInfo(game);
+
+                if (fi.Extension == ".wud" || fi.Extension == ".wux") files = new[] { gamePath };
+                else files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
+
+                if (files.Length > 0) rpx = files[0];
+                var cemuPath = Path.Combine(dir, "cemu.exe");
+                if (File.Exists(cemuPath) && File.Exists(rpx))
+                    RunCemu(cemuPath, rpx);
+                else
+                    SetStatus("Could not find a valid .rpx");
             }
-            else {
-                RunCemu(Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe"), "");
-                return;
+            catch (Exception e) {
+                return false;
             }
 
-            string[] files;
-            var fi = new FileInfo(game);
-
-            if (fi.Extension == ".wud" || fi.Extension == ".wux") files = new[] {gamePath};
-            else files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
-
-            if (files.Length > 0) rpx = files[0];
-            var cemuPath = Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe");
-            if (File.Exists(cemuPath) && File.Exists(rpx))
-                RunCemu(cemuPath, rpx);
-            else
-                SetStatus("Could not find a valid .rpx");
+            return true;
         }
 
         public static string RIC(string str)

@@ -44,6 +44,8 @@ namespace MapleSeed
                 WriteKeyValue("TitleDirectory", value);
                 return value;
             }
+
+            set { WriteKeyValue("TitleDirectory", Path.GetFullPath(value)); }
         }
 
         public string CemuDirectory {
@@ -56,18 +58,19 @@ namespace MapleSeed
                     CheckFileExists = true,
                     Filter = @"Cemu Excutable |cemu.exe"
                 };
-                var result = DialogResult.Cancel;
-                Toolbelt.Form1.Invoke(new Action(() => result = ofd.ShowDialog()));
 
+                var result = ofd.ShowDialog();
                 if (string.IsNullOrWhiteSpace(ofd.FileName) || result != DialogResult.OK) {
-                    MessageBox.Show(@"Cemu Directory is required. Shutting down.");
-                    Application.Exit();
+                    MessageBox.Show(@"Cemu Directory is required to launch titles.");
+                    return string.Empty;
                 }
 
                 value = Path.GetDirectoryName(ofd.FileName);
                 WriteKeyValue("CemuDirectory", value);
                 return value;
             }
+
+            set { WriteKeyValue("CemuDirectory", Path.GetFullPath(value)); }
         }
 
         public string Username {
@@ -83,6 +86,8 @@ namespace MapleSeed
                     WriteKeyValue("Hub", value = "mapletree.tsumes.com");
                 return value;
             }
+
+            set { WriteKeyValue("Hub", value); }
         }
 
         public string Serial {
@@ -102,6 +107,8 @@ namespace MapleSeed
 
             set { WriteKeyValue("FullScreenMode", value.ToString()); }
         }
+
+        public bool DownloadFullTitle { get; set; }
 
         public static Settings Instance => Toolbelt.Settings;
         private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

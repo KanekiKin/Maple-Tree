@@ -33,7 +33,6 @@ namespace MapleSeed
         public Form1()
         {
             InitializeComponent();
-            Toolbelt.Form1 = this;
         }
 
         private static bool IsLive { get; set; } = true;
@@ -77,6 +76,10 @@ namespace MapleSeed
             chatbox.Text += @"Enter /help for a list of poossible commands.";
             chatbox.Text += Environment.NewLine;
             AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
+
+            titleDir.Text = Toolbelt.Settings.TitleDirectory;
+            cemuDir.Text = Toolbelt.Settings.CemuDirectory;
+            serverHub.Text = Toolbelt.Settings.Hub;
         }
 
         private void ReadLibrary()
@@ -393,6 +396,7 @@ namespace MapleSeed
 
         private void fullTitle_CheckedChanged(object sender, EventArgs e)
         {
+            Toolbelt.Settings.DownloadFullTitle = fullTitle.Checked;
             updateBtn.Text = fullTitle.Checked ? "Download" : "Update";
         }
 
@@ -471,10 +475,9 @@ namespace MapleSeed
         private void playBtn_Click(object sender, EventArgs e)
         {
             var wiiuTitle = titleList.SelectedItem as string;
-            Toolbelt.LaunchCemu(wiiuTitle);
+            if (!Toolbelt.LaunchCemu(wiiuTitle)) return;
 
             var title = Path.GetFileNameWithoutExtension(wiiuTitle);
-
             var msg = $"[{DateTime.UtcNow:T}][{Client.UserData.Username}] Has started playing {title}!";
             Client.Send(msg, MessageType.ChatMessage);
             AppendLog(msg);
@@ -544,6 +547,21 @@ namespace MapleSeed
             }
 
             return false;
+        }
+
+        private void titleDir_TextChanged(object sender, EventArgs e)
+        {
+            Toolbelt.Settings.TitleDirectory = titleDir.Text;
+        }
+
+        private void cemuDir_TextChanged(object sender, EventArgs e)
+        {
+            Toolbelt.Settings.CemuDirectory = cemuDir.Text;
+        }
+
+        private void serverHub_TextChanged(object sender, EventArgs e)
+        {
+            Toolbelt.Settings.Hub = serverHub.Text;
         }
     }
 }

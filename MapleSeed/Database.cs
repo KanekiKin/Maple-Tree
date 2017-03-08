@@ -64,8 +64,8 @@ namespace MapleSeed
                 Toolbelt.AppendLog($"Unable to locate title using ID {titleId}");
             }
             else {
-                if (Toolbelt.Form1 != null && modtid)
-                    if (!Toolbelt.Form1.fullTitle.Checked)
+                if (modtid)
+                    if (!Toolbelt.Settings.DownloadFullTitle)
                         game.TitleID = game.TitleID.Replace("00050000", "0005000e");
 
                 Toolbelt.SetStatus($"Updating {titleId}");

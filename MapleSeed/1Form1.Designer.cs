@@ -55,11 +55,19 @@
             this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.titleDir = new System.Windows.Forms.TextBox();
+            this.cemuDir = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.serverHub = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar
@@ -105,7 +113,6 @@
             // 
             this.richTextBox1.BackColor = System.Drawing.SystemColors.HighlightText;
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.Cursor = System.Windows.Forms.Cursors.Default;
             this.richTextBox1.DetectUrls = false;
             this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.ForeColor = System.Drawing.SystemColors.WindowFrame;
@@ -202,6 +209,7 @@
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(268, 36);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -337,6 +345,73 @@
             this.progressOverlay.TabIndex = 23;
             this.progressOverlay.Text = "0 bytes / 0 bytes";
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.serverHub);
+            this.tabPage4.Controls.Add(this.label4);
+            this.tabPage4.Controls.Add(this.cemuDir);
+            this.tabPage4.Controls.Add(this.label3);
+            this.tabPage4.Controls.Add(this.titleDir);
+            this.tabPage4.Controls.Add(this.label2);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(861, 496);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Settings";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(7, 28);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Title Directory";
+            // 
+            // titleDir
+            // 
+            this.titleDir.Location = new System.Drawing.Point(10, 45);
+            this.titleDir.Name = "titleDir";
+            this.titleDir.Size = new System.Drawing.Size(174, 22);
+            this.titleDir.TabIndex = 1;
+            this.titleDir.TextChanged += new System.EventHandler(this.titleDir_TextChanged);
+            // 
+            // cemuDir
+            // 
+            this.cemuDir.Location = new System.Drawing.Point(10, 102);
+            this.cemuDir.Name = "cemuDir";
+            this.cemuDir.Size = new System.Drawing.Size(174, 22);
+            this.cemuDir.TabIndex = 3;
+            this.cemuDir.TextChanged += new System.EventHandler(this.cemuDir_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 85);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Cemu Directory";
+            // 
+            // serverHub
+            // 
+            this.serverHub.Location = new System.Drawing.Point(10, 158);
+            this.serverHub.Name = "serverHub";
+            this.serverHub.Size = new System.Drawing.Size(174, 22);
+            this.serverHub.TabIndex = 5;
+            this.serverHub.TextChanged += new System.EventHandler(this.serverHub_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 141);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(63, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Server Hub";
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
@@ -373,6 +448,8 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -405,6 +482,13 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.RichTextBox chatbox;
         private System.Windows.Forms.Label progressOverlay;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TextBox cemuDir;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox titleDir;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox serverHub;
+        private System.Windows.Forms.Label label4;
     }
 }
 
