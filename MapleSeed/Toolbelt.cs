@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using libWiiSharp;
+using MapleLib;
 using MapleSeed.Properties;
 using NUS_Downloader;
 
@@ -71,18 +72,11 @@ namespace MapleSeed
                     .Replace(':', ' ').Replace("(", "").Replace(")", "");
         }
 
-        public static async void AppendLog(string msg, Color color = default(Color))
+        public static void AppendLog(string msg, Color color = default(Color))
         {
-#if (DEBUG)
-            try {
-                //Logger.log(msg);
-            }
-            catch {
-                // ignored
-            }
-#endif
-            if (Form1 != null)
-                await Task.Run(() => Form1?.AppendLog(msg, color));
+            //if (Form1 != null) await Task.Run(() => Form1?.AppendLog(msg, color));
+            
+            TextLog.MesgLog.NewLine(msg + '\n', color);
         }
 
         public static void SetStatus(string msg, Color color = default(Color))

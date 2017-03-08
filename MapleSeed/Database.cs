@@ -190,8 +190,8 @@ namespace MapleSeed
             for (var i = 0; i < tmd.NumOfContents; i++) {
                 var numc = tmd.NumOfContents;
                 var size = Toolbelt.SizeSuffix((long) tmd.Contents[i].Size);
-                Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc}... ({size} bytes)");
-                Toolbelt.SetStatus($"Downloading '{name}' Content #{i + 1} of {numc}... ({size} bytes)", Color.OrangeRed);
+                Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc}... ({size})");
+                Toolbelt.SetStatus($"Downloading '{name}' Content #{i + 1} of {numc}... ({size})", Color.OrangeRed);
 
                 var contentPath = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
                 if (Toolbelt.IsValid(tmd.Contents[i], contentPath))

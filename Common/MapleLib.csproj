@@ -75,6 +75,7 @@
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Enums\MessageType.cs" />
+    <Compile Include="TextLog.cs" />
     <Compile Include="Network\Events\OnMessageReceivedEventArgs.cs" />
     <Compile Include="Network\MapleBase.cs" />
     <Compile Include="Network\MapleServer.cs" />

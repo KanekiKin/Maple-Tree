@@ -44,9 +44,10 @@ namespace MapleSeed
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            await Database.Initialize();
-
+            TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             Network.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
+
+            await Database.Initialize();
 
             if (Client == null) {
                 Client = MapleClient.Create();
@@ -74,6 +75,22 @@ namespace MapleSeed
             chatbox.Text += @"Enter /help for a list of poossible commands.";
             chatbox.Text += Environment.NewLine;
             AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
+        }
+
+        private void MesgLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        {
+            if (richTextBox1.InvokeRequired)
+            {
+                richTextBox1.BeginInvoke(new Action(() => {
+                    richTextBox1.AppendText(e.Entry, e.Color);
+                    richTextBox1.ScrollToCaret();
+                }));
+            }
+            else
+            {
+                richTextBox1.AppendText(e.Entry, e.Color);
+                richTextBox1.ScrollToCaret();
+            }
         }
 
         private void ReadLibrary()
@@ -196,12 +213,15 @@ namespace MapleSeed
 
         private void Network_DownloadProgressChangedEvent(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
-            Invoke(new Action(() => { progressBar.Value = e?.ProgressPercentage ?? 0; }));
+            try {
+                Invoke(new Action(() => { progressBar.Value = e?.ProgressPercentage ?? 0; }));
 
-            var received = Toolbelt.SizeSuffix(e?.BytesReceived ?? 0);
-            var toReceive = Toolbelt.SizeSuffix(e?.TotalBytesToReceive ?? 0);
+                var received = Toolbelt.SizeSuffix(e?.BytesReceived ?? 0);
+                var toReceive = Toolbelt.SizeSuffix(e?.TotalBytesToReceive ?? 0);
 
-            progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
+                progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
+            }
+            catch { }
         }
 
         private void HandleChatMessage(byte[] data)
@@ -314,7 +334,8 @@ namespace MapleSeed
 
         public void AppendLog(string msg, Color color = default(Color))
         {
-            msg += '\n';
+            TextLog.MesgLog.NewLine(msg + '\n', color);
+            /*
             if (richTextBox1.InvokeRequired) {
                 richTextBox1.BeginInvoke(new Action(() => {
                     richTextBox1.AppendText(msg, color);
@@ -324,7 +345,7 @@ namespace MapleSeed
             else {
                 richTextBox1.AppendText(msg, color);
                 richTextBox1.ScrollToCaret();
-            }
+            }*/
         }
 
         public void SetStatus(string msg, Color color = default(Color))
