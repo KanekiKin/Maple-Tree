@@ -14,6 +14,7 @@ using System.Xml;
 using libWiiSharp;
 using MapleLib.Common;
 using MapleLib.Network;
+using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Newtonsoft.Json;
 

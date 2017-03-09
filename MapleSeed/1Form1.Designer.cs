@@ -62,6 +62,7 @@
             this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
+            this.checkUpdateBtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -302,6 +303,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.checkUpdateBtn);
             this.tabPage4.Controls.Add(this.serverHub);
             this.tabPage4.Controls.Add(this.label4);
             this.tabPage4.Controls.Add(this.cemuDir);
@@ -412,6 +414,16 @@
             this.progressOverlay.TabIndex = 23;
             this.progressOverlay.Text = "0 bytes / 0 bytes";
             // 
+            // checkUpdateBtn
+            // 
+            this.checkUpdateBtn.Location = new System.Drawing.Point(780, 467);
+            this.checkUpdateBtn.Name = "checkUpdateBtn";
+            this.checkUpdateBtn.Size = new System.Drawing.Size(75, 23);
+            this.checkUpdateBtn.TabIndex = 6;
+            this.checkUpdateBtn.Text = "Update";
+            this.checkUpdateBtn.UseVisualStyleBackColor = true;
+            this.checkUpdateBtn.Click += new System.EventHandler(this.checkUpdateBtn_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
@@ -489,6 +501,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox serverHub;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button checkUpdateBtn;
     }
 }
 

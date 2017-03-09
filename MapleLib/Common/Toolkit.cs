@@ -38,7 +38,7 @@ namespace MapleLib.Common
 
         public static string TempName()
         {
-            return Environment.MachineName;
+            return Environment.UserName;
         }
 
         public static string UniqueID()

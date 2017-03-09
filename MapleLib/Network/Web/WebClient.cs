@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 #endregion
 
-namespace MapleLib.Network
+namespace MapleLib.Network.Web
 {
     public static class WebClient
     {
@@ -38,7 +38,7 @@ namespace MapleLib.Network
                 wc.DownloadProgressChanged += DownloadProgressChanged;
                 wc.DownloadDataCompleted += downloadDataCompleted;
                 wc.DownloadDataCompleted += DownloadDataCompleted;
-                var data = await wc.DownloadDataTaskAsync(new Uri(url));
+                await wc.DownloadDataTaskAsync(new Uri(url));
             }
         }
 

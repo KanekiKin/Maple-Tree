@@ -59,6 +59,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
@@ -77,7 +78,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Enums\MessageType.cs" />
-    <Compile Include="Network\WebClient.cs" />
+    <Compile Include="Network\Web\WebClient.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Common\DateTimeWithZone.cs" />
     <Compile Include="Structs\WiiUTitle.cs" />
@@ -485,6 +486,7 @@
     <Compile Include="ThirdParty\protobuf-net\WireType.cs" />
     <Compile Include="Common\Toolkit.cs" />
     <Compile Include="Common\Toolbelt.cs" />
+    <Compile Include="AppUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\MapleClient.cs" />
@@ -530,9 +532,7 @@
     <Content Include="ThirdParty\Lidgren.Network\Documentation\Tutorial.html" />
     <Content Include="ThirdParty\protobuf-net\Web\TODO.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Network\Web\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

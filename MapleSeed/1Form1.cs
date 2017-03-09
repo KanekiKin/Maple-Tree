@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -23,7 +23,8 @@ using MapleLib.Network.Events;
 using MapleLib.Properties;
 using MapleLib.Structs;
 using ProtoBuf;
-using WebClient = MapleLib.Network.WebClient;
+using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
+using WebClient = MapleLib.Network.Web.WebClient;
 
 #endregion
 
@@ -45,10 +46,13 @@ namespace MapleSeed
 
         private async void Form1_Load(object sender, EventArgs e)
         {
+            MinimumSize = MaximumSize = Size;
+
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
             WebClient.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
+            AppUpdate.Instance.ProgressChangedEventHandler += Instance_ProgressChangedEventHandler;
 
             await Database.Initialize();
 
@@ -58,11 +62,7 @@ namespace MapleSeed
                 Client.OnConnected += ClientOnConnected;
                 Client.NetClient.Start();
             }
-
-            MinimumSize = MaximumSize = Size;
-            Text += Toolbelt.Version;
-            Text += $@" - Serial {Toolbelt.Settings.Serial}";
-
+            
             ReadLibrary();
 
             fullScreen.Checked = Settings.Instance.FullScreenMode;
@@ -82,6 +82,20 @@ namespace MapleSeed
 
             AppendChat(@"Welcome to Maple Tree.");
             AppendChat(@"Enter /help for a list of poossible commands.");
+
+            if (AppUpdate.Instance.UpdateAvailable) {
+                var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
+                var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
+
+                TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Chocolate);
+                TextLog.ChatLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
+                TextLog.ChatLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
+            }
+            else {
+                if (AppUpdate.Instance.Ad == null) return;
+                var version = AppUpdate.Instance.Ad.CurrentVersion.ToString();
+                TextLog.ChatLog.WriteLog($"Current Version: {version}", Color.Green);
+            }
         }
 
         private void ReadLibrary()
@@ -200,13 +214,13 @@ namespace MapleSeed
             }
         }
 
-        private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
+        private void UpdateProgressBar(int _progress, long _toReceive, long _received)
         {
             try {
-                Invoke(new Action(() => { progressBar.Value = e?.ProgressPercentage ?? 0; }));
+                Invoke(new Action(() => { progressBar.Value = _progress; }));
 
-                var received = Toolbelt.SizeSuffix(e?.BytesReceived ?? 0);
-                var toReceive = Toolbelt.SizeSuffix(e?.TotalBytesToReceive ?? 0);
+                var toReceive = Toolbelt.SizeSuffix(_toReceive);
+                var received = Toolbelt.SizeSuffix(_received);
 
                 progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
             }
@@ -214,6 +228,16 @@ namespace MapleSeed
                 TextLog.MesgLog.WriteError($"{ex.Message}\n{ex.StackTrace}");
                 TextLog.StatusLog.WriteError($"{ex.Message}\n{ex.StackTrace}");
             }
+        }
+
+        private void Instance_ProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e)
+        {
+            UpdateProgressBar(e?.ProgressPercentage ?? 0, e?.TotalBytesReceived ?? 0, e?.BytesReceived ?? 0);
+        }
+
+        private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
+        {
+            UpdateProgressBar(e?.ProgressPercentage ?? 0, e?.TotalBytesToReceive ?? 0, e?.BytesReceived ?? 0);
         }
 
         private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
@@ -360,11 +384,6 @@ namespace MapleSeed
             TextLog.MesgLog.WriteLog(msg, color);
         }
 
-        public void SetStatus(string msg, Color color = default(Color))
-        {
-            TextLog.StatusLog.WriteLog(msg);
-        }
-
         private async void updateBtn_Click(object sender, EventArgs e)
         {
             try {
@@ -482,7 +501,8 @@ namespace MapleSeed
             if (!Toolbelt.LaunchCemu(wiiuTitle)) return;
 
             var title = Path.GetFileNameWithoutExtension(wiiuTitle);
-            var msg = $"[{DateTime.UtcNow:T}][{Client.UserData.Username}] Has started playing {title}!";
+            if (title == null || title.Length <= 1) return;
+            var msg = $"[{Client.UserData.Username}] Has started playing {title}!";
             Client.Send(msg, MessageType.ChatMessage);
             AppendLog(msg);
         }
@@ -566,6 +586,23 @@ namespace MapleSeed
         private void serverHub_TextChanged(object sender, EventArgs e)
         {
             Toolbelt.Settings.Hub = serverHub.Text;
+        }
+
+        private void checkUpdateBtn_Click(object sender, EventArgs e)
+        {
+            try {
+                if (!AppUpdate.Instance.UpdateAvailable) return;
+
+                var result = MessageBox.Show(@"Would you like to update?", @"Update Available!", MessageBoxButtons.YesNo);
+                if (result != DialogResult.Yes) return;
+
+                AppUpdate.Instance.Update();
+            }
+            catch (DeploymentDownloadException dde) {
+                System.Windows.MessageBox.Show(
+                    "Cannot install the latest version of the application.\n\nPlease check your network connection, or try again later. Error: " +
+                    dde);
+            }
         }
     }
 }
