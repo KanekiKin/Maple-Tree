@@ -211,7 +211,7 @@ namespace MapleSeed
             catch {}
         }
 
-        private void MesgLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
             if (richTextBox1.InvokeRequired) {
                 richTextBox1.BeginInvoke(new Action(() => {
@@ -225,7 +225,7 @@ namespace MapleSeed
             }
         }
 
-        private void ChatLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        private void ChatLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
             if (chatbox.InvokeRequired) {
                 chatbox.BeginInvoke(new Action(() => {
@@ -239,7 +239,7 @@ namespace MapleSeed
             }
         }
 
-        private void StatusLog_NewLogEntryEventHandler(object sender, OnNewLogEntry e)
+        private void StatusLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
             if (status.InvokeRequired) {
                 status.BeginInvoke(new Action(() => {
@@ -348,17 +348,17 @@ namespace MapleSeed
 
         private void AppendChat(string msg, Color color = default(Color))
         {
-            TextLog.ChatLog.NewLine(msg + '\n', color);
+            TextLog.ChatLog.WriteLog(msg + '\n', color);
         }
 
         private void AppendLog(string msg, Color color = default(Color))
         {
-            TextLog.MesgLog.NewLine(msg + '\n', color);
+            TextLog.MesgLog.WriteLog(msg + '\n', color);
         }
 
         public void SetStatus(string msg, Color color = default(Color))
         {
-            TextLog.StatusLog.NewLine(msg);
+            TextLog.StatusLog.WriteLog(msg);
         }
 
         private async void updateBtn_Click(object sender, EventArgs e)

@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapleSeed", "MapleSeed\MapleSeed.csproj", "{07945F9B-70DC-4360-8D8B-D1991D6D722F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapleLib", "Common\MapleLib.csproj", "{4375D4C0-FEF9-46F5-942D-36C2EBE15672}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapleLib", "MapleLib\MapleLib.csproj", "{4375D4C0-FEF9-46F5-942D-36C2EBE15672}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -58,6 +58,7 @@ namespace MapleSeed
                     SetStatus("Could not find a valid .rpx");
             }
             catch (Exception e) {
+                AppendLog($"{e.Message}\n{e.StackTrace}", Color.DarkRed);
                 return false;
             }
 
@@ -79,12 +80,12 @@ namespace MapleSeed
 
         public static void AppendLog(string msg, Color color = default(Color))
         {
-            TextLog.MesgLog.NewLine(msg + '\n', color);
+            TextLog.MesgLog.WriteLog(msg + '\n', color);
         }
 
         public static void SetStatus(string msg, Color color = default(Color))
         {
-            TextLog.StatusLog.NewLine(msg, color);
+            TextLog.StatusLog.WriteLog(msg, color);
         }
 
         public static string SizeSuffix(long bytes)
