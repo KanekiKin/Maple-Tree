@@ -110,15 +110,5 @@ namespace MapleSeed.Properties {
                 return ResourceManager.GetString("Settings_DefaultSettings", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 6c5d8dc
-        ///.
-        /// </summary>
-        internal static string version {
-            get {
-                return ResourceManager.GetString("version", resourceCulture);
-            }
-        }
     }
 }

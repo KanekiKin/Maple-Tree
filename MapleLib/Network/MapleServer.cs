@@ -11,13 +11,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Lidgren.Network;
 using MapleLib.Common;
 using MapleLib.Enums;
 using MapleLib.Network.Events;
 using MapleLib.Structs;
-using Newtonsoft.Json;
 using ProtoBuf;
 
 #endregion
@@ -56,7 +54,7 @@ namespace MapleLib.Network
                     HandleUserList(from);
                     break;
                 case MessageType.ChatMessage:
-                    string msg = Encoding.UTF8.GetString(e.Header.Data);
+                    var msg = Encoding.UTF8.GetString(e.Header.Data);
                     SendToAll(msg, MessageType.ChatMessage);
                     Console.WriteLine(msg);
                     break;
@@ -64,20 +62,20 @@ namespace MapleLib.Network
                     using (var ms = new MemoryStream(e.Header.Data)) {
                         from.Tag = Serializer.Deserialize<UserData>(ms);
                         HandleUserList(from);
-                        Console.WriteLine($"[{((UserData)from.Tag).Username}] User data updated.");
+                        Console.WriteLine($@"[{((UserData) from.Tag).Username}] User data updated.");
                     }
                     break;
                 case MessageType.StorageUpload:
                     HandleStorageUpload(e.Header.Data, from);
                     break;
                 case MessageType.ShaderData:
-                    HandleShaderData(e.Header, from);
+                    HandleShaderData(from);
                     break;
                 case MessageType.ReceiveFile:
                     break;
                 case MessageType.RequestDownload:
                     HandleRequestDownload(e.Header.Data, from);
-                        break;
+                    break;
                 case MessageType.RequestSearch:
                     HandleRequestSearch(e.Header.Data, from);
                     break;
@@ -86,18 +84,17 @@ namespace MapleLib.Network
 
         private void HandleUserList(NetConnection from)
         {
-            var names = (from c in NetServer.Connections select (UserData)c.Tag into mc select mc.Username).ToList();
+            var names = (from c in NetServer.Connections select (UserData) c.Tag into mc select mc.Username).ToList();
             names.RemoveAll(string.IsNullOrEmpty);
 
             if (names.Count <= 0) return;
 
-            Send(names, from, MessageType.Userlist);
+            Send(names, @from, MessageType.Userlist);
         }
 
-        private void HandleRequestDownload(byte[] data, NetConnection @from)
+        private void HandleRequestDownload(byte[] data, NetConnection from)
         {
-            using (var ms = new MemoryStream(data))
-            {
+            using (var ms = new MemoryStream(data)) {
                 var rsd = Serializer.Deserialize<StorageData>(ms);
                 if (string.IsNullOrEmpty(rsd.Name)) return;
                 var path = Path.Combine(Storage.Dir, rsd.Serial, rsd.Name);
@@ -107,7 +104,7 @@ namespace MapleLib.Network
             }
         }
 
-        private void HandleRequestSearch(byte[] data, NetConnection @from)
+        private void HandleRequestSearch(byte[] data, NetConnection from)
         {
             var str = Encoding.UTF8.GetString(data);
             var dCache = new List<StorageData>();
@@ -126,19 +123,20 @@ namespace MapleLib.Network
             Send(dCache, @from, MessageType.RequestSearch);
         }
 
-        private void HandleStorageUpload(byte[] data, NetConnection @from)
+        private void HandleStorageUpload(byte[] data, NetConnection from)
         {
             using (var ms = new MemoryStream(data)) {
                 var sd = Serializer.Deserialize<StorageData>(ms);
-                Console.WriteLine($"[{((UserData)from.Tag).Username}] Uploading {sd.Name}");
+                Console.WriteLine($@"[{((UserData) from.Tag).Username}] Uploading {sd.Name}");
                 if (!Storage.AddToStorage(sd)) return;
                 sd.Data = null;
                 Send(sd, @from, MessageType.StorageUpload);
-                SendToAll($"[+New] {sd.Name} has been uploaded by {((UserData)@from.Tag).Username}", MessageType.ChatMessage);
+                SendToAll($"[+New] {sd.Name} has been uploaded by {((UserData) from.Tag).Username}",
+                    MessageType.ChatMessage);
             }
         }
 
-        private void HandleShaderData(MessageHeader header, NetConnection from)
+        private void HandleShaderData(NetConnection from)
         {
             var ud = (UserData) from.Tag;
             if (ud == null) return;
@@ -158,8 +156,8 @@ namespace MapleLib.Network
                     Console.WriteLine(e);
                 }
 
-            Console.WriteLine($"[{((UserData)from.Tag).Username}] Requested ShaderData");
-            Send(dCache, from, MessageType.ShaderData);
+            Console.WriteLine($@"[{((UserData) from.Tag).Username}] Requested ShaderData");
+            Send(dCache, @from, MessageType.ShaderData);
         }
 
         private void SendToAll(string message, MessageType m_type)
@@ -172,11 +170,11 @@ namespace MapleLib.Network
             NetServer.SendToAll(msg, NetDeliveryMethod.ReliableOrdered);
         }
 
-        private NetSendResult Send<T>(T data, NetConnection recipient, MessageType m_type)
+        private void Send<T>(T data, NetConnection recipient, MessageType m_type)
         {
             var ms = new MemoryStream();
             Serializer.Serialize(ms, data);
-            return Send(NetServer, recipient, ms.ToArray(), m_type);
+            Send(NetServer, recipient, ms.ToArray(), m_type);
         }
 
         private void ReadMessage(object state)
@@ -200,10 +198,10 @@ namespace MapleLib.Network
                             case NetConnectionStatus.Connected:
                                 inMsg.SenderConnection.Tag = new UserData();
                                 Connections.Add(inMsg.SenderConnection);
-                                Console.WriteLine($"{inMsg.SenderConnection} has connected!");
+                                Console.WriteLine($@"{inMsg.SenderConnection} has connected!");
                                 break;
                             case NetConnectionStatus.Disconnected:
-                                Console.WriteLine($"{inMsg.SenderConnection} has disconnected!");
+                                Console.WriteLine($@"{inMsg.SenderConnection} has disconnected!");
                                 break;
                         }
                         break;
@@ -219,7 +217,7 @@ namespace MapleLib.Network
                         }
                         break;
                     default:
-                        Console.WriteLine("Unhandled type: " + inMsg.MessageType);
+                        Console.WriteLine($@"Unhandled type: {inMsg.MessageType}");
                         break;
                 }
                 server.Recycle(inMsg);

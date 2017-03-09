@@ -503,6 +503,7 @@
     <None Include="ThirdParty\protobuf-net\protobuf_net.xproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="version.txt" />
     <None Include="Resources\CDecrypt.exe" />
     <Content Include="Resources\images\download.png" />
     <Content Include="Resources\images\Green_Light.ico" />
@@ -539,4 +540,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"C:\Program Files\Git\bin\git.exe" rev-parse --short HEAD &gt; "$(ProjectDir)\version.txt"
+</PreBuildEvent>
+  </PropertyGroup>
 </Project>

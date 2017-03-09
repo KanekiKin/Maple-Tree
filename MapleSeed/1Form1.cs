@@ -34,6 +34,7 @@ namespace MapleSeed
         public Form1()
         {
             InitializeComponent();
+            MapleServer.Init();
         }
 
         private static bool IsLive { get; set; } = true;
