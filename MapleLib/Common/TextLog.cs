@@ -6,9 +6,8 @@
 using System;
 using System.Drawing;
 using System.Text;
-using MapleLib.Structs;
 
-namespace MapleLib
+namespace MapleLib.Common
 {
     public sealed class TextLog
     {
@@ -16,14 +15,14 @@ namespace MapleLib
         public static TextLog ChatLog { get; set; } = new TextLog();
         public static TextLog StatusLog { get; set; } = new TextLog();
 
-        private StringBuilder LogBuilder { get; set; } = new StringBuilder();
+        private StringBuilder LogBuilder { get; } = new StringBuilder();
 
         public event EventHandler<NewLogEntryEvent> NewLogEntryEventHandler;
-        
+
         private void NewLine(string text, Color color = default(Color))
         {
             LogBuilder.AppendFormat(text, color);
-            NewLogEntryEventHandler?.Invoke(this, new NewLogEntryEvent(this, text, color));
+            NewLogEntryEventHandler?.Invoke(this, new NewLogEntryEvent(text, color));
         }
 
         public void WriteLog(string text, Color color = default(Color))
@@ -38,25 +37,22 @@ namespace MapleLib
 
         public void WriteError(string text)
         {
-            Color color = Color.DarkRed;
+            var color = Color.DarkRed;
             NewLine(text + Environment.NewLine, color);
         }
     }
 
     public class NewLogEntryEvent : EventArgs
     {
-        public string Entry { get; private set; }
-
-        public Color Color { get; private set; }
-
-        public object Sender { get; set; }
-
-        public NewLogEntryEvent(object sender, string entry, Color color = default(Color))
+        public NewLogEntryEvent(string entry, Color color = default(Color))
         {
-            Sender = sender;
             Entry = $"[{TimeStamp()}] {entry}";
             Color = color;
         }
+
+        public string Entry { get; private set; }
+
+        public Color Color { get; private set; }
 
         private string TimeStamp()
         {

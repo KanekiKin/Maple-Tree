@@ -79,9 +79,9 @@
     <Compile Include="Enums\MessageType.cs" />
     <Compile Include="Network\WebClient.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Structs\DateTimeWithZone.cs" />
+    <Compile Include="Common\DateTimeWithZone.cs" />
     <Compile Include="Structs\WiiUTitle.cs" />
-    <Compile Include="TextLog.cs" />
+    <Compile Include="Common\TextLog.cs" />
     <Compile Include="Network\Events\OnMessageReceivedEventArgs.cs" />
     <Compile Include="Network\MapleBase.cs" />
     <Compile Include="Network\MapleServer.cs" />
@@ -484,7 +484,7 @@
     <Compile Include="ThirdParty\protobuf-net\SubItemToken.cs" />
     <Compile Include="ThirdParty\protobuf-net\WireType.cs" />
     <Compile Include="Common\Toolkit.cs" />
-    <Compile Include="Toolbelt.cs" />
+    <Compile Include="Common\Toolbelt.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\MapleClient.cs" />

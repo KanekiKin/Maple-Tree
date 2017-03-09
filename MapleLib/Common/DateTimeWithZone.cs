@@ -5,7 +5,7 @@
 
 using System;
 
-namespace MapleLib.Structs
+namespace MapleLib.Common
 {
     public class DateTimeWithZone
     {

@@ -1,4 +1,6 @@
-﻿namespace MapleLib.Structs
+﻿using MapleLib.Common;
+
+namespace MapleLib.Structs
 {
     public struct WiiUTitle
     {

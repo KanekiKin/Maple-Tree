@@ -6,11 +6,9 @@
 #region usings
 
 using System;
-using System.Globalization;
 using System.IO;
 using System.Management;
 using System.Threading;
-using Lidgren.Network;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Timer = System.Timers.Timer;
@@ -40,7 +38,7 @@ namespace MapleLib.Common
 
         public static string TempName()
         {
-            return $"Guest#{new Random().Next(555555, 999999)}";
+            return Environment.MachineName;
         }
 
         public static string UniqueID()
@@ -79,22 +77,6 @@ namespace MapleLib.Common
                     return serializer.Deserialize<T>(reader);
                 }
             }
-        }
-
-        public static string ToTitleID(string hexId)
-        {
-            var str1 = "85887bc1";
-            var str2 = "1010ec00";
-
-            var bytes1 = NetUtility.ToByteArray(str1);
-            var bytes2 = NetUtility.ToByteArray(str2);
-
-            var intValue1 = long.Parse(str1, NumberStyles.HexNumber);
-            var intValue2 = long.Parse(str2, NumberStyles.HexNumber);
-
-            var hex1 = intValue1.ToString("x8");
-            var hex2 = intValue2.ToString("x8");
-            return hex1;
         }
     }
 }

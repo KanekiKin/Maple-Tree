@@ -17,7 +17,7 @@ using NUS_Downloader;
 
 #endregion
 
-namespace MapleLib
+namespace MapleLib.Common
 {
     public static class Toolbelt
     {

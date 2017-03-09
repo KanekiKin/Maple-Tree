@@ -74,14 +74,14 @@ namespace MapleSeed
             Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
             GlobalTimer_Elapsed(null, null);
 
-            chatbox.Text += @"Welcome to Maple Tree." + Environment.NewLine;
-            chatbox.Text += @"Enter /help for a list of poossible commands.";
-            chatbox.Text += Environment.NewLine;
             AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
 
             titleDir.Text = Toolbelt.Settings.TitleDirectory;
             cemuDir.Text = Toolbelt.Settings.CemuDirectory;
             serverHub.Text = Toolbelt.Settings.Hub;
+
+            HandleChatMessage(Encoding.UTF8.GetBytes($@"Welcome to Maple Tree."));
+            HandleChatMessage(Encoding.UTF8.GetBytes(@"Enter /help for a list of poossible commands."));
         }
 
         private void ReadLibrary()
@@ -260,8 +260,7 @@ namespace MapleSeed
 
         private void HandleChatMessage(byte[] data)
         {
-            var msg = Encoding.UTF8.GetString(data);
-            AppendChat(msg);
+            AppendChat($"{Encoding.UTF8.GetString(data)}", Color.Gray);
         }
 
         private void HandleRequestDownload(MessageHeader header)
@@ -353,7 +352,7 @@ namespace MapleSeed
 
         private void AppendChat(string msg, Color color = default(Color))
         {
-            TextLog.ChatLog.WriteLog(msg + '\n', color);
+            TextLog.ChatLog.WriteLog(msg, color);
         }
 
         private void AppendLog(string msg, Color color = default(Color))
