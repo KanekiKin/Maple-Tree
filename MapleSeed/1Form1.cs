@@ -80,8 +80,8 @@ namespace MapleSeed
             cemuDir.Text = Toolbelt.Settings.CemuDirectory;
             serverHub.Text = Toolbelt.Settings.Hub;
 
-            HandleChatMessage(Encoding.UTF8.GetBytes($@"Welcome to Maple Tree."));
-            HandleChatMessage(Encoding.UTF8.GetBytes(@"Enter /help for a list of poossible commands."));
+            AppendChat(@"Welcome to Maple Tree.");
+            AppendChat(@"Enter /help for a list of poossible commands.");
         }
 
         private void ReadLibrary()
@@ -260,7 +260,7 @@ namespace MapleSeed
 
         private void HandleChatMessage(byte[] data)
         {
-            AppendChat($"{Encoding.UTF8.GetString(data)}", Color.Gray);
+            AppendChat($"{Encoding.UTF8.GetString(data)}", Color.MediumSlateBlue);
         }
 
         private void HandleRequestDownload(MessageHeader header)
@@ -515,7 +515,7 @@ namespace MapleSeed
             }
             else {
                 if (Client.NetClient.ServerConnection == null) return;
-                Client.Send($"[{DateTime.UtcNow:T}][{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
+                Client.Send($"[{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
                 chatInput.Text = string.Empty;
             }
         }
