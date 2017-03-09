@@ -75,7 +75,12 @@
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Database.cs" />
     <Compile Include="Enums\MessageType.cs" />
+    <Compile Include="Network\WebClient.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Structs\DateTimeWithZone.cs" />
+    <Compile Include="Structs\WiiUTitle.cs" />
     <Compile Include="TextLog.cs" />
     <Compile Include="Network\Events\OnMessageReceivedEventArgs.cs" />
     <Compile Include="Network\MapleBase.cs" />
@@ -479,6 +484,7 @@
     <Compile Include="ThirdParty\protobuf-net\SubItemToken.cs" />
     <Compile Include="ThirdParty\protobuf-net\WireType.cs" />
     <Compile Include="Common\Toolkit.cs" />
+    <Compile Include="Toolbelt.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\MapleClient.cs" />
@@ -497,9 +503,12 @@
     <None Include="ThirdParty\protobuf-net\protobuf_net.xproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\CDecrypt.exe" />
     <Content Include="Resources\images\download.png" />
     <Content Include="Resources\images\Green_Light.ico" />
     <Content Include="Resources\images\Red_Light.ico" />
+    <None Include="Resources\libeay32.dll" />
+    <None Include="Resources\msvcr120d.dll" />
     <Content Include="Resources\Seed-icon.png" />
     <Content Include="Resources\Seed.ico" />
     <Content Include="ThirdParty\CefSharp\CefSharp.Core.dll" />
@@ -519,7 +528,6 @@
     <Content Include="ThirdParty\Lidgren.Network\Documentation\TODO.txt" />
     <Content Include="ThirdParty\Lidgren.Network\Documentation\Tutorial.html" />
     <Content Include="ThirdParty\protobuf-net\Web\TODO.txt" />
-    <Content Include="version.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Network\Web\" />

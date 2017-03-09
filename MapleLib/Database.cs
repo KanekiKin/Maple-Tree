@@ -13,12 +13,13 @@ using System.Threading.Tasks;
 using System.Xml;
 using libWiiSharp;
 using MapleLib.Common;
-using MapleSeed.Structs;
+using MapleLib.Network;
+using MapleLib.Structs;
 using Newtonsoft.Json;
 
 #endregion
 
-namespace MapleSeed
+namespace MapleLib
 {
     public class Database
     {
@@ -36,7 +37,7 @@ namespace MapleSeed
                     Toolbelt.Settings = new Settings();
 
                 if (DateTime.Now > new FileInfo(DatabaseFile).LastWriteTime.AddDays(1))
-                    await Network.DownloadFileAsync(TitleKeys + "/json", DatabaseFile);
+                    await WebClient.DownloadFileAsync(TitleKeys + "/json", DatabaseFile);
             }
             catch (Exception e) {
                 Toolbelt.AppendLog($"{e.Message}\n{e.StackTrace}");
@@ -137,7 +138,7 @@ namespace MapleSeed
                 var tmdFile = Path.Combine(outputDir, "tmd");
 
                 Toolbelt.AppendLog("  - Downloading TMD...");
-                await Network.DownloadFileAsync(Path.Combine(titleUrl, "tmd"), tmdFile);
+                await WebClient.DownloadFileAsync(Path.Combine(titleUrl, "tmd"), tmdFile);
 
                 Toolbelt.AppendLog("  - Loading TMD...");
                 var tmd = TMD.Load(File.ReadAllBytes(tmdFile));
@@ -163,14 +164,14 @@ namespace MapleSeed
                 Toolbelt.AppendLog("  - Downloading Ticket...");
 
                 var cetkUrl = Path.Combine(titleUrl, "cetk");
-                await Network.DownloadFileAsync(cetkUrl, cetk);
+                await WebClient.DownloadFileAsync(cetkUrl, cetk);
             }
             catch (Exception ex) {
                 try {
                     if (wiiUTitle.Ticket == "1") {
                         var WII_TIK_URL = "https://wiiu.titlekeys.com/ticket/";
                         var cetkUrl = $"{WII_TIK_URL}{wiiUTitle.TitleID.ToLower()}.tik";
-                        await Network.DownloadFileAsync(cetkUrl, cetk);
+                        await WebClient.DownloadFileAsync(cetkUrl, cetk);
                     }
                 }
                 catch {
@@ -200,7 +201,7 @@ namespace MapleSeed
                     try {
                         var downloadUrl = titleUrl + tmd.Contents[i].ContentID.ToString("x8");
                         var outputdir = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
-                        await Network.DownloadFileAsync(downloadUrl, outputdir);
+                        await WebClient.DownloadFileAsync(downloadUrl, outputdir);
                     }
                     catch (Exception ex) {
                         Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc} failed...\n{ex.Message}");
@@ -250,7 +251,7 @@ namespace MapleSeed
                 Toolbelt.SetStatus($"Downloading Title '{wiiUTitle}' Failed.", Color.DarkRed);
             }
 
-            Network.ResetDownloadProgressChanged();
+            WebClient.ResetDownloadProgressChanged();
         }
     }
 }

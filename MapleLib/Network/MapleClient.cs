@@ -125,7 +125,7 @@ namespace MapleLib.Network
                         break;
 
                     default:
-                        Console.WriteLine("Unhandled type: " + inMsg.MessageType);
+                        Console.WriteLine(@"Unhandled type: " + inMsg.MessageType);
                         break;
                 }
                 client.Recycle(inMsg);

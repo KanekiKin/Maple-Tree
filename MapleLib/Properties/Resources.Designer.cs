@@ -61,6 +61,16 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] CDecrypt {
+            get {
+                object obj = ResourceManager.GetObject("CDecrypt", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap download {
@@ -77,6 +87,26 @@ namespace MapleLib.Properties {
             get {
                 object obj = ResourceManager.GetObject("Green_Light", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] libeay32 {
+            get {
+                object obj = ResourceManager.GetObject("libeay32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] msvcr120d {
+            get {
+                object obj = ResourceManager.GetObject("msvcr120d", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

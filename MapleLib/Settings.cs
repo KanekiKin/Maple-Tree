@@ -10,11 +10,11 @@ using System.IO;
 using System.Windows.Forms;
 using IniParser;
 using MapleLib.Common;
-using MapleSeed.Properties;
+using MapleLib.Properties;
 
 #endregion
 
-namespace MapleSeed
+namespace MapleLib
 {
     public class Settings
     {

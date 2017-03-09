@@ -12,13 +12,12 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using libWiiSharp;
-using MapleLib;
-using MapleSeed.Properties;
+using MapleLib.Properties;
 using NUS_Downloader;
 
 #endregion
 
-namespace MapleSeed
+namespace MapleLib
 {
     public static class Toolbelt
     {
@@ -80,7 +79,7 @@ namespace MapleSeed
 
         public static void AppendLog(string msg, Color color = default(Color))
         {
-            TextLog.MesgLog.WriteLog(msg + '\n', color);
+            TextLog.MesgLog.WriteLog(msg, color);
         }
 
         public static void SetStatus(string msg, Color color = default(Color))

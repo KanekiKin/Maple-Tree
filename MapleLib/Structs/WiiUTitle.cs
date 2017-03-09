@@ -1,6 +1,4 @@
-﻿using MapleLib;
-
-namespace MapleSeed.Structs
+﻿namespace MapleLib.Structs
 {
     public struct WiiUTitle
     {

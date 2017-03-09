@@ -6,6 +6,7 @@
 using System;
 using System.Drawing;
 using System.Text;
+using MapleLib.Structs;
 
 namespace MapleLib
 {
@@ -18,7 +19,7 @@ namespace MapleLib
         private StringBuilder LogBuilder { get; set; } = new StringBuilder();
 
         public event EventHandler<NewLogEntryEvent> NewLogEntryEventHandler;
-
+        
         private void NewLine(string text, Color color = default(Color))
         {
             LogBuilder.AppendFormat(text, color);
@@ -28,20 +29,17 @@ namespace MapleLib
         public void WriteLog(string text, Color color = default(Color))
         {
             NewLine(text + Environment.NewLine, color);
-            NewLogEntryEventHandler?.Invoke(this, new NewLogEntryEvent(this, text, color));
         }
 
         public void WriteStatus(string text, Color color = default(Color))
         {
             NewLine(text, color);
-            NewLogEntryEventHandler?.Invoke(this, new NewLogEntryEvent(this, text, color));
         }
 
         public void WriteError(string text)
         {
             Color color = Color.DarkRed;
             NewLine(text + Environment.NewLine, color);
-            NewLogEntryEventHandler?.Invoke(this, new NewLogEntryEvent(this, text, color));
         }
     }
 
@@ -56,8 +54,13 @@ namespace MapleLib
         public NewLogEntryEvent(object sender, string entry, Color color = default(Color))
         {
             Sender = sender;
-            Entry = entry;
+            Entry = $"[{TimeStamp()}] {entry}";
             Color = color;
+        }
+
+        private string TimeStamp()
+        {
+            return new DateTimeWithZone().TimeStamp();
         }
     }
 }

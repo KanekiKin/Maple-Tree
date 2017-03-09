@@ -51,17 +51,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.search = new System.Windows.Forms.TextBox();
             this.dataGrid1 = new System.Windows.Forms.DataGridView();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.serverHub = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cemuDir = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.titleDir = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.myUploads = new System.Windows.Forms.Button();
             this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.label2 = new System.Windows.Forms.Label();
-            this.titleDir = new System.Windows.Forms.TextBox();
-            this.cemuDir = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.serverHub = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -300,6 +300,73 @@
             this.dataGrid1.TabIndex = 0;
             this.dataGrid1.DoubleClick += new System.EventHandler(this.dataGrid1_DoubleClick);
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.serverHub);
+            this.tabPage4.Controls.Add(this.label4);
+            this.tabPage4.Controls.Add(this.cemuDir);
+            this.tabPage4.Controls.Add(this.label3);
+            this.tabPage4.Controls.Add(this.titleDir);
+            this.tabPage4.Controls.Add(this.label2);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(861, 496);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Settings";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // serverHub
+            // 
+            this.serverHub.Location = new System.Drawing.Point(10, 158);
+            this.serverHub.Name = "serverHub";
+            this.serverHub.Size = new System.Drawing.Size(174, 22);
+            this.serverHub.TabIndex = 5;
+            this.serverHub.TextChanged += new System.EventHandler(this.serverHub_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 141);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(63, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Server Hub";
+            // 
+            // cemuDir
+            // 
+            this.cemuDir.Location = new System.Drawing.Point(10, 102);
+            this.cemuDir.Name = "cemuDir";
+            this.cemuDir.Size = new System.Drawing.Size(174, 22);
+            this.cemuDir.TabIndex = 3;
+            this.cemuDir.TextChanged += new System.EventHandler(this.cemuDir_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 85);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Cemu Directory";
+            // 
+            // titleDir
+            // 
+            this.titleDir.Location = new System.Drawing.Point(10, 45);
+            this.titleDir.Name = "titleDir";
+            this.titleDir.Size = new System.Drawing.Size(174, 22);
+            this.titleDir.TabIndex = 1;
+            this.titleDir.TextChanged += new System.EventHandler(this.titleDir_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(7, 28);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Title Directory";
+            // 
             // myUploads
             // 
             this.myUploads.Location = new System.Drawing.Point(268, 7);
@@ -344,73 +411,6 @@
             this.progressOverlay.Size = new System.Drawing.Size(89, 13);
             this.progressOverlay.TabIndex = 23;
             this.progressOverlay.Text = "0 bytes / 0 bytes";
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.serverHub);
-            this.tabPage4.Controls.Add(this.label4);
-            this.tabPage4.Controls.Add(this.cemuDir);
-            this.tabPage4.Controls.Add(this.label3);
-            this.tabPage4.Controls.Add(this.titleDir);
-            this.tabPage4.Controls.Add(this.label2);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(861, 496);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Settings";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 28);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(77, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Title Directory";
-            // 
-            // titleDir
-            // 
-            this.titleDir.Location = new System.Drawing.Point(10, 45);
-            this.titleDir.Name = "titleDir";
-            this.titleDir.Size = new System.Drawing.Size(174, 22);
-            this.titleDir.TabIndex = 1;
-            this.titleDir.TextChanged += new System.EventHandler(this.titleDir_TextChanged);
-            // 
-            // cemuDir
-            // 
-            this.cemuDir.Location = new System.Drawing.Point(10, 102);
-            this.cemuDir.Name = "cemuDir";
-            this.cemuDir.Size = new System.Drawing.Size(174, 22);
-            this.cemuDir.TabIndex = 3;
-            this.cemuDir.TextChanged += new System.EventHandler(this.cemuDir_TextChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 85);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(85, 13);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Cemu Directory";
-            // 
-            // serverHub
-            // 
-            this.serverHub.Location = new System.Drawing.Point(10, 158);
-            this.serverHub.Name = "serverHub";
-            this.serverHub.Size = new System.Drawing.Size(174, 22);
-            this.serverHub.TabIndex = 5;
-            this.serverHub.TextChanged += new System.EventHandler(this.serverHub_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 141);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(63, 13);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Server Hub";
             // 
             // Form1
             // 

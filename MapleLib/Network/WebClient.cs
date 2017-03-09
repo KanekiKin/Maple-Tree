@@ -6,15 +6,14 @@
 #region usings
 
 using System;
-using System.ComponentModel;
 using System.Net;
 using System.Threading.Tasks;
 
 #endregion
 
-namespace MapleSeed
+namespace MapleLib.Network
 {
-    public static class Network
+    public static class WebClient
     {
         private const string WII_USER_AGENT = "wii libnup/1.0";
 
@@ -22,7 +21,7 @@ namespace MapleSeed
 
         public static async Task DownloadFileAsync(string url, string saveTo)
         {
-            var wc = new WebClient {Headers = {[HttpRequestHeader.UserAgent] = WII_USER_AGENT}};
+            var wc = new System.Net.WebClient { Headers = {[HttpRequestHeader.UserAgent] = WII_USER_AGENT } };
             wc.DownloadProgressChanged += DownloadProgressChanged;
             wc.DownloadDataCompleted += DownloadDataCompleted;
 
@@ -34,7 +33,7 @@ namespace MapleSeed
 
         public static async void DownloadData(string url, DownloadDataCompletedEventHandler downloadDataCompleted)
         {
-            using (var wc = new WebClient()) {
+            using (var wc = new System.Net.WebClient()) {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
                 wc.DownloadDataCompleted += downloadDataCompleted;

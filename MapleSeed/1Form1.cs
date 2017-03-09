@@ -23,6 +23,7 @@ using MapleLib.Network.Events;
 using MapleLib.Properties;
 using MapleLib.Structs;
 using ProtoBuf;
+using WebClient = MapleLib.Network.WebClient;
 
 #endregion
 
@@ -46,7 +47,7 @@ namespace MapleSeed
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
-            Network.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
+            WebClient.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
 
             await Database.Initialize();
 
@@ -208,7 +209,10 @@ namespace MapleSeed
 
                 progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
             }
-            catch {}
+            catch (Exception ex) {
+                TextLog.MesgLog.WriteError($"{ex.Message}\n{ex.StackTrace}");
+                TextLog.StatusLog.WriteError($"{ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
@@ -353,7 +357,7 @@ namespace MapleSeed
 
         private void AppendLog(string msg, Color color = default(Color))
         {
-            TextLog.MesgLog.WriteLog(msg + '\n', color);
+            TextLog.MesgLog.WriteLog(msg, color);
         }
 
         public void SetStatus(string msg, Color color = default(Color))
