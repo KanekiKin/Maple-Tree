@@ -65,21 +65,21 @@ namespace MapleSeed
             
             ReadLibrary();
 
+            Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
+            GlobalTimer_Elapsed(null, null);
+
             fullScreen.Checked = Settings.Instance.FullScreenMode;
+            cemu173Patch.Checked = Settings.Instance.Cemu173Patch;
 
             username.Text = Settings.Instance.Username;
             if (Settings.Instance.Username.IsNullOrEmpty())
                 username.Text = Settings.Instance.Username = Toolkit.TempName();
 
-            Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
-            GlobalTimer_Elapsed(null, null);
-
-            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
-
             titleDir.Text = Toolbelt.Settings.TitleDirectory;
             cemuDir.Text = Toolbelt.Settings.CemuDirectory;
             serverHub.Text = Toolbelt.Settings.Hub;
 
+            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
             AppendChat(@"Welcome to Maple Tree.");
             AppendChat(@"Enter /help for a list of poossible commands.");
 
@@ -603,6 +603,11 @@ namespace MapleSeed
                     "Cannot install the latest version of the application.\n\nPlease check your network connection, or try again later. Error: " +
                     dde);
             }
+        }
+
+        private void cemu173Patch_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.Cemu173Patch = cemu173Patch.Checked;
         }
     }
 }

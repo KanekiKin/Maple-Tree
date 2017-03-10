@@ -101,11 +101,27 @@ namespace MapleLib
         public bool FullScreenMode {
             get {
                 var value = GetKeyValue("FullScreenMode");
-                if (string.IsNullOrEmpty(value)) WriteKeyValue("FullScreenMode", false.ToString());
-                return value == "True";
+                if (string.IsNullOrEmpty(value))
+                    WriteKeyValue("FullScreenMode", false.ToString());
+
+                return GetKeyValue("FullScreenMode") == "True";
             }
 
             set { WriteKeyValue("FullScreenMode", value.ToString()); }
+        }
+
+        public bool Cemu173Patch
+        {
+            get
+            {
+                var value = GetKeyValue("Cemu173Patch");
+                if (string.IsNullOrEmpty(value))
+                    WriteKeyValue("Cemu173Patch", true.ToString());
+
+                return GetKeyValue("Cemu173Patch") == "True";
+            }
+
+            set { WriteKeyValue("Cemu173Patch", value.ToString()); }
         }
 
         public bool DownloadFullTitle { get; set; }

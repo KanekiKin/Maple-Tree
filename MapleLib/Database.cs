@@ -58,8 +58,11 @@ namespace MapleLib
 #pragma warning restore 4014
         }
 
+        //mlc01/usr/title/<titleId_upper8Digits>/<titleId_lower8Digits>/
         public async Task UpdateGame(string titleId, string fullPath, bool modtid = true)
         {
+            var basePatchDir = Path.Combine(Toolbelt.Settings.CemuDirectory, "mlc01", "usr", "title");
+
             var game = FindByTitleId(titleId);
 
             if (game.TitleID.IsNullOrEmpty()) {
@@ -71,6 +74,12 @@ namespace MapleLib
                         game.TitleID = game.TitleID.Replace("00050000", "0005000e");
 
                 Toolbelt.SetStatus($"Updating {titleId}");
+
+                if (Settings.Instance.Cemu173Patch) {
+                    var upper8Digits = game.TitleID.Substring(0, 8).ToUpper();
+                    var lower8Digits = game.TitleID.Substring(8).ToLower();
+                    fullPath = Path.Combine(basePatchDir, upper8Digits, lower8Digits);
+                }
 
                 await DownloadTitle(game, fullPath);
             }

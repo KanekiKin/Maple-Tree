@@ -52,6 +52,7 @@
             this.search = new System.Windows.Forms.TextBox();
             this.dataGrid1 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.checkUpdateBtn = new System.Windows.Forms.Button();
             this.serverHub = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cemuDir = new System.Windows.Forms.TextBox();
@@ -62,7 +63,7 @@
             this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
-            this.checkUpdateBtn = new System.Windows.Forms.Button();
+            this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -303,6 +304,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.cemu173Patch);
             this.tabPage4.Controls.Add(this.checkUpdateBtn);
             this.tabPage4.Controls.Add(this.serverHub);
             this.tabPage4.Controls.Add(this.label4);
@@ -317,6 +319,16 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Settings";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // checkUpdateBtn
+            // 
+            this.checkUpdateBtn.Location = new System.Drawing.Point(780, 467);
+            this.checkUpdateBtn.Name = "checkUpdateBtn";
+            this.checkUpdateBtn.Size = new System.Drawing.Size(75, 23);
+            this.checkUpdateBtn.TabIndex = 6;
+            this.checkUpdateBtn.Text = "Update";
+            this.checkUpdateBtn.UseVisualStyleBackColor = true;
+            this.checkUpdateBtn.Click += new System.EventHandler(this.checkUpdateBtn_Click);
             // 
             // serverHub
             // 
@@ -414,15 +426,18 @@
             this.progressOverlay.TabIndex = 23;
             this.progressOverlay.Text = "0 bytes / 0 bytes";
             // 
-            // checkUpdateBtn
+            // cemu173Patch
             // 
-            this.checkUpdateBtn.Location = new System.Drawing.Point(780, 467);
-            this.checkUpdateBtn.Name = "checkUpdateBtn";
-            this.checkUpdateBtn.Size = new System.Drawing.Size(75, 23);
-            this.checkUpdateBtn.TabIndex = 6;
-            this.checkUpdateBtn.Text = "Update";
-            this.checkUpdateBtn.UseVisualStyleBackColor = true;
-            this.checkUpdateBtn.Click += new System.EventHandler(this.checkUpdateBtn_Click);
+            this.cemu173Patch.AutoSize = true;
+            this.cemu173Patch.Checked = true;
+            this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cemu173Patch.Location = new System.Drawing.Point(226, 45);
+            this.cemu173Patch.Name = "cemu173Patch";
+            this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
+            this.cemu173Patch.TabIndex = 7;
+            this.cemu173Patch.Text = "Cemu 1.7.3 Patch Support";
+            this.cemu173Patch.UseVisualStyleBackColor = true;
+            this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
             // 
             // Form1
             // 
@@ -502,6 +517,7 @@
         private System.Windows.Forms.TextBox serverHub;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button checkUpdateBtn;
+        private System.Windows.Forms.CheckBox cemu173Patch;
     }
 }
 
