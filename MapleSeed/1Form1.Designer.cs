@@ -64,6 +64,11 @@
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
             this.cemu173Patch = new System.Windows.Forms.CheckBox();
+            this.discordEmail = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.discordPass = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.discordConnect = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -304,6 +309,10 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.discordPass);
+            this.tabPage4.Controls.Add(this.label6);
+            this.tabPage4.Controls.Add(this.discordEmail);
+            this.tabPage4.Controls.Add(this.label5);
             this.tabPage4.Controls.Add(this.cemu173Patch);
             this.tabPage4.Controls.Add(this.checkUpdateBtn);
             this.tabPage4.Controls.Add(this.serverHub);
@@ -439,12 +448,59 @@
             this.cemu173Patch.UseVisualStyleBackColor = true;
             this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
             // 
+            // discordEmail
+            // 
+            this.discordEmail.Location = new System.Drawing.Point(435, 43);
+            this.discordEmail.Name = "discordEmail";
+            this.discordEmail.Size = new System.Drawing.Size(174, 22);
+            this.discordEmail.TabIndex = 9;
+            this.discordEmail.TextChanged += new System.EventHandler(this.discordEmail_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(432, 26);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(81, 13);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Discord E-Mail";
+            // 
+            // discordPass
+            // 
+            this.discordPass.Location = new System.Drawing.Point(435, 102);
+            this.discordPass.Name = "discordPass";
+            this.discordPass.PasswordChar = '*';
+            this.discordPass.Size = new System.Drawing.Size(174, 22);
+            this.discordPass.TabIndex = 11;
+            this.discordPass.UseSystemPasswordChar = true;
+            this.discordPass.TextChanged += new System.EventHandler(this.discordPass_TextChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(432, 85);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(98, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Discord Password";
+            // 
+            // discordConnect
+            // 
+            this.discordConnect.Location = new System.Drawing.Point(1143, 592);
+            this.discordConnect.Name = "discordConnect";
+            this.discordConnect.Size = new System.Drawing.Size(109, 23);
+            this.discordConnect.TabIndex = 24;
+            this.discordConnect.Text = "Connect To Chat";
+            this.discordConnect.UseVisualStyleBackColor = true;
+            this.discordConnect.Click += new System.EventHandler(this.discordConnect_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.discordConnect);
             this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.sendChat);
             this.Controls.Add(this.myUploads);
@@ -518,6 +574,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button checkUpdateBtn;
         private System.Windows.Forms.CheckBox cemu173Patch;
+        private System.Windows.Forms.TextBox discordPass;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox discordEmail;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button discordConnect;
     }
 }
 

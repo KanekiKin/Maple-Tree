@@ -79,6 +79,32 @@ namespace MapleLib
             set { WriteKeyValue("Username", value); }
         }
 
+        public string DiscordEmail
+        {
+            get
+            {
+                var value = GetKeyValue("DiscordEmail");
+                if (string.IsNullOrEmpty(value))
+                    WriteKeyValue("DiscordEmail", value = "");
+                return value;
+            }
+
+            set { WriteKeyValue("DiscordEmail", value); }
+        }
+
+        public string DiscordPass
+        {
+            get {
+                var value = GetKeyValue("DiscordPass");
+                if (string.IsNullOrEmpty(value))
+                    WriteKeyValue("DiscordPass", value = "");
+
+                return Helper.DecryptStr(value);
+            }
+
+            set { WriteKeyValue("DiscordPass", Helper.EncryptStr(value)); }
+        }
+
         public string Hub {
             get {
                 var value = GetKeyValue("Hub");

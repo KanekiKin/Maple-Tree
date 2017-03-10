@@ -28,5 +28,15 @@ namespace MapleLib.Common
         {
             return Directory.Exists(file);
         }
+
+        public static string EncryptStr(string text)
+        {
+            return Crypto.Encrypt(text);
+        }
+
+        public static string DecryptStr(string text)
+        {
+            return Crypto.Decrypt(text);
+        }
     }
 }

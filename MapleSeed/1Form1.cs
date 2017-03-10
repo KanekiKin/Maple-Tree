@@ -44,25 +44,6 @@ namespace MapleSeed
 
         private static MapleClient Client { get; set; }
 
-        private async void Form1_Load(object sender, EventArgs e)
-        {
-            MinimumSize = MaximumSize = Size;
-
-            await Database.Initialize();
-
-            RegisterEvents();
-
-            RegisterDefaults();
-
-            RegisterMapleClient();
-
-            CheckUpdate();
-
-            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
-            AppendChat(@"Welcome to Maple Tree.");
-            AppendChat(@"Enter /help for a list of possible commands.");
-        }
-
         private void RegisterEvents()
         {
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
@@ -128,9 +109,12 @@ namespace MapleSeed
             if (Settings.Instance.Username.IsNullOrEmpty())
                 username.Text = Settings.Instance.Username = Toolkit.TempName();
 
-            titleDir.Text = Toolbelt.Settings.TitleDirectory;
-            cemuDir.Text = Toolbelt.Settings.CemuDirectory;
-            serverHub.Text = Toolbelt.Settings.Hub;
+            titleDir.Text = Settings.Instance.TitleDirectory;
+            cemuDir.Text = Settings.Instance.CemuDirectory;
+            serverHub.Text = Settings.Instance.Hub;
+
+            discordEmail.Text = Settings.Instance.DiscordEmail;
+            discordPass.Text = Settings.Instance.DiscordPass;
         }
 
         private void CheckUpdate()
@@ -175,6 +159,29 @@ namespace MapleSeed
                 : Resources.Red_Light.ToBitmap();
         }
 
+        private async void Form1_Load(object sender, EventArgs e)
+        {
+            MinimumSize = MaximumSize = Size;
+
+            await Database.Initialize();
+
+            RegisterEvents();
+
+            RegisterDefaults();
+
+            RegisterMapleClient();
+
+            CheckUpdate();
+
+            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
+            AppendChat(@"Welcome to Maple Tree.");
+            AppendChat(@"Enter /help for a list of possible commands.");
+
+            Discord.UpdateUserlist(userList);
+
+            await Discord.Connect();
+        }
+
         private void GlobalTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try {
@@ -183,7 +190,9 @@ namespace MapleSeed
                 else UpdateUIModes();
 
                 ReadLibrary();
-                Client?.Send("", MessageType.Userlist);
+
+                if (!Discord.Connected)
+                    Client?.Send("", MessageType.Userlist);
             }
             catch (Exception ex) {
                 AppendLog(ex.StackTrace);
@@ -363,6 +372,7 @@ namespace MapleSeed
 
         private void HandleUserList(byte[] data)
         {
+            return;
             List<string> userlist;
             using (var ms = new MemoryStream(data)) {
                 userlist = Serializer.Deserialize<List<string>>(ms);
@@ -556,8 +566,10 @@ namespace MapleSeed
             chatInput.Text = string.Empty;
 
             if (await CheckForCommandInput(text)) return;
-            if (Client.NetClient.ServerConnection == null) return;
-            Client.Send($"[{username.Text}]: {text}", MessageType.ChatMessage);
+
+            if (Discord.Connected) {
+                Discord.SendMessage(text);
+            }
         }
 
         private async Task<bool> CheckForCommandInput(string s)
@@ -577,6 +589,12 @@ namespace MapleSeed
                     AppendChat($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]\n");
                 return true;
             }
+            if (s.StartsWith("/channel"))
+            {
+                var channel = s.Substring(8).Trim();
+                Discord.SetChannel(channel);
+                return true;
+            }
             if (s.StartsWith("/clear")) {
                 chatbox.Text = string.Empty;
                 return true;
@@ -586,6 +604,8 @@ namespace MapleSeed
                 AppendChat("/dl <title id> - Download the specified title ID from NUS.");
                 AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
                 AppendChat("/clear - Clears the current chat log.");
+                AppendChat("------------------Discord-----------------");
+                AppendChat("/channel <channel name> - Switch your currently active Discord channel.");
                 AppendChat("------------------------------------------");
                 return true;
             }
@@ -628,6 +648,22 @@ namespace MapleSeed
         private void cemu173Patch_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Instance.Cemu173Patch = cemu173Patch.Checked;
+        }
+
+        private void discordEmail_TextChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.DiscordEmail = discordEmail.Text;
+        }
+
+        private void discordPass_TextChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.DiscordPass = discordPass.Text;
+        }
+
+        private async void discordConnect_Click(object sender, EventArgs e)
+        {
+            if (!Discord.Connected)
+                await Discord.Connect();
         }
     }
 }
