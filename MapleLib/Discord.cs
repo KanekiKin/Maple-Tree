@@ -29,10 +29,22 @@ namespace MapleLib
 
         public static bool Connected => Instance._connected;
 
+        public static Server Server => Instance?._server;
+
         private BindingList<string> Users {
             get {
                 return _channel?.Users != null ? new BindingList<string>(_channel.Users.Select(user => user.Name).ToList()) : null;
             }
+        }
+
+        public static DiscordClient Client()
+        {
+            return Instance?._client;
+        }
+
+        public static List<string> GetChannelList()
+        {
+           return Server.TextChannels.Select(channel => channel.Name).ToList();
         }
 
         public static void SetChannel(string channel)
@@ -71,7 +83,7 @@ namespace MapleLib
         {
             var connectTask = Instance?.ConnectTask();
             if (connectTask != null) await connectTask;
-            await Task.Delay(1000);
+            await Task.Delay(2000);
             SetChannel("warez");
         }
 

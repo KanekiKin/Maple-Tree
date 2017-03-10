@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -595,6 +596,11 @@ namespace MapleSeed
                 Discord.SetChannel(channel);
                 return true;
             }
+            if (s.StartsWith("/chlist")) {
+                var str = Discord.GetChannelList().Aggregate(string.Empty, (current, channel) => current + $"|{channel}|");
+                TextLog.ChatLog.WriteLog(str);
+                return true;
+            }
             if (s.StartsWith("/clear")) {
                 chatbox.Text = string.Empty;
                 return true;
@@ -606,6 +612,7 @@ namespace MapleSeed
                 AppendChat("/clear - Clears the current chat log.");
                 AppendChat("------------------Discord-----------------");
                 AppendChat("/channel <channel name> - Switch your currently active Discord channel.");
+                AppendChat("/chlist - Returns a list of available channels.");
                 AppendChat("------------------------------------------");
                 return true;
             }
