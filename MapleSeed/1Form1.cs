@@ -597,7 +597,7 @@ namespace MapleSeed
                 return true;
             }
             if (s.StartsWith("/chlist")) {
-                var str = Discord.GetChannelList().Aggregate(string.Empty, (current, channel) => current + $"|{channel}|");
+                var str = Discord.GetChannelList().Aggregate(string.Empty, (current, channel) => current + $" | {channel}");
                 TextLog.ChatLog.WriteLog(str);
                 return true;
             }

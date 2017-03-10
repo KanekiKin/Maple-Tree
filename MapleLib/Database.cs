@@ -77,10 +77,17 @@ namespace MapleLib
                 if (Settings.Instance.Cemu173Patch) {
                     var upper8Digits = game.TitleID.Substring(0, 8).ToUpper();
                     var lower8Digits = game.TitleID.Substring(8).ToLower();
-                    fullPath = Path.Combine(basePatchDir, upper8Digits, lower8Digits);
+
+                    if (game.ContentType == "eShop/Application") {
+                        fullPath = Path.GetFullPath(fullPath);
+                    }
+
+                    if (game.ContentType == "Patch") {
+                        fullPath = Path.Combine(basePatchDir, upper8Digits, lower8Digits);
+                    }
 
                     if (game.ContentType == "DLC")
-                        fullPath = Path.Combine(fullPath, "aoc");
+                        fullPath = Path.Combine(basePatchDir, upper8Digits, lower8Digits, "aoc");
                 }
 
                 await DownloadTitle(game, fullPath);
