@@ -10,7 +10,7 @@ namespace MapleLib.Structs
         public string Region { get; set; }
         public string Ticket { get; set; }
 
-        public string GetTypeAttribute {
+        public string ContentType {
             get {
                 var header = TitleID.Substring(0, 8).ToUpper();
 

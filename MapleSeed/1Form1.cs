@@ -529,15 +529,12 @@ namespace MapleSeed
         private async void sendChat_Click(object sender, EventArgs e)
         {
             if (chatInput.Text.IsNullOrEmpty()) return;
+            var text = chatInput.Text;
+            chatInput.Text = string.Empty;
 
-            if (await CheckForCommandInput(chatInput.Text)) {
-                chatInput.Text = string.Empty;
-            }
-            else {
-                if (Client.NetClient.ServerConnection == null) return;
-                Client.Send($"[{username.Text}]: {chatInput.Text}", MessageType.ChatMessage);
-                chatInput.Text = string.Empty;
-            }
+            if (await CheckForCommandInput(text)) return;
+            if (Client.NetClient.ServerConnection == null) return;
+            Client.Send($"[{username.Text}]: {text}", MessageType.ChatMessage);
         }
 
         private async Task<bool> CheckForCommandInput(string s)
@@ -554,7 +551,7 @@ namespace MapleSeed
                 var titleStr = s.Substring(5).Trim();
                 var titles = Database.FindTitles(titleStr);
                 foreach (var title in titles)
-                    AppendChat($"{title}, TitleID: {title.TitleID}, [{title.GetTypeAttribute}]\n");
+                    AppendChat($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]\n");
                 return true;
             }
             if (s.StartsWith("/clear")) {
