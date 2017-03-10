@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using libWiiSharp;
 using MapleLib.Common;
-using MapleLib.Network;
 using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Newtonsoft.Json;
@@ -132,8 +131,9 @@ namespace MapleLib
             try {
                 Toolbelt.AppendLog("  - Deleting Encrypted Contents...");
                 foreach (var t in tmd.Contents)
-                    if (File.Exists(Path.Combine(outputDir, t.ContentID.ToString("x8"))))
-                        File.Delete(Path.Combine(outputDir, t.ContentID.ToString("x8")));
+                    if (File.Exists(Path.Combine(outputDir, t.ContentID.ToString("x8")))) {
+                        //File.Delete(Path.Combine(outputDir, t.ContentID.ToString("x8")));
+                    }
 
                 Toolbelt.AppendLog("  - Deleting CDecrypt and libeay32...");
                 File.Delete(Path.Combine(outputDir, "CDecrypt.exe"));

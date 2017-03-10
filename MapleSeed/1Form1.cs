@@ -48,58 +48,37 @@ namespace MapleSeed
         {
             MinimumSize = MaximumSize = Size;
 
+            await Database.Initialize();
+
+            RegisterEvents();
+
+            RegisterDefaults();
+
+            RegisterMapleClient();
+
+            CheckUpdate();
+
+            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
+            AppendChat(@"Welcome to Maple Tree.");
+            AppendChat(@"Enter /help for a list of possible commands.");
+        }
+
+        private void RegisterEvents()
+        {
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
             WebClient.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
             AppUpdate.Instance.ProgressChangedEventHandler += Instance_ProgressChangedEventHandler;
 
-            await Database.Initialize();
-
-            if (Client == null) {
-                Client = MapleClient.Create();
-                Client.OnMessageReceived += ClientOnMessageReceived;
-                Client.OnConnected += ClientOnConnected;
-                Client.NetClient.Start();
-            }
-            
-            ReadLibrary();
-
             Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
             GlobalTimer_Elapsed(null, null);
-
-            fullScreen.Checked = Settings.Instance.FullScreenMode;
-            cemu173Patch.Checked = Settings.Instance.Cemu173Patch;
-
-            username.Text = Settings.Instance.Username;
-            if (Settings.Instance.Username.IsNullOrEmpty())
-                username.Text = Settings.Instance.Username = Toolkit.TempName();
-
-            titleDir.Text = Toolbelt.Settings.TitleDirectory;
-            cemuDir.Text = Toolbelt.Settings.CemuDirectory;
-            serverHub.Text = Toolbelt.Settings.Hub;
-
-            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
-            AppendChat(@"Welcome to Maple Tree.");
-            AppendChat(@"Enter /help for a list of poossible commands.");
-
-            if (AppUpdate.Instance.UpdateAvailable) {
-                var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
-                var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
-
-                TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Chocolate);
-                TextLog.ChatLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
-                TextLog.ChatLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
-            }
-            else {
-                if (AppUpdate.Instance.Ad == null) return;
-                var version = AppUpdate.Instance.Ad.CurrentVersion.ToString();
-                TextLog.ChatLog.WriteLog($"Current Version: {version}", Color.Green);
-            }
         }
 
         private void ReadLibrary()
         {
+            if (Toolbelt.Settings == null) return;
+
             var dir = Toolbelt.Settings.TitleDirectory;
             if (dir.IsNullOrEmpty()) return;
 
@@ -131,8 +110,52 @@ namespace MapleSeed
             }
         }
 
+        private void RegisterMapleClient()
+        {
+            if (Client != null) return;
+            Client = MapleClient.Create();
+            Client.OnMessageReceived += ClientOnMessageReceived;
+            Client.OnConnected += ClientOnConnected;
+            Client.NetClient.Start();
+        }
+
+        private void RegisterDefaults()
+        {
+            fullScreen.Checked = Settings.Instance.FullScreenMode;
+            cemu173Patch.Checked = Settings.Instance.Cemu173Patch;
+
+            username.Text = Settings.Instance.Username;
+            if (Settings.Instance.Username.IsNullOrEmpty())
+                username.Text = Settings.Instance.Username = Toolkit.TempName();
+
+            titleDir.Text = Toolbelt.Settings.TitleDirectory;
+            cemuDir.Text = Toolbelt.Settings.CemuDirectory;
+            serverHub.Text = Toolbelt.Settings.Hub;
+        }
+
+        private void CheckUpdate()
+        {
+            if (AppUpdate.Instance.UpdateAvailable)
+            {
+                var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
+                var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
+
+                TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Chocolate);
+                TextLog.ChatLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
+                TextLog.ChatLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
+            }
+            else
+            {
+                if (AppUpdate.Instance.Ad == null) return;
+                var version = AppUpdate.Instance.Ad.CurrentVersion.ToString();
+                TextLog.ChatLog.WriteLog($"Current Version: {version}", Color.Green);
+            }
+        }
+
         private void UpdateUIModes()
         {
+            if (Client == null) return;
+
             if (Client.NetClient.ConnectionsCount <= 0 && IsLive) {
                 Client.Start(Toolbelt.Settings.Hub);
                 shareBtn.Enabled = false;
@@ -160,7 +183,7 @@ namespace MapleSeed
                 else UpdateUIModes();
 
                 ReadLibrary();
-                Client.Send("", MessageType.Userlist);
+                Client?.Send("", MessageType.Userlist);
             }
             catch (Exception ex) {
                 AppendLog(ex.StackTrace);
@@ -432,7 +455,7 @@ namespace MapleSeed
         {
             Settings.Instance.Username = username.Text;
 
-            if (Client.UserData == null) return;
+            if (Client?.UserData == null) return;
             Client.UserData.Username = username.Text;
             Client.Send(Client.UserData, MessageType.ModUserData);
             Client.Send("", MessageType.Userlist);
