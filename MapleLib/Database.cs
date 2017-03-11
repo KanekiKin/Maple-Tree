@@ -194,17 +194,18 @@ namespace MapleLib
                 catch (Exception)
                 {
                     try {
-                        await WebClient.DownloadFileAsync("http://pixxy.in/upload/ticket", cetk);
-                        var ticket = Ticket.Load(File.ReadAllBytes(cetk));
-                        ticket.TitleID = BitConverter.ToUInt64(Hex2Binary(wiiUTitle.TitleID), 0);
-                        ticket.TitleKey = Hex2Binary(wiiUTitle.TitleKey);
-
-                        /*if (wiiUTitle.Ticket == "1")
-                        {
+                        if (wiiUTitle.Ticket == "1") {
                             var WII_TIK_URL = "https://wiiu.titlekeys.com/ticket/";
                             var cetkUrl = $"{WII_TIK_URL}{wiiUTitle.TitleID.ToLower()}.tik";
                             await WebClient.DownloadFileAsync(cetkUrl, cetk);
-                        }*/
+                        }
+                        else {
+                            await WebClient.DownloadFileAsync("http://pixxy.in/upload/ticket", cetk);
+                            var ticket = Ticket.Load(File.ReadAllBytes(cetk));
+                            ticket.TitleID = BitConverter.ToUInt64(Hex2Binary(wiiUTitle.TitleID), 0);
+                            ticket.TitleKey = Hex2Binary(wiiUTitle.TitleKey);
+                            ticket.Save(cetk);
+                        }
                     }
                     catch(Exception e) {
                         Toolbelt.AppendLog($"   + Downloading Ticket Failed...\n{e.Message}");
@@ -215,7 +216,7 @@ namespace MapleLib
 
             // Parse Ticket
             Toolbelt.AppendLog("   + Loading Ticket...");
-            var tik = Ticket.Load(File.ReadAllBytes(cetk));
+            Ticket.Load(File.ReadAllBytes(cetk));
             return 1;
         }
 
