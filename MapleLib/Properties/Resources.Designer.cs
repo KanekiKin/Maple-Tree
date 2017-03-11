@@ -132,7 +132,7 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 75516a1
+        ///   Looks up a localized string similar to 87144db
         ///.
         /// </summary>
         public static string version {

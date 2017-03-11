@@ -10,14 +10,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml;
 using libWiiSharp;
 using MapleLib.Common;
-using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Newtonsoft.Json;
+using WebClient = MapleLib.Network.Web.WebClient;
 
 #endregion
 
@@ -73,8 +75,6 @@ namespace MapleLib
                     contentType = game.ContentType;
                 }
 
-                Toolbelt.SetStatus($"Downloading {contentType} Content for '{titleId}'");
-
                 if (Settings.Instance.Cemu173Patch) {
                     var lower8Digits = game.TitleID.Substring(8).ToUpper();
 
@@ -93,7 +93,10 @@ namespace MapleLib
                     }
                 }
 
-                await DownloadTitle(game, fullPath);
+                Toolbelt.AppendLog($"Downloading {contentType} Content for '{titleId}'");
+                Toolbelt.SetStatus($"Downloading {contentType} Content for '{titleId}'", Color.Green);
+
+                await DownloadTitle(game.TitleID.ToLower(), fullPath);
             }
         }
 
@@ -142,7 +145,10 @@ namespace MapleLib
                 Toolbelt.AppendLog("  - Deleting Encrypted Contents...");
                 foreach (var t in tmd.Contents)
                     if (File.Exists(Path.Combine(outputDir, t.ContentID.ToString("x8")))) {
-                        //File.Delete(Path.Combine(outputDir, t.ContentID.ToString("x8")));
+                        if (Settings.Instance.StoreEncryptedContent) continue;
+                        File.Delete(Path.Combine(outputDir, t.ContentID.ToString("x8")));
+                        File.Delete(Path.Combine(outputDir, "cetk"));
+                        File.Delete(Path.Combine(outputDir, "tmd"));
                     }
 
                 Toolbelt.AppendLog("  - Deleting CDecrypt and libeay32...");
@@ -155,62 +161,52 @@ namespace MapleLib
             }
         }
 
-        private async Task<TMD> LoadTmd(string outputDir, string titleUrl)
+        private async Task<TMD> LoadTmd(WiiUTitle wiiUTitle, string outputDir, string titleUrl)
         {
-            try {
-                var tmdFile = Path.Combine(outputDir, "tmd");
+            var tmdFile = Path.Combine(outputDir, "tmd");
 
+            try {
                 Toolbelt.AppendLog("  - Downloading TMD...");
                 await WebClient.DownloadFileAsync(Path.Combine(titleUrl, "tmd"), tmdFile);
-
-                Toolbelt.AppendLog("  - Loading TMD...");
-                var tmd = TMD.Load(File.ReadAllBytes(tmdFile));
-
-                Toolbelt.AppendLog("  - Parsing TMD...");
-                Toolbelt.AppendLog($"    + Title Version: {tmd.TitleVersion}");
-                Toolbelt.AppendLog($"    + {tmd.NumOfContents} Contents");
-
-                return tmd;
             }
             catch (Exception ex) {
-                Toolbelt.AppendLog($"   + Downloading TMD Failed...\n{ex.Message}");
+                var titleId = wiiUTitle.TitleID.ToLower();
+                var titleKey = wiiUTitle.TitleKey.ToLower();
+                var args = $"-title {titleId} -key {titleKey} -onlinetickets -onlinekeys -ticketsonly";
+                await WebClient.DownloadFileAsync("http://" + $"192.99.69.253/?args={args}&title={titleId}&type=tmd", tmdFile);
+
+                //Toolbelt.AppendLog($"   + Downloading TMD Failed...\n{ex.Message}");
             }
 
-            return null;
+            Toolbelt.AppendLog("  - Loading TMD...");
+            var tmd = TMD.Load(File.ReadAllBytes(tmdFile));
+
+            Toolbelt.AppendLog("  - Parsing TMD...");
+            Toolbelt.AppendLog($"    + Title Version: {tmd.TitleVersion}");
+            Toolbelt.AppendLog($"    + {tmd.NumOfContents} Contents");
+
+            return tmd;
         }
 
         private async Task<int> LoadTicket(WiiUTitle wiiUTitle, string outputDir, string titleUrl)
         {
             var cetk = Path.Combine(outputDir, "cetk");
 
-            if (!File.Exists(cetk)) {
+            Toolbelt.AppendLog("  - Downloading Ticket...");
+
+            try {
+                await WebClient.DownloadFileAsync($"{titleUrl}cetk", cetk);
+            }
+            catch (Exception ex) {
                 try
                 {
-                    Toolbelt.AppendLog("  - Downloading Ticket...");
-
-                    var cetkUrl = Path.Combine(titleUrl, "cetk");
-                    await WebClient.DownloadFileAsync(cetkUrl, cetk);
+                    var titleId = wiiUTitle.TitleID.ToLower();
+                    var titleKey = wiiUTitle.TitleKey.ToLower();
+                    var args = $"-title {titleId} -key {titleKey} -ticketsonly";
+                    await WebClient.DownloadFileAsync("http://" + $"192.99.69.253/?args={args}&title={titleId}&type=tik", cetk);
                 }
-                catch (Exception)
-                {
-                    try {
-                        if (wiiUTitle.Ticket == "1") {
-                            var WII_TIK_URL = "https://wiiu.titlekeys.com/ticket/";
-                            var cetkUrl = $"{WII_TIK_URL}{wiiUTitle.TitleID.ToLower()}.tik";
-                            await WebClient.DownloadFileAsync(cetkUrl, cetk);
-                        }
-                        else {
-                            await WebClient.DownloadFileAsync("http://pixxy.in/upload/ticket", cetk);
-                            var ticket = Ticket.Load(File.ReadAllBytes(cetk));
-                            ticket.TitleID = BitConverter.ToUInt64(Hex2Binary(wiiUTitle.TitleID), 0);
-                            ticket.TitleKey = Hex2Binary(wiiUTitle.TitleKey);
-                            ticket.Save(cetk);
-                        }
-                    }
-                    catch(Exception e) {
-                        Toolbelt.AppendLog($"   + Downloading Ticket Failed...\n{e.Message}");
-                        return 0;
-                    }
+                catch (Exception e) {
+                    Toolbelt.AppendLog($"   + Downloading Ticket Failed...\n{e.Message}");
                 }
             }
 
@@ -218,32 +214,6 @@ namespace MapleLib
             Toolbelt.AppendLog("   + Loading Ticket...");
             Ticket.Load(File.ReadAllBytes(cetk));
             return 1;
-        }
-
-        private byte[] Hex2Binary(string hex)
-        {
-            var chars = hex.ToCharArray();
-            var bytes = new List<byte>();
-            for (int index = 0; index < chars.Length; index += 2)
-            {
-                var chunk = new string(chars, index, 2);
-                bytes.Add(byte.Parse(chunk, NumberStyles.AllowHexSpecifier));
-            }
-            return bytes.ToArray();
-        }
-
-        private Ticket CreateTicket(string title_id, int title_version, string outputDir, bool patch_demo = false,
-            bool patch_dlc = false)
-        {
-            var cetk = Path.Combine(outputDir, "cetk");
-
-            var title = FindByTitleId(title_id);
-
-            var tik = new Ticket {TitleID = ulong.Parse(title_id)};
-            tik.SetTitleKey(title.TitleKey);
-
-            tik.Save(cetk);
-            return tik;
         }
 
         private async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl, string name)
@@ -259,7 +229,7 @@ namespace MapleLib
                     Toolbelt.AppendLog("   + Using Local File, Skipping...");
                 else
                     try {
-                        var downloadUrl = titleUrl + tmd.Contents[i].ContentID.ToString("x8");
+                        var downloadUrl = $"{titleUrl}/{tmd.Contents[i].ContentID:x8}";
                         var outputdir = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
                         await WebClient.DownloadFileAsync(downloadUrl, outputdir);
                     }
@@ -273,8 +243,10 @@ namespace MapleLib
             return 1;
         }
 
-        private async Task DownloadTitle(WiiUTitle wiiUTitle, string fullPath)
+        private async Task DownloadTitle(string titleId, string fullPath)
         {
+            var title = FindByTitleId(titleId);
+
             var outputDir = Path.GetFullPath(fullPath);
 
             if (fullPath.EndsWith(".rpx")) {
@@ -288,30 +260,47 @@ namespace MapleLib
 
             Toolbelt.AppendLog($"Output Directory '{outputDir}'");
 
-            Toolbelt.AppendLog($"Downloading Title {wiiUTitle.TitleID} v[Latest]...");
+            Toolbelt.AppendLog($"Downloading Title {title.TitleID} v[Latest]...");
 
-            const string wiiNusUrl = "http://nus.cdn.shop.wii.com/ccs/download/";
-            const string wiiWupUrl = "http://ccs.cdn.wup.shop.nintendo.net/ccs/download/";
-            string titleUrl = $"{wiiWupUrl}{wiiUTitle.TitleID}/";
-            string titleUrl2 = $"{wiiNusUrl}{wiiUTitle.TitleID}/";
-            
-            TMD tmd;
-            if ((tmd = await LoadTmd(outputDir, titleUrl)) != null) {
-                if (await LoadTicket(wiiUTitle, outputDir, titleUrl) == 1) {
-                    if (await DownloadContent(tmd, outputDir, titleUrl2, wiiUTitle.ToString()) == 1) {
-                        Toolbelt.AppendLog("  - Decrypting Content...");
-                        await Toolbelt.CDecrypt(outputDir, tmd);
-                        CleanUpdate(outputDir, tmd);
-                    }
-                    Toolbelt.AppendLog($"Downloading Title '{wiiUTitle}' v{tmd.TitleVersion} Finished.");
-                    Toolbelt.SetStatus($"Downloading Title '{wiiUTitle}' v{tmd.TitleVersion} Finished.", Color.Green);
-                }
+            var nusUrls = new List<string>
+            {
+                "http://ccs.cdn.wup.shop.nintendo.net/ccs/download/",
+                "http://nus.cdn.shop.wii.com/ccs/download/",
+                "http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/"
+            };
+
+            TMD tmd = null;
+            foreach (var nusUrl in nusUrls) {
+                string titleUrl = $"{nusUrl}{title.TitleID.ToLower()}/";
+
+                if ((tmd = await LoadTmd(title, outputDir, titleUrl)) != null)
+                    break;
             }
-            else {
-                Toolbelt.SetStatus($"Downloading Title '{wiiUTitle}' Failed.", Color.DarkRed);
+
+            foreach (var nusUrl in nusUrls) {
+                string titleUrl = $"{nusUrl}{title.TitleID.ToLower()}/";
+
+                if (await LoadTicket(title, outputDir, titleUrl) == 1)
+                    break;
+            }
+
+            foreach (var nusUrl in nusUrls) {
+                if (tmd == null) continue;
+                var url = nusUrl + title.TitleID.ToLower();
+                if (await DownloadContent(tmd, outputDir, url, title.ToString()) != 1)
+                    continue;
+
+                Toolbelt.AppendLog("  - Decrypting Content...");
+                await Toolbelt.CDecrypt(outputDir, tmd);
+                CleanUpdate(outputDir, tmd);
+                break;
             }
 
             WebClient.ResetDownloadProgressChanged();
+
+            if (tmd == null) return;
+            Toolbelt.AppendLog($"Downloading Title '{title}' v{tmd.TitleVersion} Finished.");
+            Toolbelt.SetStatus($"Downloading Title '{title}' v{tmd.TitleVersion} Finished.", Color.Green);
         }
     }
 }

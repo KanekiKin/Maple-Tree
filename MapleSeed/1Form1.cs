@@ -105,6 +105,7 @@ namespace MapleSeed
         {
             fullScreen.Checked = Settings.Instance.FullScreenMode;
             cemu173Patch.Checked = Settings.Instance.Cemu173Patch;
+            storeEncCont.Checked = Settings.Instance.StoreEncryptedContent;
 
             username.Text = Settings.Instance.Username;
             if (Settings.Instance.Username.IsNullOrEmpty())
@@ -116,6 +117,12 @@ namespace MapleSeed
 
             discordEmail.Text = Settings.Instance.DiscordEmail;
             discordPass.Text = Settings.Instance.DiscordPass;
+
+            if (!ApplicationDeployment.IsNetworkDeployed) return;
+            var ver = ApplicationDeployment.CurrentDeployment?.CurrentVersion;
+            if (ver != null) {
+                Text = $@"Maple Seed - Version: {ver}";
+            }
         }
 
         private void CheckUpdate()
@@ -410,7 +417,10 @@ namespace MapleSeed
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Client.IsRunning) Client.Stop();
+            if (Client.IsRunning)
+                Client.Stop();
+
+            Application.Exit();
         }
 
         private void AppendChat(string msg, Color color = default(Color))
@@ -455,13 +465,7 @@ namespace MapleSeed
         {
             playBtn_Click(null, null);
         }
-
-        private void fullTitle_CheckedChanged(object sender, EventArgs e)
-        {
-            Toolbelt.Settings.DownloadFullTitle = fullTitle.Checked;
-            updateBtn.Text = fullTitle.Checked ? "Download" : "Update";
-        }
-
+        
         private void fullScreen_CheckedChanged(object sender, EventArgs e)
         {
             Toolbelt.Settings.FullScreenMode = fullScreen.Checked;
@@ -712,6 +716,11 @@ namespace MapleSeed
             }
 
             dlcBtn.Enabled = true;
+        }
+        
+        private void storeEncCont_CheckedChanged(object sender, EventArgs e)
+        {
+            Toolbelt.Settings.StoreEncryptedContent = storeEncCont.Checked;
         }
     }
 }

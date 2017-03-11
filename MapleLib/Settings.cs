@@ -150,7 +150,19 @@ namespace MapleLib
             set { WriteKeyValue("Cemu173Patch", value.ToString()); }
         }
 
-        public bool DownloadFullTitle { get; set; }
+        public bool StoreEncryptedContent
+        {
+            get
+            {
+                var value = GetKeyValue("StoreEncryptedContent");
+                if (string.IsNullOrEmpty(value))
+                    WriteKeyValue("StoreEncryptedContent", true.ToString());
+
+                return GetKeyValue("StoreEncryptedContent") == "True";
+            }
+
+            set { WriteKeyValue("StoreEncryptedContent", value.ToString()); }
+        }
 
         public static Settings Instance => Toolbelt.Settings;
         private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

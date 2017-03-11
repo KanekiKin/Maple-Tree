@@ -35,7 +35,7 @@
             this.titleList = new System.Windows.Forms.ListBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.fullTitle = new System.Windows.Forms.CheckBox();
+            this.storeEncCont = new System.Windows.Forms.CheckBox();
             this.updateBtn = new System.Windows.Forms.Button();
             this.fullScreen = new System.Windows.Forms.CheckBox();
             this.userList = new System.Windows.Forms.ListBox();
@@ -52,6 +52,11 @@
             this.search = new System.Windows.Forms.TextBox();
             this.dataGrid1 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.discordPass = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.discordEmail = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.checkUpdateBtn = new System.Windows.Forms.Button();
             this.serverHub = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -63,11 +68,6 @@
             this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
-            this.cemu173Patch = new System.Windows.Forms.CheckBox();
-            this.discordEmail = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.discordPass = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.discordConnect = new System.Windows.Forms.Button();
             this.dlcBtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
@@ -133,17 +133,16 @@
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
-            // fullTitle
+            // storeEncCont
             // 
-            this.fullTitle.AutoSize = true;
-            this.fullTitle.Location = new System.Drawing.Point(133, 592);
-            this.fullTitle.Name = "fullTitle";
-            this.fullTitle.Size = new System.Drawing.Size(126, 17);
-            this.fullTitle.TabIndex = 11;
-            this.fullTitle.Text = "Download Full Title";
-            this.fullTitle.UseVisualStyleBackColor = true;
-            this.fullTitle.Visible = false;
-            this.fullTitle.CheckedChanged += new System.EventHandler(this.fullTitle_CheckedChanged);
+            this.storeEncCont.AutoSize = true;
+            this.storeEncCont.Location = new System.Drawing.Point(133, 592);
+            this.storeEncCont.Name = "storeEncCont";
+            this.storeEncCont.Size = new System.Drawing.Size(152, 17);
+            this.storeEncCont.TabIndex = 11;
+            this.storeEncCont.Text = "Store Encrypted Content";
+            this.storeEncCont.UseVisualStyleBackColor = true;
+            this.storeEncCont.CheckedChanged += new System.EventHandler(this.storeEncCont_CheckedChanged);
             // 
             // updateBtn
             // 
@@ -314,7 +313,6 @@
             this.tabPage4.Controls.Add(this.label6);
             this.tabPage4.Controls.Add(this.discordEmail);
             this.tabPage4.Controls.Add(this.label5);
-            this.tabPage4.Controls.Add(this.cemu173Patch);
             this.tabPage4.Controls.Add(this.checkUpdateBtn);
             this.tabPage4.Controls.Add(this.serverHub);
             this.tabPage4.Controls.Add(this.label4);
@@ -329,6 +327,55 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Settings";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // discordPass
+            // 
+            this.discordPass.Location = new System.Drawing.Point(435, 102);
+            this.discordPass.Name = "discordPass";
+            this.discordPass.PasswordChar = '*';
+            this.discordPass.Size = new System.Drawing.Size(174, 22);
+            this.discordPass.TabIndex = 11;
+            this.discordPass.UseSystemPasswordChar = true;
+            this.discordPass.TextChanged += new System.EventHandler(this.discordPass_TextChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(432, 85);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(98, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Discord Password";
+            // 
+            // discordEmail
+            // 
+            this.discordEmail.Location = new System.Drawing.Point(435, 43);
+            this.discordEmail.Name = "discordEmail";
+            this.discordEmail.Size = new System.Drawing.Size(174, 22);
+            this.discordEmail.TabIndex = 9;
+            this.discordEmail.TextChanged += new System.EventHandler(this.discordEmail_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(432, 26);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(81, 13);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Discord E-Mail";
+            // 
+            // cemu173Patch
+            // 
+            this.cemu173Patch.AutoSize = true;
+            this.cemu173Patch.Checked = true;
+            this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cemu173Patch.Location = new System.Drawing.Point(291, 592);
+            this.cemu173Patch.Name = "cemu173Patch";
+            this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
+            this.cemu173Patch.TabIndex = 7;
+            this.cemu173Patch.Text = "Cemu 1.7.3 Patch Support";
+            this.cemu173Patch.UseVisualStyleBackColor = true;
+            this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
             // 
             // checkUpdateBtn
             // 
@@ -436,55 +483,6 @@
             this.progressOverlay.TabIndex = 23;
             this.progressOverlay.Text = "0 bytes / 0 bytes";
             // 
-            // cemu173Patch
-            // 
-            this.cemu173Patch.AutoSize = true;
-            this.cemu173Patch.Checked = true;
-            this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cemu173Patch.Location = new System.Drawing.Point(226, 45);
-            this.cemu173Patch.Name = "cemu173Patch";
-            this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
-            this.cemu173Patch.TabIndex = 7;
-            this.cemu173Patch.Text = "Cemu 1.7.3 Patch Support";
-            this.cemu173Patch.UseVisualStyleBackColor = true;
-            this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
-            // 
-            // discordEmail
-            // 
-            this.discordEmail.Location = new System.Drawing.Point(435, 43);
-            this.discordEmail.Name = "discordEmail";
-            this.discordEmail.Size = new System.Drawing.Size(174, 22);
-            this.discordEmail.TabIndex = 9;
-            this.discordEmail.TextChanged += new System.EventHandler(this.discordEmail_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(432, 26);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(81, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Discord E-Mail";
-            // 
-            // discordPass
-            // 
-            this.discordPass.Location = new System.Drawing.Point(435, 102);
-            this.discordPass.Name = "discordPass";
-            this.discordPass.PasswordChar = '*';
-            this.discordPass.Size = new System.Drawing.Size(174, 22);
-            this.discordPass.TabIndex = 11;
-            this.discordPass.UseSystemPasswordChar = true;
-            this.discordPass.TextChanged += new System.EventHandler(this.discordPass_TextChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(432, 85);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(98, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Discord Password";
-            // 
             // discordConnect
             // 
             this.discordConnect.Location = new System.Drawing.Point(1143, 592);
@@ -515,6 +513,7 @@
             this.Controls.Add(this.discordConnect);
             this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.sendChat);
+            this.Controls.Add(this.cemu173Patch);
             this.Controls.Add(this.myUploads);
             this.Controls.Add(this.connectBtn);
             this.Controls.Add(this.tabControl1);
@@ -525,7 +524,7 @@
             this.Controls.Add(this.userList);
             this.Controls.Add(this.fullScreen);
             this.Controls.Add(this.updateBtn);
-            this.Controls.Add(this.fullTitle);
+            this.Controls.Add(this.storeEncCont);
             this.Controls.Add(this.titleList);
             this.Controls.Add(this.status);
             this.Controls.Add(this.progressBar);
@@ -557,7 +556,7 @@
         internal System.Windows.Forms.ListBox titleList;
         internal System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        internal System.Windows.Forms.CheckBox fullTitle;
+        internal System.Windows.Forms.CheckBox storeEncCont;
         private System.Windows.Forms.Button updateBtn;
         private System.Windows.Forms.CheckBox fullScreen;
         private System.Windows.Forms.ListBox userList;
