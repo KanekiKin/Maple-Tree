@@ -36,7 +36,7 @@ namespace MapleSeed
         public Form1()
         {
             InitializeComponent();
-            MapleServer.Init();
+            //MapleServer.Init();
         }
 
         private static bool IsLive { get; set; } = true;
@@ -275,16 +275,21 @@ namespace MapleSeed
 
         private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
-            if (richTextBox1.InvokeRequired) {
-                richTextBox1.BeginInvoke(new Action(() => {
+            try {
+                if (richTextBox1.InvokeRequired)
+                {
+                    richTextBox1.BeginInvoke(new Action(() => {
+                        richTextBox1.AppendText(e.Entry, e.Color);
+                        richTextBox1.ScrollToCaret();
+                    }));
+                }
+                else
+                {
                     richTextBox1.AppendText(e.Entry, e.Color);
                     richTextBox1.ScrollToCaret();
-                }));
+                }
             }
-            else {
-                richTextBox1.AppendText(e.Entry, e.Color);
-                richTextBox1.ScrollToCaret();
-            }
+            catch { }
         }
 
         private void ChatLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
@@ -434,7 +439,7 @@ namespace MapleSeed
 
                         if (Toolbelt.Database == null) continue;
                         var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath);
+                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "Patch");
                     }
                 }
             }
@@ -575,49 +580,56 @@ namespace MapleSeed
 
         private async Task<bool> CheckForCommandInput(string s)
         {
-            if (s.StartsWith("/dl")) {
-                var titleId = s.Substring(3).Trim();
-                var title = Database.FindByTitleId(titleId);
-                var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
-                if (title.TitleID.IsNullOrEmpty()) return false;
-                await Toolbelt.Database.UpdateGame(titleId, fullPath, false);
-                return true;
-            }
-            if (s.StartsWith("/find")) {
-                var titleStr = s.Substring(5).Trim();
-                var titles = Database.FindTitles(titleStr);
-                foreach (var title in titles)
-                    AppendChat($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]\n");
-                return true;
-            }
-            if (s.StartsWith("/channel"))
-            {
-                var channel = s.Substring(8).Trim();
-                Discord.SetChannel(channel);
-                return true;
-            }
-            if (s.StartsWith("/chlist")) {
-                var str = Discord.GetChannelList().Aggregate(string.Empty, (current, channel) => current + $" | {channel}");
-                TextLog.ChatLog.WriteLog(str);
-                return true;
-            }
-            if (s.StartsWith("/clear")) {
-                chatbox.Text = string.Empty;
-                return true;
-            }
-            if (s.StartsWith("/help")) {
-                AppendChat("------------------------------------------");
-                AppendChat("/dl <title id> - Download the specified title ID from NUS.");
-                AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
-                AppendChat("/clear - Clears the current chat log.");
-                AppendChat("------------------Discord-----------------");
-                AppendChat("/channel <channel name> - Switch your currently active Discord channel.");
-                AppendChat("/chlist - Returns a list of available channels.");
-                AppendChat("------------------------------------------");
-                return true;
-            }
+            return await Task.Run(() => {
+                if (s.StartsWith("/dl")) {
+                    var titleId = s.Substring(3).Trim();
+                    var title = Database.FindByTitleId(titleId);
+                    var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
+                    if (title.TitleID.IsNullOrEmpty()) return false;
+                    Invoke(new Action(async () => await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, null)));
+                    return true;
+                }
 
-            return false;
+                if (s.StartsWith("/find")) {
+                    var titleStr = s.Substring(5).Trim();
+                    var titles = Database.FindTitles(titleStr);
+                    foreach (var title in titles)
+                        AppendChat($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]\n");
+                    return true;
+                }
+
+                if (s.StartsWith("/channel")) {
+                    var channel = s.Substring(8).Trim();
+                    Discord.SetChannel(channel);
+                    return true;
+                }
+
+                if (s.StartsWith("/chlist")) {
+                    var str = Discord.GetChannelList()
+                        .Aggregate(string.Empty, (current, channel) => current + $" | {channel}");
+                    TextLog.ChatLog.WriteLog(str);
+                    return true;
+                }
+
+                if (s.StartsWith("/clear")) {
+                    chatbox.Text = string.Empty;
+                    return true;
+                }
+
+                if (s.StartsWith("/help")) {
+                    AppendChat("------------------------------------------");
+                    AppendChat("/dl <title id> - Download the specified title ID from NUS.");
+                    AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
+                    AppendChat("/clear - Clears the current chat log.");
+                    AppendChat("------------------Discord-----------------");
+                    AppendChat("/channel <channel name> - Switch your currently active Discord channel.");
+                    AppendChat("/chlist - Returns a list of available channels.");
+                    AppendChat("------------------------------------------");
+                    return true;
+                }
+
+                return false;
+            });
         }
 
         private void titleDir_TextChanged(object sender, EventArgs e)
@@ -671,6 +683,35 @@ namespace MapleSeed
         {
             if (!Discord.Connected)
                 await Discord.Connect();
+        }
+
+        private async void dlcBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (MessageBox.Show(@"This action will overwrite pre-existing files!",
+                        @"Confirm DLC Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
+                    dlcBtn.Enabled = false;
+
+                    foreach (var item in titleList.SelectedItems) {
+                        var fullPath = item as string;
+                        if (fullPath.IsNullOrEmpty()) continue;
+
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
+
+                        if (Toolbelt.Database == null) continue;
+                        var title = Database.Find(new FileInfo(fullPath).Name);
+                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "DLC");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
+            }
+
+            dlcBtn.Enabled = true;
         }
     }
 }

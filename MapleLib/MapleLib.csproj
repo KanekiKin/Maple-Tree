@@ -101,6 +101,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CDecrypt.cs" />
     <Compile Include="Common\Crypto.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\Helper.cs" />

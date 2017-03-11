@@ -6,10 +6,15 @@
 #region usings
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using libWiiSharp;
 using MapleLib.Properties;
@@ -139,12 +144,13 @@ namespace MapleLib.Common
             }
         }
 
-        public static void CDecrypt(string tdir)
+        public static async Task CDecrypt(string workingDir, TMD tmd)
         {
             try {
-                var cdecrypt = Path.Combine(tdir, "CDecrypt.exe");
-                var libeay32 = Path.Combine(tdir, "libeay32.dll");
-                var msvcr120d = Path.Combine(tdir, "msvcr120d.dll");
+                var args = "tmd cetk";
+                var cdecrypt = Path.Combine(workingDir, "CDecrypt.exe");
+                var libeay32 = Path.Combine(workingDir, "libeay32.dll");
+                var msvcr120d = Path.Combine(workingDir, "msvcr120d.dll");
 
                 if (!GZip.Decompress(Resources.CDecrypt, cdecrypt))
                     AppendLog("Error decrypting contents!\r\n       Could not extract CDecrypt.");
@@ -155,35 +161,144 @@ namespace MapleLib.Common
                 if (!GZip.Decompress(Resources.msvcr120d, msvcr120d))
                     AppendLog("Error decrypting contents!\r\n       Could not extract msvcr120d.");
 
-                var cdecryptP = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = cdecrypt,
-                        Arguments = "tmd cetk",
-                        WorkingDirectory = tdir,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    }
-                };
-
-                cdecryptP.Start();
-                while (!cdecryptP.StandardOutput.EndOfStream) {
-                    cdecryptP.StandardOutput.ReadLine();
-                    AppendLog(cdecryptP.StandardOutput.ReadLine());
-                    Application.DoEvents();
+                var processes = Process.GetProcessesByName("CDecrypt");
+                foreach (var proc in processes) {
+                    proc.Kill();
                 }
-                cdecryptP.WaitForExit();
-                cdecryptP.Dispose();
-
-                AppendLog("Finished decrypting contents.");
+                
+                using (TextWriter writer = File.CreateText(Path.Combine(workingDir, "result.log"))) {
+                    var exitCode = await StartProcess(cdecrypt, args, workingDir, null, true, false, writer);
+                    TextLog.MesgLog.WriteLog($@"Process Exited with Exit Code {exitCode}!");
+                }
+            }
+            catch (TaskCanceledException) {
+                TextLog.MesgLog.WriteError(@"Process Timed Out!");
             }
             catch (Exception ex) {
                 AppendLog("Error decrypting contents!\r\n" + ex.Message);
             }
+        }
+
+
+        private static async Task<int> StartProcess(string filename, string arguments, string workingDirectory,
+            int? timeout = null, bool createNoWindow = true, bool shellEx = false, TextWriter outputTextWriter = null, TextWriter errorTextWriter = null)
+        {
+            using (var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    CreateNoWindow = createNoWindow,
+                    Arguments = arguments,
+                    FileName = filename,
+                    RedirectStandardOutput = outputTextWriter != null,
+                    RedirectStandardError = errorTextWriter != null,
+                    UseShellExecute = shellEx,
+                    WorkingDirectory = workingDirectory
+                }
+            }) {
+                process.Start();
+                var cancellationTokenSource = timeout.HasValue
+                    ? new CancellationTokenSource(timeout.Value)
+                    : new CancellationTokenSource();
+
+                var tasks = new List<Task>(3) {process.WaitForExitAsync(cancellationTokenSource.Token)};
+                if (outputTextWriter != null) {
+                    tasks.Add(ReadAsync(
+                        x => {
+                            process.OutputDataReceived += x;
+                            process.BeginOutputReadLine();
+                        },
+                        x => process.OutputDataReceived -= x,
+                        outputTextWriter,
+                        cancellationTokenSource.Token));
+                }
+
+                if (errorTextWriter != null) {
+                    tasks.Add(ReadAsync(
+                        x => {
+                            process.ErrorDataReceived += x;
+                            process.BeginErrorReadLine();
+                        },
+                        x => process.ErrorDataReceived -= x,
+                        errorTextWriter,
+                        cancellationTokenSource.Token));
+                }
+
+                await Task.WhenAll(tasks);
+                return process.ExitCode;
+            }
+        }
+
+        /// <summary>
+        /// Waits asynchronously for the process to exit.
+        /// </summary>
+        /// <param name="process">The process to wait for cancellation.</param>
+        /// <param name="cancellationToken">A cancellation token. If invoked, the task will return
+        /// immediately as cancelled.</param>
+        /// <returns>A Task representing waiting for the process to end.</returns>
+        public static Task WaitForExitAsync(this Process process,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            process.EnableRaisingEvents = true;
+
+            var taskCompletionSource = new TaskCompletionSource<object>();
+
+            EventHandler handler = null;
+            handler = (sender, args) => {
+                process.Exited -= handler;
+                taskCompletionSource.TrySetResult(null);
+            };
+            process.Exited += handler;
+
+            if (cancellationToken != default(CancellationToken)) {
+                cancellationToken.Register(
+                    () => {
+                        process.Exited -= handler;
+                        taskCompletionSource.TrySetCanceled();
+                    });
+            }
+
+            return taskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// Reads the data from the specified data recieved event and writes it to the
+        /// <paramref name="textWriter"/>.
+        /// </summary>
+        /// <param name="addHandler">Adds the event handler.</param>
+        /// <param name="removeHandler">Removes the event handler.</param>
+        /// <param name="textWriter">The text writer.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private static Task ReadAsync(this Action<DataReceivedEventHandler> addHandler,
+            Action<DataReceivedEventHandler> removeHandler, TextWriter textWriter,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var taskCompletionSource = new TaskCompletionSource<object>();
+
+            DataReceivedEventHandler handler = null;
+            handler = (sender, e) => {
+                if (e.Data == null) {
+                    removeHandler(handler);
+                    taskCompletionSource.TrySetResult(null);
+                }
+                else {
+                    textWriter.WriteLine(e.Data);
+                    TextLog.MesgLog.WriteLog(e.Data);
+                }
+            };
+
+            addHandler(handler);
+
+            if (cancellationToken != default(CancellationToken)) {
+                cancellationToken.Register(
+                    () => {
+                        removeHandler(handler);
+                        taskCompletionSource.TrySetCanceled();
+                    });
+            }
+
+            return taskCompletionSource.Task;
         }
     }
 }

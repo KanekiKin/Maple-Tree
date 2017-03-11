@@ -8,7 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using libWiiSharp;
@@ -53,41 +55,42 @@ namespace MapleLib
         {
             titleId = titleId.Replace("00050000", "0005000e");
 #pragma warning disable 4014
-            UpdateGame(titleId, fullPath);
+            UpdateGame(titleId, fullPath, "Patch");
 #pragma warning restore 4014
         }
-
-        //mlc01/usr/title/<titleId_upper8Digits>/<titleId_lower8Digits>/
-        public async Task UpdateGame(string titleId, string fullPath, bool modtid = true)
+        
+        public async Task UpdateGame(string titleId, string fullPath, string contentType)
         {
-            var basePatchDir = Path.Combine(Toolbelt.Settings.CemuDirectory, "mlc01", "usr", "title");
+            var cemu = Toolbelt.Settings.CemuDirectory;
+            var basePatchDir = Path.Combine(cemu, "mlc01", "usr", "title", "00050000");
 
             var game = FindByTitleId(titleId);
-
             if (game.TitleID.IsNullOrEmpty()) {
                 Toolbelt.AppendLog($"Unable to locate title using ID {titleId}");
             }
             else {
-                if (modtid)
-                    if (!Toolbelt.Settings.DownloadFullTitle)
-                        game.TitleID = game.TitleID.Replace("00050000", "0005000e");
+                if (string.IsNullOrEmpty(contentType)) {
+                    contentType = game.ContentType;
+                }
 
-                Toolbelt.SetStatus($"Updating {titleId}");
+                Toolbelt.SetStatus($"Downloading {contentType} Content for '{titleId}'");
 
                 if (Settings.Instance.Cemu173Patch) {
-                    var upper8Digits = game.TitleID.Substring(0, 8).ToUpper();
-                    var lower8Digits = game.TitleID.Substring(8).ToLower();
+                    var lower8Digits = game.TitleID.Substring(8).ToUpper();
 
-                    if (game.ContentType == "eShop/Application") {
+                    if (contentType == "eShop/Application") {
                         fullPath = Path.GetFullPath(fullPath);
                     }
 
-                    if (game.ContentType == "Patch") {
-                        fullPath = Path.Combine(basePatchDir, upper8Digits, lower8Digits);
+                    if (contentType == "Patch") {
+                        game = FindByTitleId("0005000e" + lower8Digits);
+                        fullPath = Path.Combine(basePatchDir, lower8Digits);
                     }
 
-                    if (game.ContentType == "DLC")
-                        fullPath = Path.Combine(basePatchDir, upper8Digits, lower8Digits, "aoc");
+                    if (contentType == "DLC") {
+                        game = FindByTitleId("0005000c" + lower8Digits);
+                        fullPath = Path.Combine(basePatchDir, lower8Digits, "aoc");
+                    }
                 }
 
                 await DownloadTitle(game, fullPath);
@@ -180,30 +183,66 @@ namespace MapleLib
         {
             var cetk = Path.Combine(outputDir, "cetk");
 
-            try {
-                Toolbelt.AppendLog("  - Downloading Ticket...");
+            if (!File.Exists(cetk)) {
+                try
+                {
+                    Toolbelt.AppendLog("  - Downloading Ticket...");
 
-                var cetkUrl = Path.Combine(titleUrl, "cetk");
-                await WebClient.DownloadFileAsync(cetkUrl, cetk);
-            }
-            catch (Exception ex) {
-                try {
-                    if (wiiUTitle.Ticket == "1") {
-                        var WII_TIK_URL = "https://wiiu.titlekeys.com/ticket/";
-                        var cetkUrl = $"{WII_TIK_URL}{wiiUTitle.TitleID.ToLower()}.tik";
-                        await WebClient.DownloadFileAsync(cetkUrl, cetk);
-                    }
+                    var cetkUrl = Path.Combine(titleUrl, "cetk");
+                    await WebClient.DownloadFileAsync(cetkUrl, cetk);
                 }
-                catch {
-                    Toolbelt.AppendLog($"   + Downloading Ticket Failed...\n{ex.Message}");
-                    return 0;
+                catch (Exception)
+                {
+                    try {
+                        await WebClient.DownloadFileAsync("http://pixxy.in/upload/ticket", cetk);
+                        var ticket = Ticket.Load(File.ReadAllBytes(cetk));
+                        ticket.TitleID = BitConverter.ToUInt64(Hex2Binary(wiiUTitle.TitleID), 0);
+                        ticket.TitleKey = Hex2Binary(wiiUTitle.TitleKey);
+
+                        /*if (wiiUTitle.Ticket == "1")
+                        {
+                            var WII_TIK_URL = "https://wiiu.titlekeys.com/ticket/";
+                            var cetkUrl = $"{WII_TIK_URL}{wiiUTitle.TitleID.ToLower()}.tik";
+                            await WebClient.DownloadFileAsync(cetkUrl, cetk);
+                        }*/
+                    }
+                    catch(Exception e) {
+                        Toolbelt.AppendLog($"   + Downloading Ticket Failed...\n{e.Message}");
+                        return 0;
+                    }
                 }
             }
 
             // Parse Ticket
             Toolbelt.AppendLog("   + Loading Ticket...");
-            Ticket.Load(File.ReadAllBytes(cetk));
+            var tik = Ticket.Load(File.ReadAllBytes(cetk));
             return 1;
+        }
+
+        private byte[] Hex2Binary(string hex)
+        {
+            var chars = hex.ToCharArray();
+            var bytes = new List<byte>();
+            for (int index = 0; index < chars.Length; index += 2)
+            {
+                var chunk = new string(chars, index, 2);
+                bytes.Add(byte.Parse(chunk, NumberStyles.AllowHexSpecifier));
+            }
+            return bytes.ToArray();
+        }
+
+        private Ticket CreateTicket(string title_id, int title_version, string outputDir, bool patch_demo = false,
+            bool patch_dlc = false)
+        {
+            var cetk = Path.Combine(outputDir, "cetk");
+
+            var title = FindByTitleId(title_id);
+
+            var tik = new Ticket {TitleID = ulong.Parse(title_id)};
+            tik.SetTitleKey(title.TitleKey);
+
+            tik.Save(cetk);
+            return tik;
         }
 
         private async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl, string name)
@@ -254,13 +293,13 @@ namespace MapleLib
             const string wiiWupUrl = "http://ccs.cdn.wup.shop.nintendo.net/ccs/download/";
             string titleUrl = $"{wiiWupUrl}{wiiUTitle.TitleID}/";
             string titleUrl2 = $"{wiiNusUrl}{wiiUTitle.TitleID}/";
-
+            
             TMD tmd;
             if ((tmd = await LoadTmd(outputDir, titleUrl)) != null) {
                 if (await LoadTicket(wiiUTitle, outputDir, titleUrl) == 1) {
                     if (await DownloadContent(tmd, outputDir, titleUrl2, wiiUTitle.ToString()) == 1) {
                         Toolbelt.AppendLog("  - Decrypting Content...");
-                        Toolbelt.CDecrypt(outputDir);
+                        await Toolbelt.CDecrypt(outputDir, tmd);
                         CleanUpdate(outputDir, tmd);
                     }
                     Toolbelt.AppendLog($"Downloading Title '{wiiUTitle}' v{tmd.TitleVersion} Finished.");

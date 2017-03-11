@@ -69,6 +69,7 @@
             this.discordPass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.discordConnect = new System.Windows.Forms.Button();
+            this.dlcBtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -193,7 +194,7 @@
             // 
             // shareBtn
             // 
-            this.shareBtn.Location = new System.Drawing.Point(187, 7);
+            this.shareBtn.Location = new System.Drawing.Point(267, 7);
             this.shareBtn.Name = "shareBtn";
             this.shareBtn.Size = new System.Drawing.Size(75, 23);
             this.shareBtn.TabIndex = 16;
@@ -392,7 +393,7 @@
             // 
             // myUploads
             // 
-            this.myUploads.Location = new System.Drawing.Point(268, 7);
+            this.myUploads.Location = new System.Drawing.Point(348, 7);
             this.myUploads.Name = "myUploads";
             this.myUploads.Size = new System.Drawing.Size(86, 23);
             this.myUploads.TabIndex = 19;
@@ -494,12 +495,23 @@
             this.discordConnect.UseVisualStyleBackColor = true;
             this.discordConnect.Click += new System.EventHandler(this.discordConnect_Click);
             // 
+            // dlcBtn
+            // 
+            this.dlcBtn.Location = new System.Drawing.Point(185, 7);
+            this.dlcBtn.Name = "dlcBtn";
+            this.dlcBtn.Size = new System.Drawing.Size(74, 23);
+            this.dlcBtn.TabIndex = 25;
+            this.dlcBtn.Text = "DLC";
+            this.dlcBtn.UseVisualStyleBackColor = true;
+            this.dlcBtn.Click += new System.EventHandler(this.dlcBtn_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.dlcBtn);
             this.Controls.Add(this.discordConnect);
             this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.sendChat);
@@ -579,6 +591,7 @@
         private System.Windows.Forms.TextBox discordEmail;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button discordConnect;
+        private System.Windows.Forms.Button dlcBtn;
     }
 }
 
