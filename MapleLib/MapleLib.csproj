@@ -128,6 +128,7 @@
     <Compile Include="Network\Discord.cs" />
     <Compile Include="Network\Web\WebClient.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Structs\Title.cs" />
     <Compile Include="Structs\TitleUpdate.cs" />
     <Compile Include="Structs\WiiUTitle.cs" />
     <Compile Include="Common\TextLog.cs" />
@@ -343,7 +344,8 @@
     <None Include="ThirdParty\protobuf-net\protobuf_net.xproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\database.txt" />
+    <None Include="Resources\database.txt" />
+    <None Include="Resources\titles.txt" />
     <Content Include="version.txt" />
     <None Include="Resources\CDecrypt.exe" />
     <Content Include="Resources\images\download.png" />

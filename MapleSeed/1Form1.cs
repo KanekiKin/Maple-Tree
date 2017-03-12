@@ -8,23 +8,18 @@
 using System;
 using System.Collections.Generic;
 using System.Deployment.Application;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
-using Lidgren.Network;
 using MapleLib;
 using MapleLib.Common;
-using MapleLib.Enums;
 using MapleLib.Network;
-using MapleLib.Network.Events;
 using MapleLib.Network.Web;
-using MapleLib.Properties;
 using MapleLib.Structs;
-using ProtoBuf;
 using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
 using WebClient = MapleLib.Network.Web.WebClient;
 
@@ -36,14 +31,11 @@ namespace MapleSeed
     {
         public Form1()
         {
+
             InitializeComponent();
         }
 
-        private static bool IsLive { get; set; } = true;
-
         private static List<string> Library { get; set; }
-
-        private static MapleClient Client { get; set; }
 
         private void RegisterEvents()
         {
@@ -52,7 +44,7 @@ namespace MapleSeed
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
             WebClient.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
             AppUpdate.Instance.ProgressChangedEventHandler += Instance_ProgressChangedEventHandler;
-            
+
             Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
             GlobalTimer_Elapsed(null, null);
         }
@@ -92,24 +84,11 @@ namespace MapleSeed
             }
         }
 
-        private void RegisterMapleClient()
-        {
-            if (Client != null) return;
-            Client = MapleClient.Create();
-            Client.OnMessageReceived += ClientOnMessageReceived;
-            Client.OnConnected += ClientOnConnected;
-            Client.NetClient.Start();
-        }
-
         private void RegisterDefaults()
         {
             fullScreen.Checked = Settings.Instance.FullScreenMode;
             cemu173Patch.Checked = Settings.Instance.Cemu173Patch;
             storeEncCont.Checked = Settings.Instance.StoreEncryptedContent;
-
-            username.Text = Settings.Instance.Username;
-            if (Settings.Instance.Username.IsNullOrEmpty())
-                username.Text = Settings.Instance.Username = Toolkit.TempName();
 
             titleDir.Text = Settings.Instance.TitleDirectory;
             cemuDir.Text = Settings.Instance.CemuDirectory;
@@ -120,15 +99,12 @@ namespace MapleSeed
 
             if (!ApplicationDeployment.IsNetworkDeployed) return;
             var ver = ApplicationDeployment.CurrentDeployment?.CurrentVersion;
-            if (ver != null) {
-                Text = $@"Maple Seed - Version: {ver}";
-            }
+            if (ver != null) Text = $@"Maple Seed - Version: {ver}";
         }
 
         private void CheckUpdate()
         {
-            if (AppUpdate.Instance.UpdateAvailable)
-            {
+            if (AppUpdate.Instance.UpdateAvailable) {
                 var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
                 var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
 
@@ -136,44 +112,24 @@ namespace MapleSeed
                 TextLog.ChatLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
                 TextLog.ChatLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
             }
-            else
-            {
+            else {
                 if (AppUpdate.Instance.Ad == null) return;
                 var version = AppUpdate.Instance.Ad.CurrentVersion.ToString();
                 TextLog.ChatLog.WriteLog($"Current Version: {version}", Color.Green);
             }
         }
 
-        private void UpdateUIModes()
-        {
-            if (Client == null) return;
-
-            if (Client.NetClient.ConnectionsCount <= 0 && IsLive) {
-                Client.Start(Toolbelt.Settings.Hub);
-                sendChat.Enabled = false;
-                username.Enabled = false;
-            }
-            else {
-                sendChat.Enabled = true;
-                username.Enabled = true;
-            }
-
-            connectBtn.BackgroundImage = Client.NetClient.ConnectionStatus == NetConnectionStatus.Connected
-                ? Resources.Green_Light.ToBitmap()
-                : Resources.Red_Light.ToBitmap();
-        }
-
         private async void Form1_Load(object sender, EventArgs e)
         {
             MinimumSize = MaximumSize = Size;
 
-            await Database.Initialize();
-
             RegisterEvents();
 
-            RegisterDefaults();
+            titleList.Enabled = false;
+            await Database.Initialize();
+            titleList.Enabled = true;
 
-            RegisterMapleClient();
+            RegisterDefaults();
 
             CheckUpdate();
 
@@ -189,61 +145,12 @@ namespace MapleSeed
         private void GlobalTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try {
-                if (InvokeRequired)
-                    Invoke(new Action(UpdateUIModes));
-                else UpdateUIModes();
+                username.Invoke(new Action(() => username.Text = Discord.Nickname));
 
                 ReadLibrary();
-
-                if (!Discord.Connected)
-                    Client?.Send("", MessageType.Userlist);
             }
             catch (Exception ex) {
                 AppendLog(ex.StackTrace);
-            }
-        }
-
-        private void ClientOnConnected(object sender, EventArgs e)
-        {
-            Client.UserData = new UserData
-            {
-                Username = Settings.Instance.Username,
-                Serial = Settings.Instance.Serial
-            };
-            Client.Send(Client.UserData, MessageType.ModUserData);
-
-            GlobalTimer_Elapsed(null, null);
-
-            Toolbelt.AppendLog($"Connected to Hub [{Toolbelt.Settings.Hub}]", Color.DarkGreen);
-        }
-
-        private void ClientOnMessageReceived(object sender, OnMessageReceivedEventArgs e)
-        {
-            var header = e.Header;
-
-            switch (header.Type) {
-                case MessageType.Userlist:
-                    break;
-                case MessageType.ChatMessage:
-                    HandleChatMessage(header.Data);
-                    break;
-                case MessageType.ModUserData:
-                    UpdateUsername(e.Header.Data);
-                    break;
-                case MessageType.StorageUpload:
-                    ConfirmStorageUpload(e.Header);
-                    break;
-                case MessageType.ShaderData:
-                    break;
-                case MessageType.ReceiveFile:
-                    break;
-                case MessageType.RequestDownload:
-                    HandleRequestDownload(e.Header);
-                    break;
-                case MessageType.RequestSearch:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -297,30 +204,6 @@ namespace MapleSeed
             }
         }
 
-        private void HandleChatMessage(byte[] data)
-        {
-            AppendChat($"{Encoding.UTF8.GetString(data)}", Color.MediumSlateBlue);
-        }
-
-        private void HandleRequestDownload(MessageHeader header)
-        {
-            try {
-                using (var ms = new MemoryStream(header.Data)) {
-                    var sd = Serializer.Deserialize<StorageData>(ms);
-
-                    var saveTo = sd.Shader
-                        ? Path.Combine(Toolbelt.Settings.CemuDirectory, "shaderCache", "transferable", sd.Name)
-                        : Path.Combine(Toolbelt.Settings.CemuDirectory, "graphicPacks", sd.Name, "rules.txt");
-
-                    File.WriteAllBytes(saveTo, sd.Data);
-                    AppendLog($"[{sd.Name}] Download Complete.");
-                }
-            }
-            catch (Exception e) {
-                MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace);
-            }
-        }
-
         private void ListBoxAddItem(object obj)
         {
             if (titleList.InvokeRequired)
@@ -335,26 +218,15 @@ namespace MapleSeed
             e.Graphics.DrawString(titleList.Items[e.Index].ToString(), titleList.Font, Brushes.Black, e.Bounds);
         }
 
-        private void connectBtn_Click(object sender, EventArgs e)
-        {
-            if (!IsLive) Client.Start(Toolbelt.Settings.Hub);
-            else Client.Stop();
-            IsLive = !IsLive;
-        }
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Client.IsRunning)
-                Client.Stop();
-
-            foreach (var proc in System.Diagnostics.Process.GetProcessesByName("CDecrypt")) {
+            foreach (var proc in Process.GetProcessesByName("CDecrypt"))
                 try {
                     proc.Kill();
                 }
                 catch {
                     // ignored
                 }
-            }
 
             Application.Exit();
         }
@@ -385,7 +257,7 @@ namespace MapleSeed
 
                         if (Toolbelt.Database == null) continue;
                         var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "Patch", titleVersion.Text);
+                        await Toolbelt.Database.UpdateGame(title.Id, fullPath, "Patch", titleVersion.Text);
                     }
                 }
             }
@@ -401,7 +273,7 @@ namespace MapleSeed
         {
             playBtn_Click(null, null);
         }
-        
+
         private void fullScreen_CheckedChanged(object sender, EventArgs e)
         {
             Toolbelt.Settings.FullScreenMode = fullScreen.Checked;
@@ -410,46 +282,13 @@ namespace MapleSeed
         private void username_TextChanged(object sender, EventArgs e)
         {
             Settings.Instance.Username = username.Text;
-
-            if (Client?.UserData == null) return;
-            Client.UserData.Username = username.Text;
-            Client.Send(Client.UserData, MessageType.ModUserData);
-            Client.Send("", MessageType.Userlist);
-        }
-
-        private void UpdateUsername(byte[] data)
-        {
-            UserData ud;
-            using (var ms = new MemoryStream(data)) {
-                ud = Serializer.Deserialize<UserData>(ms);
-            }
-            Client.UserData.Username = ud.Username;
-            Settings.Instance.Username = ud.Username;
-            username.Invoke(new Action(() => { username.Text = ud.Username; }));
-        }
-
-        private void ConfirmStorageUpload(MessageHeader header)
-        {
-            using (var ms = new MemoryStream(header.Data)) {
-                var sd = Serializer.Deserialize<StorageData>(ms);
-                if (sd.Length <= 0) return;
-
-                AppendLog(!sd.Shader
-                    ? $"Graphic Pack, {sd.Name} has been uploaded!"
-                    : $"Transferable Shader, {sd.Name} has been uploaded!");
-            }
         }
 
         private void playBtn_Click(object sender, EventArgs e)
         {
-            var wiiuTitle = titleList.SelectedItem as string;
-            if (!Toolbelt.LaunchCemu(wiiuTitle)) return;
-
-            var title = Path.GetFileNameWithoutExtension(wiiuTitle);
-            if (title == null || title.Length <= 1) return;
-            var msg = $"[{Client.UserData.Username}] Has started playing {title}!";
-            Client.Send(msg, MessageType.ChatMessage);
-            AppendLog(msg);
+            var title = titleList.SelectedItem as string;
+            if (!Toolbelt.LaunchCemu(title)) return;
+            TextLog.MesgLog.WriteLog($"[{Settings.Instance.Username}] Has started playing {title}!");
         }
 
         private async void sendChat_Click(object sender, EventArgs e)
@@ -460,9 +299,7 @@ namespace MapleSeed
 
             if (await CheckForCommandInput(text)) return;
 
-            if (Discord.Connected) {
-                Discord.SendMessage(text);
-            }
+            if (Discord.Connected) Discord.SendMessage(text);
         }
 
         private async Task<bool> CheckForCommandInput(string s)
@@ -472,8 +309,8 @@ namespace MapleSeed
                     var titleId = s.Substring(3).Trim();
                     var title = Database.FindByTitleId(titleId);
                     var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
-                    if (title.TitleID.IsNullOrEmpty()) return false;
-                    Invoke(new Action(async () => await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, null)));
+                    if (title.Id.IsNullOrEmpty()) return false;
+                    Invoke(new Action(async () => await Toolbelt.Database.UpdateGame(title.Id, fullPath, null)));
                     return true;
                 }
 
@@ -481,7 +318,7 @@ namespace MapleSeed
                     var titleStr = s.Substring(5).Trim();
                     var titles = Database.FindTitles(titleStr);
                     foreach (var title in titles)
-                        AppendChat($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]\n");
+                        TextLog.MesgLog.WriteLog($"{title}, TitleID: {title.Id}, [{title.ContentType}]", Color.Green);
                     return true;
                 }
 
@@ -504,14 +341,14 @@ namespace MapleSeed
                 }
 
                 if (s.StartsWith("/help")) {
-                    AppendChat("------------------------------------------");
-                    AppendChat("/dl <title id> - Download the specified title ID from NUS.");
-                    AppendChat("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
-                    AppendChat("/clear - Clears the current chat log.");
-                    AppendChat("------------------Discord-----------------");
-                    AppendChat("/channel <channel name> - Switch your currently active Discord channel.");
-                    AppendChat("/chlist - Returns a list of available channels.");
-                    AppendChat("------------------------------------------");
+                    TextLog.MesgLog.WriteLog("------------------------------------------");
+                    TextLog.MesgLog.WriteLog("/dl <title id> - Download the specified title ID from NUS.");
+                    TextLog.MesgLog.WriteLog("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
+                    TextLog.MesgLog.WriteLog("/clear - Clears the current chat log.");
+                    TextLog.MesgLog.WriteLog("------------------Discord-----------------");
+                    TextLog.MesgLog.WriteLog("/channel <channel name> - Switch your currently active Discord channel.");
+                    TextLog.MesgLog.WriteLog("/chlist - Returns a list of available channels.");
+                    TextLog.MesgLog.WriteLog("------------------------------------------");
                     return true;
                 }
 
@@ -574,8 +411,7 @@ namespace MapleSeed
 
         private async void dlcBtn_Click(object sender, EventArgs e)
         {
-            try
-            {
+            try {
                 if (MessageBox.Show(@"This action will overwrite pre-existing files!",
                         @"Confirm DLC Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
                     dlcBtn.Enabled = false;
@@ -589,18 +425,17 @@ namespace MapleSeed
 
                         if (Toolbelt.Database == null) continue;
                         var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "DLC");
+                        await Toolbelt.Database.UpdateGame(title.Id, fullPath, "DLC");
                     }
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
             }
 
             dlcBtn.Enabled = true;
         }
-        
+
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
         {
             Toolbelt.Settings.StoreEncryptedContent = storeEncCont.Checked;
@@ -614,7 +449,8 @@ namespace MapleSeed
 
                 foreach (var item in titleList.SelectedItems) {
                     if (result != DialogResult.OK) {
-                        var msg = $"WARNING!! WARNING!! WARNING!!\n\nThis task will delete your '{item}' directory and redownload the base title content!";
+                        var msg =
+                            $"WARNING!! WARNING!! WARNING!!\n\nThis task will delete your '{item}' directory and redownload the base title content!";
                         result = MessageBox.Show(msg, $@"Reinstall {item}", MessageBoxButtons.OKCancel);
 
                         if (result != DialogResult.OK)
@@ -623,7 +459,7 @@ namespace MapleSeed
 
                     var fullPath = item as string;
                     if (fullPath.IsNullOrEmpty() || Toolbelt.Database == null) continue;
-                    
+
                     // ReSharper disable once AssignNullToNotNullAttribute
                     fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
                     var title = Database.Find(Path.GetFileName(fullPath));
@@ -634,11 +470,10 @@ namespace MapleSeed
                     if (Directory.Exists(Path.Combine(fullPath, "content")))
                         Directory.Delete(Path.Combine(fullPath, "content"), true);
 
-                    await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "eShop/Application");
+                    await Toolbelt.Database.UpdateGame(title.Id, fullPath, "eShop/Application");
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
             }
 
@@ -649,15 +484,21 @@ namespace MapleSeed
         {
             var item = titleList.SelectedItem as string;
             var title = Database.Find(item);
+            if (string.IsNullOrEmpty(title?.Lower8Digits)) return;
 
-            var results = Database.UpdateDbObject.Where(t => string.Equals(t.Lower8Digits, title.Lower8Digits, StringComparison.CurrentCultureIgnoreCase));
-            results = new List<TitleUpdate>(results);
+            dlcBtn.Enabled = Database.HasDLC(title.Id);
+            updateBtn.Enabled = Database.HasUpdates(title.Id);
+
+            var compare = StringComparison.CurrentCultureIgnoreCase;
+            var results = Database.TitleDbObject.Where(t => string.Equals(t.Lower8Digits, title.Lower8Digits, compare));
+            results = new List<Title>(results);
 
             var titleUpdates = results.ToArray();
             if (!titleUpdates.Any()) return;
-            
-            var updatesStr = titleUpdates[0].Versions.Aggregate(string.Empty, (current, update) => current + $"| v{update.Trim()} |");
-            TextLog.StatusLog.WriteLog($"{titleUpdates[0].Lower8Digits}|Available Updates: {updatesStr}", Color.Green);
+
+            var updatesStr = titleUpdates[0].Versions.Aggregate(string.Empty,
+                (current, update) => current + $"| v{update.Trim()} ");
+            TextLog.StatusLog.WriteLog($"{titleUpdates[0].Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
         }
     }
 }

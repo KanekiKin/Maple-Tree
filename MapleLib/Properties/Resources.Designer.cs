@@ -71,25 +71,6 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0005000E10100600|TEKKEN TAG TOURNAMENT 2Wii U EDITION|16|JAP
-        ///0005000E10101B00|LEGO� CITY UNDERCOVER|16|EUR
-        ///0005000E10101C00|New SUPER MARIO BROS. U|32, 48, 65|JAP
-        ///0005000E10101D00|New SUPER MARIO BROS. U|32, 48, 64|USA
-        ///0005000E10101E00|New SUPER MARIO BROS. U|32, 48, 64, 80|EUR
-        ///0005000E10101F00|Nintendo Land|32|JAP
-        ///0005000E10102000|Nintendo Land|32|USA
-        ///0005000E10102100|Nintendo Land|32|EUR
-        ///0005000E10102200|Wii Fit U|32, 48, 64, 81|JAP
-        ///0005000E10102300|Wii Fit U|16, 48, 64, 81|USA
-        ///0005000E10102400| [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string database {
-            get {
-                return ResourceManager.GetString("database", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap download {
@@ -151,7 +132,43 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to a2bbd51
+        ///   Looks up a localized string similar to 0005000010013000|Nintendo TVii|WUP-X-HBCJ|JAP|No TMD
+        ///0005000010100600|鉄拳タッグトーナメント2 Wii U EDITION|WUP-N-AKNJ|00AF|v16|JAP|Yes
+        ///0005000010100D00|Nintendo×JOYSOUND Wii カラオケ U|WUP-N-WAHJ|v112|JAP|Yes
+        ///0005000010101800|SiNG PARTY|WUP-N-ASWE|v0|USA|Yes
+        ///0005000010101900|SiNG PARTY|WUP-P-ASWP|v0|EUR|Yes
+        ///0005000010101A00|LEGO City: Undercover|WUP-N-APLE|v0|USA|Yes
+        ///0005000010101B00|LEGO City Undercover|WUP-P-APLP|v16|EUR|Yes
+        ///0005000010101C00|New スーパーマリオブラザーズ U|WUP-N-ARPJ|v16|JAP|Yes
+        ///0005000010101D00|New Super M [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string titles {
+            get {
+                return ResourceManager.GetString("titles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0005000E10100600|TEKKEN TAG TOURNAMENT 2Wii U EDITION|16|JAP
+        ///0005000E10110000|TEKKEN TAG TOURNAMENT 2 Wii U EDITION|32|USA
+        ///0005000E10101B00|LEGO� CITY UNDERCOVER|16|EUR
+        ///0005000E10101C00|New SUPER MARIO BROS. U|32, 48, 65|JAP
+        ///0005000E10101D00|New SUPER MARIO BROS. U|32, 48, 64|USA
+        ///0005000E10101E00|New SUPER MARIO BROS. U|32, 48, 64, 80|EUR
+        ///0005000E10101F00|Nintendo Land|32|JAP
+        ///0005000E10102000|Nintendo Land|32|USA
+        ///0005000E10102100|Nintendo Land|32|EUR
+        ///0005000E10102200|Wii Fit U|32, 48, 64, 81|JAP
+        ///0 [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string updates {
+            get {
+                return ResourceManager.GetString("updates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3337000
         ///.
         /// </summary>
         public static string version {

@@ -59,7 +59,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.titleDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
             this.discordConnect = new System.Windows.Forms.Button();
@@ -127,8 +126,7 @@
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
-            this.richTextBox1.ShortcutsEnabled = false;
-            this.richTextBox1.Size = new System.Drawing.Size(852, 490);
+            this.richTextBox1.Size = new System.Drawing.Size(967, 490);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -167,10 +165,10 @@
             // userList
             // 
             this.userList.FormattingEnabled = true;
-            this.userList.Location = new System.Drawing.Point(1143, 86);
+            this.userList.Location = new System.Drawing.Point(864, 34);
             this.userList.Name = "userList";
             this.userList.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.userList.Size = new System.Drawing.Size(109, 472);
+            this.userList.Size = new System.Drawing.Size(109, 459);
             this.userList.Sorted = true;
             this.userList.TabIndex = 14;
             // 
@@ -183,11 +181,13 @@
             // 
             // username
             // 
-            this.username.Location = new System.Drawing.Point(1143, 58);
+            this.username.Location = new System.Drawing.Point(864, 6);
             this.username.MaxLength = 12;
             this.username.Name = "username";
+            this.username.ReadOnly = true;
             this.username.Size = new System.Drawing.Size(109, 22);
             this.username.TabIndex = 15;
+            this.username.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.username.TextChanged += new System.EventHandler(this.username_TextChanged);
             // 
             // playBtn
@@ -208,29 +208,30 @@
             this.tabControl1.Location = new System.Drawing.Point(268, 36);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(869, 522);
+            this.tabControl1.Size = new System.Drawing.Size(984, 522);
             this.tabControl1.TabIndex = 18;
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.chatbox);
+            this.tabPage2.Controls.Add(this.username);
+            this.tabPage2.Controls.Add(this.userList);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(861, 496);
+            this.tabPage2.Size = new System.Drawing.Size(976, 496);
             this.tabPage2.TabIndex = 2;
-            this.tabPage2.Text = "Chat";
+            this.tabPage2.Text = "Community";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // chatbox
             // 
             this.chatbox.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.chatbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.chatbox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chatbox.ForeColor = System.Drawing.SystemColors.WindowFrame;
-            this.chatbox.Location = new System.Drawing.Point(0, 0);
+            this.chatbox.Location = new System.Drawing.Point(3, 3);
             this.chatbox.Name = "chatbox";
             this.chatbox.ReadOnly = true;
-            this.chatbox.Size = new System.Drawing.Size(861, 496);
+            this.chatbox.Size = new System.Drawing.Size(855, 490);
             this.chatbox.TabIndex = 0;
             this.chatbox.Text = "";
             // 
@@ -240,7 +241,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(861, 496);
+            this.tabPage1.Size = new System.Drawing.Size(976, 496);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Dashboard";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -261,7 +262,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(861, 496);
+            this.tabPage3.Size = new System.Drawing.Size(976, 496);
             this.tabPage3.TabIndex = 3;
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -317,7 +318,7 @@
             // 
             // checkUpdateBtn
             // 
-            this.checkUpdateBtn.Location = new System.Drawing.Point(780, 467);
+            this.checkUpdateBtn.Location = new System.Drawing.Point(895, 6);
             this.checkUpdateBtn.Name = "checkUpdateBtn";
             this.checkUpdateBtn.Size = new System.Drawing.Size(75, 23);
             this.checkUpdateBtn.TabIndex = 6;
@@ -375,20 +376,6 @@
             this.label2.Size = new System.Drawing.Size(77, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Title Directory";
-            // 
-            // connectBtn
-            // 
-            this.connectBtn.BackColor = System.Drawing.Color.Transparent;
-            this.connectBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("connectBtn.BackgroundImage")));
-            this.connectBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.connectBtn.FlatAppearance.BorderSize = 0;
-            this.connectBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.connectBtn.Location = new System.Drawing.Point(1222, 7);
-            this.connectBtn.Name = "connectBtn";
-            this.connectBtn.Size = new System.Drawing.Size(30, 29);
-            this.connectBtn.TabIndex = 20;
-            this.connectBtn.UseVisualStyleBackColor = true;
-            this.connectBtn.Click += new System.EventHandler(this.connectBtn_Click);
             // 
             // sendChat
             // 
@@ -475,12 +462,9 @@
             this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.sendChat);
             this.Controls.Add(this.cemu173Patch);
-            this.Controls.Add(this.connectBtn);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.playBtn);
-            this.Controls.Add(this.username);
             this.Controls.Add(this.chatInput);
-            this.Controls.Add(this.userList);
             this.Controls.Add(this.fullScreen);
             this.Controls.Add(this.updateBtn);
             this.Controls.Add(this.storeEncCont);
@@ -497,6 +481,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.tabPage1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
@@ -521,7 +506,6 @@
         private System.Windows.Forms.Button playBtn;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.Button connectBtn;
         private System.Windows.Forms.Button sendChat;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.RichTextBox chatbox;

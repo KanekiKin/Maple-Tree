@@ -144,7 +144,10 @@
   <data name="msvcr120d" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\msvcr120d.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="database" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="updates" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\database.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="titles" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\titles.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
   </data>
 </root>

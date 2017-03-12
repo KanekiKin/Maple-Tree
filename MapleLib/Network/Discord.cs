@@ -31,6 +31,8 @@ namespace MapleLib.Network
 
         public static Server Server => Instance?._server;
 
+        public static string Nickname => Instance?._server?.CurrentUser?.ToString();
+
         private BindingList<string> Users {
             get {
                 return _channel?.Users != null ? new BindingList<string>(_channel.Users.Select(user => user.Name).ToList()) : null;

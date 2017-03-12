@@ -23,8 +23,6 @@ namespace MapleLib.Common
 {
     public static class Toolbelt
     {
-        public static readonly string Version = $" - Git {Resources.version.Trim('\n')}";
-        public static string Serial => Settings.Serial;
         public static Database Database { get; internal set; }
         public static Settings Settings { get; internal set; }
 
@@ -64,6 +62,22 @@ namespace MapleLib.Common
             }
 
             return true;
+        }
+
+        private static async void RunCemu(string cemuPath, string rpx)
+        {
+            try {
+                var workingDir = Path.GetDirectoryName(cemuPath);
+                if (workingDir == null) return;
+
+                using (TextWriter writer = File.CreateText(Path.GetFullPath("cemu.log"))) {
+                    var o1 = Settings.FullScreenMode ? "-f" : "";
+                    await StartProcess(cemuPath, $"{o1} -g \"{rpx}\"", workingDir, null, true, false, writer);
+                }
+            }
+            catch (Exception ex) {
+                TextLog.MesgLog.WriteError("Error!\r\n" + ex.Message);
+            }
         }
 
         public static string RIC(string str)
@@ -111,36 +125,6 @@ namespace MapleLib.Common
             return (ulong) new FileInfo(contentFile).Length == content.Size;
         }
 
-        private static void RunCemu(string cemuPath, string rpx)
-        {
-            try {
-                var workingDir = Path.GetDirectoryName(cemuPath);
-                if (workingDir == null) return;
-
-                var o1 = Settings.FullScreenMode ? "-f" : "";
-                var process = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = cemuPath,
-                        Arguments = $"{o1} -g \"{rpx}\"",
-                        WorkingDirectory = workingDir,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    }
-                };
-
-                process.Start();
-                AppendLog("Started playing a game!");
-            }
-            catch (Exception ex) {
-                AppendLog("Error!\r\n" + ex.Message);
-            }
-        }
-
         public static async Task CDecrypt(string workingDir)
         {
             try {
@@ -161,9 +145,7 @@ namespace MapleLib.Common
                 foreach (var proc in processes) proc.Kill();
 
                 using (TextWriter writer = File.CreateText(Path.Combine(workingDir, "result.log"))) {
-                    var args = "tmd cetk";
-                    var exitCode = await StartProcess(cdecrypt, args, workingDir, null, true, false, writer);
-                    TextLog.MesgLog.WriteLog($@"Process Exited with Exit Code {exitCode}!");
+                    await StartProcess(cdecrypt, "tmd cetk", workingDir, null, true, false, writer);
                 }
             }
             catch (TaskCanceledException) {
@@ -218,6 +200,11 @@ namespace MapleLib.Common
                         cancellationTokenSource.Token));
 
                 await Task.WhenAll(tasks);
+
+                var log = TextLog.MesgLog;
+                if (process.ExitCode == 0) log.WriteLog($@"[{Path.GetFileName(filename)}] Exited Successfully!");
+                else log.WriteError($@"[{Path.GetFileName(filename)}] Exited with Exit Code {process.ExitCode}!");
+
                 return process.ExitCode;
             }
         }

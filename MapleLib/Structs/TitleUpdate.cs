@@ -10,15 +10,15 @@ namespace MapleLib.Structs
 {
     public class TitleUpdate
     {
-        public string Title_ID { get; set; } = string.Empty;
-        public string Title_Name { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public List<string> Versions { get; set; } = new List<string>();
         public string Region { get; set; } = string.Empty;
-        public string Lower8Digits => Title_ID.Substring(8).ToUpper();
+        public string Lower8Digits => Id.Substring(8).ToUpper();
         
         public override string ToString()
         {
-            return Toolbelt.RIC($"{Title_Name}") + $" ({Region})";
+            return Toolbelt.RIC($"{Name}") + $" ({Region})";
         }
     }
 }
