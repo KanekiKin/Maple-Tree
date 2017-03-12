@@ -40,9 +40,7 @@ namespace MapleLib
 
         private static void RestartApp()
         {
-            //Process.Start(Application.ExecutablePath);
             Application.Exit();
-            //Close();
         }
 
         private void Ad_UpdateProgressChanged(object sender, DeploymentProgressChangedEventArgs e)
@@ -52,6 +50,16 @@ namespace MapleLib
                 ProgressPercentage = e.ProgressPercentage,
                 TotalBytesReceived = e.BytesTotal,
                 BytesReceived = e.BytesCompleted
+            });
+        }
+
+        public void InvokeProgressChangedEventHandler(object sender, double percentage, long bytesTotal, long bytesCompleted)
+        {
+            ProgressChangedEventHandler?.Invoke(sender, new ProgressChangedEventArgs
+            {
+                ProgressPercentage = (int) percentage,
+                TotalBytesReceived = bytesTotal,
+                BytesReceived = bytesCompleted
             });
         }
 

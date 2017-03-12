@@ -41,16 +41,11 @@
             this.userList = new System.Windows.Forms.ListBox();
             this.chatInput = new System.Windows.Forms.TextBox();
             this.username = new System.Windows.Forms.TextBox();
-            this.shareBtn = new System.Windows.Forms.Button();
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.chatbox = new System.Windows.Forms.RichTextBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.search = new System.Windows.Forms.TextBox();
-            this.dataGrid1 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.discordPass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -64,17 +59,15 @@
             this.label3 = new System.Windows.Forms.Label();
             this.titleDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.myUploads = new System.Windows.Forms.Button();
             this.connectBtn = new System.Windows.Forms.Button();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
             this.discordConnect = new System.Windows.Forms.Button();
             this.dlcBtn = new System.Windows.Forms.Button();
+            this.cleanTitleBtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -146,7 +139,7 @@
             // 
             // updateBtn
             // 
-            this.updateBtn.Location = new System.Drawing.Point(101, 7);
+            this.updateBtn.Location = new System.Drawing.Point(173, 7);
             this.updateBtn.Name = "updateBtn";
             this.updateBtn.Size = new System.Drawing.Size(74, 23);
             this.updateBtn.TabIndex = 12;
@@ -191,16 +184,6 @@
             this.username.TabIndex = 15;
             this.username.TextChanged += new System.EventHandler(this.username_TextChanged);
             // 
-            // shareBtn
-            // 
-            this.shareBtn.Location = new System.Drawing.Point(267, 7);
-            this.shareBtn.Name = "shareBtn";
-            this.shareBtn.Size = new System.Drawing.Size(75, 23);
-            this.shareBtn.TabIndex = 16;
-            this.shareBtn.Text = "Share";
-            this.shareBtn.UseVisualStyleBackColor = true;
-            this.shareBtn.Click += new System.EventHandler(this.shareBtn_Click);
-            // 
             // playBtn
             // 
             this.playBtn.Location = new System.Drawing.Point(12, 7);
@@ -215,7 +198,6 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(268, 36);
             this.tabControl1.Name = "tabControl1";
@@ -256,56 +238,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Console";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.label1);
-            this.tabPage2.Controls.Add(this.search);
-            this.tabPage2.Controls.Add(this.dataGrid1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(861, 496);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Uploads";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(117, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Search by filename";
-            // 
-            // search
-            // 
-            this.search.Location = new System.Drawing.Point(6, 6);
-            this.search.MaxLength = 12;
-            this.search.Name = "search";
-            this.search.Size = new System.Drawing.Size(105, 22);
-            this.search.TabIndex = 2;
-            this.search.TextChanged += new System.EventHandler(this.search_TextChanged);
-            // 
-            // dataGrid1
-            // 
-            this.dataGrid1.AllowUserToDeleteRows = false;
-            this.dataGrid1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dataGrid1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dataGrid1.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGrid1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dataGrid1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid1.Location = new System.Drawing.Point(3, 34);
-            this.dataGrid1.MultiSelect = false;
-            this.dataGrid1.Name = "dataGrid1";
-            this.dataGrid1.ReadOnly = true;
-            this.dataGrid1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.dataGrid1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGrid1.ShowCellErrors = false;
-            this.dataGrid1.Size = new System.Drawing.Size(855, 483);
-            this.dataGrid1.TabIndex = 0;
-            this.dataGrid1.DoubleClick += new System.EventHandler(this.dataGrid1_DoubleClick);
             // 
             // tabPage4
             // 
@@ -438,16 +370,6 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Title Directory";
             // 
-            // myUploads
-            // 
-            this.myUploads.Location = new System.Drawing.Point(348, 7);
-            this.myUploads.Name = "myUploads";
-            this.myUploads.Size = new System.Drawing.Size(86, 23);
-            this.myUploads.TabIndex = 19;
-            this.myUploads.Text = "My Uploads";
-            this.myUploads.UseVisualStyleBackColor = true;
-            this.myUploads.Click += new System.EventHandler(this.refreshBtn_Click);
-            // 
             // connectBtn
             // 
             this.connectBtn.BackColor = System.Drawing.Color.Transparent;
@@ -495,7 +417,7 @@
             // 
             // dlcBtn
             // 
-            this.dlcBtn.Location = new System.Drawing.Point(185, 7);
+            this.dlcBtn.Location = new System.Drawing.Point(253, 7);
             this.dlcBtn.Name = "dlcBtn";
             this.dlcBtn.Size = new System.Drawing.Size(74, 23);
             this.dlcBtn.TabIndex = 25;
@@ -503,22 +425,31 @@
             this.dlcBtn.UseVisualStyleBackColor = true;
             this.dlcBtn.Click += new System.EventHandler(this.dlcBtn_Click);
             // 
+            // cleanTitleBtn
+            // 
+            this.cleanTitleBtn.Location = new System.Drawing.Point(93, 7);
+            this.cleanTitleBtn.Name = "cleanTitleBtn";
+            this.cleanTitleBtn.Size = new System.Drawing.Size(74, 23);
+            this.cleanTitleBtn.TabIndex = 26;
+            this.cleanTitleBtn.Text = "Clean Title";
+            this.cleanTitleBtn.UseVisualStyleBackColor = true;
+            this.cleanTitleBtn.Click += new System.EventHandler(this.cleanTitleBtn_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.cleanTitleBtn);
             this.Controls.Add(this.dlcBtn);
             this.Controls.Add(this.discordConnect);
             this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.sendChat);
             this.Controls.Add(this.cemu173Patch);
-            this.Controls.Add(this.myUploads);
             this.Controls.Add(this.connectBtn);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.playBtn);
-            this.Controls.Add(this.shareBtn);
             this.Controls.Add(this.username);
             this.Controls.Add(this.chatInput);
             this.Controls.Add(this.userList);
@@ -539,9 +470,6 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
@@ -562,17 +490,11 @@
         private System.Windows.Forms.ListBox userList;
         private System.Windows.Forms.TextBox chatInput;
         private System.Windows.Forms.TextBox username;
-        private System.Windows.Forms.Button shareBtn;
         private System.Windows.Forms.Button playBtn;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button myUploads;
-        private System.Windows.Forms.DataGridView dataGrid1;
-        private System.Windows.Forms.TextBox search;
         private System.Windows.Forms.Button connectBtn;
         private System.Windows.Forms.Button sendChat;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.RichTextBox chatbox;
         private System.Windows.Forms.Label progressOverlay;
@@ -591,6 +513,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button discordConnect;
         private System.Windows.Forms.Button dlcBtn;
+        private System.Windows.Forms.Button cleanTitleBtn;
     }
 }
 

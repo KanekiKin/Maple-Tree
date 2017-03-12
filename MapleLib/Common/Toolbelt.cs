@@ -11,11 +11,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using libWiiSharp;
 using MapleLib.Properties;
 using NUS_Downloader;
@@ -35,7 +32,7 @@ namespace MapleLib.Common
         {
             try {
                 string rpx = null, gamePath;
-                string dir = Settings.Instance.CemuDirectory;
+                var dir = Settings.Instance.CemuDirectory;
 
                 if (string.IsNullOrEmpty(dir))
                     return false;
@@ -51,7 +48,7 @@ namespace MapleLib.Common
                 string[] files;
                 var fi = new FileInfo(game);
 
-                if (fi.Extension == ".wud" || fi.Extension == ".wux") files = new[] { gamePath };
+                if (fi.Extension == ".wud" || fi.Extension == ".wux") files = new[] {gamePath};
                 else files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
 
                 if (files.Length > 0) rpx = files[0];
@@ -144,10 +141,9 @@ namespace MapleLib.Common
             }
         }
 
-        public static async Task CDecrypt(string workingDir, TMD tmd)
+        public static async Task CDecrypt(string workingDir)
         {
             try {
-                var args = "tmd cetk";
                 var cdecrypt = Path.Combine(workingDir, "CDecrypt.exe");
                 var libeay32 = Path.Combine(workingDir, "libeay32.dll");
                 var msvcr120d = Path.Combine(workingDir, "msvcr120d.dll");
@@ -162,11 +158,10 @@ namespace MapleLib.Common
                     AppendLog("Error decrypting contents!\r\n       Could not extract msvcr120d.");
 
                 var processes = Process.GetProcessesByName("CDecrypt");
-                foreach (var proc in processes) {
-                    proc.Kill();
-                }
-                
+                foreach (var proc in processes) proc.Kill();
+
                 using (TextWriter writer = File.CreateText(Path.Combine(workingDir, "result.log"))) {
+                    var args = "tmd cetk";
                     var exitCode = await StartProcess(cdecrypt, args, workingDir, null, true, false, writer);
                     TextLog.MesgLog.WriteLog($@"Process Exited with Exit Code {exitCode}!");
                 }
@@ -179,9 +174,9 @@ namespace MapleLib.Common
             }
         }
 
-
         private static async Task<int> StartProcess(string filename, string arguments, string workingDirectory,
-            int? timeout = null, bool createNoWindow = true, bool shellEx = false, TextWriter outputTextWriter = null, TextWriter errorTextWriter = null)
+            int? timeout = null, bool createNoWindow = true, bool shellEx = false, TextWriter outputTextWriter = null,
+            TextWriter errorTextWriter = null)
         {
             using (var process = new Process
             {
@@ -201,8 +196,8 @@ namespace MapleLib.Common
                     ? new CancellationTokenSource(timeout.Value)
                     : new CancellationTokenSource();
 
-                var tasks = new List<Task>(3) {process.WaitForExitAsync(cancellationTokenSource.Token)};
-                if (outputTextWriter != null) {
+                var tasks = new List<Task>(2) {process.WaitForExitAsync(cancellationTokenSource.Token)};
+                if (outputTextWriter != null)
                     tasks.Add(ReadAsync(
                         x => {
                             process.OutputDataReceived += x;
@@ -211,9 +206,8 @@ namespace MapleLib.Common
                         x => process.OutputDataReceived -= x,
                         outputTextWriter,
                         cancellationTokenSource.Token));
-                }
 
-                if (errorTextWriter != null) {
+                if (errorTextWriter != null)
                     tasks.Add(ReadAsync(
                         x => {
                             process.ErrorDataReceived += x;
@@ -222,7 +216,6 @@ namespace MapleLib.Common
                         x => process.ErrorDataReceived -= x,
                         errorTextWriter,
                         cancellationTokenSource.Token));
-                }
 
                 await Task.WhenAll(tasks);
                 return process.ExitCode;
@@ -230,13 +223,15 @@ namespace MapleLib.Common
         }
 
         /// <summary>
-        /// Waits asynchronously for the process to exit.
+        ///     Waits asynchronously for the process to exit.
         /// </summary>
         /// <param name="process">The process to wait for cancellation.</param>
-        /// <param name="cancellationToken">A cancellation token. If invoked, the task will return
-        /// immediately as cancelled.</param>
+        /// <param name="cancellationToken">
+        ///     A cancellation token. If invoked, the task will return
+        ///     immediately as cancelled.
+        /// </param>
         /// <returns>A Task representing waiting for the process to end.</returns>
-        public static Task WaitForExitAsync(this Process process,
+        private static Task WaitForExitAsync(this Process process,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             process.EnableRaisingEvents = true;
@@ -250,20 +245,19 @@ namespace MapleLib.Common
             };
             process.Exited += handler;
 
-            if (cancellationToken != default(CancellationToken)) {
+            if (cancellationToken != default(CancellationToken))
                 cancellationToken.Register(
                     () => {
                         process.Exited -= handler;
                         taskCompletionSource.TrySetCanceled();
                     });
-            }
 
             return taskCompletionSource.Task;
         }
 
         /// <summary>
-        /// Reads the data from the specified data recieved event and writes it to the
-        /// <paramref name="textWriter"/>.
+        ///     Reads the data from the specified data recieved event and writes it to the
+        ///     <paramref name="textWriter" />.
         /// </summary>
         /// <param name="addHandler">Adds the event handler.</param>
         /// <param name="removeHandler">Removes the event handler.</param>
@@ -284,19 +278,18 @@ namespace MapleLib.Common
                 }
                 else {
                     textWriter.WriteLine(e.Data);
-                    TextLog.MesgLog.WriteLog(e.Data);
+                    //TextLog.MesgLog.WriteLog(e.Data, Color.DarkSlateBlue);
                 }
             };
 
             addHandler(handler);
 
-            if (cancellationToken != default(CancellationToken)) {
+            if (cancellationToken != default(CancellationToken))
                 cancellationToken.Register(
                     () => {
                         removeHandler(handler);
                         taskCompletionSource.TrySetCanceled();
                     });
-            }
 
             return taskCompletionSource.Task;
         }

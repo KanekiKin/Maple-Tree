@@ -52,7 +52,7 @@ namespace MapleSeed
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
             WebClient.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
             AppUpdate.Instance.ProgressChangedEventHandler += Instance_ProgressChangedEventHandler;
-
+            
             Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
             GlobalTimer_Elapsed(null, null);
         }
@@ -150,14 +150,10 @@ namespace MapleSeed
 
             if (Client.NetClient.ConnectionsCount <= 0 && IsLive) {
                 Client.Start(Toolbelt.Settings.Hub);
-                shareBtn.Enabled = false;
-                myUploads.Enabled = false;
                 sendChat.Enabled = false;
                 username.Enabled = false;
             }
             else {
-                shareBtn.Enabled = true;
-                myUploads.Enabled = true;
                 sendChat.Enabled = true;
                 username.Enabled = true;
             }
@@ -280,43 +276,20 @@ namespace MapleSeed
             UpdateProgressBar(e?.ProgressPercentage ?? 0, e?.TotalBytesToReceive ?? 0, e?.BytesReceived ?? 0);
         }
 
-        private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
-        {
-            try {
-                if (richTextBox1.InvokeRequired)
-                {
-                    richTextBox1.BeginInvoke(new Action(() => {
-                        richTextBox1.AppendText(e.Entry, e.Color);
-                        richTextBox1.ScrollToCaret();
-                    }));
-                }
-                else
-                {
-                    richTextBox1.AppendText(e.Entry, e.Color);
-                    richTextBox1.ScrollToCaret();
-                }
-            }
-            catch { }
-        }
-
         private void ChatLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
-            if (chatbox.InvokeRequired) {
-                chatbox.BeginInvoke(new Action(() => {
-                    chatbox.AppendText(e.Entry, e.Color);
-                    chatbox.ScrollToCaret();
-                }));
-            }
-            else {
-                chatbox.AppendText(e.Entry, e.Color);
-                chatbox.ScrollToCaret();
-            }
+            chatbox.AppendText(e.Entry, e.Color);
+        }
+
+        private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
+        {
+            richTextBox1.AppendText(e.Entry, e.Color);
         }
 
         private void StatusLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
             if (status.InvokeRequired) {
-                status.BeginInvoke(new Action(() => {
+                status.Invoke(new Action(() => {
                     status.Text = e.Entry;
                     status.ForeColor = e.Color;
                 }));
@@ -353,51 +326,17 @@ namespace MapleSeed
 
         private void HandleRequestSearch(byte[] data)
         {
-            List<StorageData> list;
-            using (var ms = new MemoryStream(data)) {
-                list = Serializer.Deserialize<List<StorageData>>(ms);
-            }
-            dataGrid1.Invoke(new Action(() => {
-                dataGrid1.DataSource = list;
-                dataGrid1.Columns.Remove("Data");
-                var dataGridViewColumn = dataGrid1.Columns["Serial"];
-                if (dataGridViewColumn != null) dataGridViewColumn.HeaderText = @"Owner";
-            }));
+
         }
 
         private void HandleShaderData(MessageHeader eHeader)
         {
-            try {
-                using (var ms = new MemoryStream(eHeader.Data)) {
-                    var list = Serializer.Deserialize<List<StorageData>>(ms);
-                    dataGrid1.Invoke(new Action(() => {
-                        dataGrid1.DataSource = list;
-                        dataGrid1.Columns.Remove("Data");
-                        var dataGridViewColumn = dataGrid1.Columns["Serial"];
-                        if (dataGridViewColumn != null) dataGridViewColumn.HeaderText = @"Owner";
-                    }));
-                }
-            }
-            catch (Exception e) {
-                Console.WriteLine(e);
-            }
+
         }
 
         private void HandleUserList(byte[] data)
         {
-            return;
-            List<string> userlist;
-            using (var ms = new MemoryStream(data)) {
-                userlist = Serializer.Deserialize<List<string>>(ms);
-            }
 
-            userList.Invoke(new Action(() => {
-                userList.Items.Clear();
-
-                foreach (var name in userlist)
-                    if (!string.IsNullOrEmpty(name))
-                        userList.Items.Add(name);
-            }));
         }
 
         private void ListBoxAddItem(object obj)
@@ -419,6 +358,13 @@ namespace MapleSeed
         {
             if (Client.IsRunning)
                 Client.Stop();
+
+            foreach (var proc in System.Diagnostics.Process.GetProcessesByName("CDecrypt")) {
+                try {
+                    proc.Kill();
+                }
+                catch {}
+            }
 
             Application.Exit();
         }
@@ -492,40 +438,6 @@ namespace MapleSeed
             username.Invoke(new Action(() => { username.Text = ud.Username; }));
         }
 
-        private void shareBtn_Click(object sender, EventArgs e)
-        {
-            var ofd = new OpenFileDialog
-            {
-                CheckFileExists = true,
-                Filter = @"Tansferable Data |*.bin;rules.txt",
-                InitialDirectory = Toolbelt.Settings.CemuDirectory,
-                Multiselect = true
-            };
-            var result = ofd.ShowDialog();
-            if (!File.Exists(ofd.FileName))
-                return;
-
-            if (result != DialogResult.OK)
-                return;
-
-            var file = Path.GetFullPath(ofd.FileName);
-
-            if (string.IsNullOrWhiteSpace(file))
-                return;
-
-            if (new FileInfo(file).Extension == ".txt") {
-                var folder = Path.GetDirectoryName(file);
-                folder = Path.GetFileName(folder);
-                Storage.Upload(Client, file, folder, Toolbelt.Serial, false);
-            }
-            else {
-                if (ofd.FileNames.Length > 0)
-                    foreach (var ofdFile in ofd.FileNames)
-                        Storage.Upload(Client, ofdFile, Path.GetFileName(ofdFile), Toolbelt.Settings.Serial, true);
-                else Storage.Upload(Client, file, Path.GetFileName(file), Toolbelt.Settings.Serial, true);
-            }
-        }
-
         private void ConfirmStorageUpload(MessageHeader header)
         {
             using (var ms = new MemoryStream(header.Data)) {
@@ -548,25 +460,6 @@ namespace MapleSeed
             var msg = $"[{Client.UserData.Username}] Has started playing {title}!";
             Client.Send(msg, MessageType.ChatMessage);
             AppendLog(msg);
-        }
-
-        private void refreshBtn_Click(object sender, EventArgs e)
-        {
-            Client.Send(Toolbelt.Serial, MessageType.ShaderData);
-        }
-
-        private void dataGrid1_DoubleClick(object sender, EventArgs e)
-        {
-            if (dataGrid1.SelectedRows.Count <= 0) return;
-            var row = (StorageData) dataGrid1.SelectedRows[0].DataBoundItem;
-            AppendLog($"[{row.Name}] Requesting download from storage server.");
-            Client.Send(row, MessageType.RequestDownload);
-        }
-
-        private void search_TextChanged(object sender, EventArgs e)
-        {
-            if (search.Text.Length > 2)
-                Client.Send(search.Text, MessageType.RequestSearch);
         }
 
         private async void sendChat_Click(object sender, EventArgs e)
@@ -721,6 +614,45 @@ namespace MapleSeed
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
         {
             Toolbelt.Settings.StoreEncryptedContent = storeEncCont.Checked;
+        }
+
+        private async void cleanTitleBtn_Click(object sender, EventArgs e)
+        {
+            try {
+                cleanTitleBtn.Enabled = false;
+                var result = DialogResult.Cancel;
+
+                foreach (var item in titleList.SelectedItems) {
+                    if (result != DialogResult.OK) {
+                        var msg = $"WARNING!! WARNING!! WARNING!!\n\nThis task will delete your '{item}' directory and redownload the base title content!";
+                        result = MessageBox.Show(msg, $@"Reinstall {item}", MessageBoxButtons.OKCancel);
+
+                        if (result != DialogResult.OK)
+                            continue;
+                    }
+
+                    var fullPath = item as string;
+                    if (fullPath.IsNullOrEmpty() || Toolbelt.Database == null) continue;
+                    
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
+                    var title = Database.Find(Path.GetFileName(fullPath));
+
+                    if (Directory.Exists(Path.Combine(fullPath, "code")))
+                        Directory.Delete(Path.Combine(fullPath, "code"), true);
+
+                    if (Directory.Exists(Path.Combine(fullPath, "content")))
+                        Directory.Delete(Path.Combine(fullPath, "content"), true);
+
+                    await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "eShop/Application");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
+            }
+
+            cleanTitleBtn.Enabled = true;
         }
     }
 }

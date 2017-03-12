@@ -4,35 +4,41 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
+using System.Threading.Tasks;
+using MapleLib.Collections;
 
 namespace MapleLib.Common
 {
     public sealed class TextLog
     {
-        public static TextLog MesgLog { get; set; } = new TextLog();
-        public static TextLog ChatLog { get; set; } = new TextLog();
-        public static TextLog StatusLog { get; set; } = new TextLog();
+        public static TextLog MesgLog { get; } = new TextLog();
+        public static TextLog ChatLog { get; } = new TextLog();
+        public static TextLog StatusLog { get; } = new TextLog();
 
-        private StringBuilder LogBuilder { get; } = new StringBuilder();
+        public MList<string> LogHistory { get; } = new MList<string>();
 
+        private int index { get; set; }
+        
         public event EventHandler<NewLogEntryEvent> NewLogEntryEventHandler;
 
-        private void NewLine(string text, Color color = default(Color))
+        public void AddHistory(string text, Color color = default(Color))
         {
-            LogBuilder.AppendFormat(text, color);
+            index = LogHistory.Count;
+            LogHistory.Add(text, color);
+        }
+
+        private Task NewLine(string text, Color color = default(Color))
+        {
+            AddHistory(text, color);
             NewLogEntryEventHandler?.Invoke(this, new NewLogEntryEvent(text, color));
+            return null;
         }
 
         public void WriteLog(string text, Color color = default(Color))
         {
             NewLine(text + Environment.NewLine, color);
-        }
-
-        public void WriteStatus(string text, Color color = default(Color))
-        {
-            NewLine(text, color);
         }
 
         public void WriteError(string text)
@@ -46,17 +52,12 @@ namespace MapleLib.Common
     {
         public NewLogEntryEvent(string entry, Color color = default(Color))
         {
-            Entry = $"[{TimeStamp()}] {entry}";
+            Entry = $"[{DateTime.Now.TimeStamp()}] {entry}";
             Color = color;
         }
 
         public string Entry { get; private set; }
 
         public Color Color { get; private set; }
-
-        private string TimeStamp()
-        {
-            return new DateTimeWithZone().TimeStamp();
-        }
     }
 }

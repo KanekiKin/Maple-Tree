@@ -8,18 +8,15 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
-using System.Net;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Xml;
 using libWiiSharp;
 using MapleLib.Common;
+using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Newtonsoft.Json;
-using WebClient = MapleLib.Network.Web.WebClient;
 
 #endregion
 
@@ -60,7 +57,7 @@ namespace MapleLib
             UpdateGame(titleId, fullPath, "Patch");
 #pragma warning restore 4014
         }
-        
+
         public async Task UpdateGame(string titleId, string fullPath, string contentType)
         {
             var cemu = Toolbelt.Settings.CemuDirectory;
@@ -71,16 +68,12 @@ namespace MapleLib
                 Toolbelt.AppendLog($"Unable to locate title using ID {titleId}");
             }
             else {
-                if (string.IsNullOrEmpty(contentType)) {
-                    contentType = game.ContentType;
-                }
+                if (string.IsNullOrEmpty(contentType)) contentType = game.ContentType;
 
                 if (Settings.Instance.Cemu173Patch) {
                     var lower8Digits = game.TitleID.Substring(8).ToUpper();
 
-                    if (contentType == "eShop/Application") {
-                        fullPath = Path.GetFullPath(fullPath);
-                    }
+                    if (contentType == "eShop/Application") fullPath = Path.GetFullPath(fullPath);
 
                     if (contentType == "Patch") {
                         game = FindByTitleId("0005000e" + lower8Digits);
@@ -121,6 +114,12 @@ namespace MapleLib
             }
 
             return new WiiUTitle {Name = "NULL"};
+        }
+        
+        public static WiiUTitle FindByName(string game_name)
+        {
+            var name = Toolbelt.RIC(game_name).ToLower();
+            return game_name == null ? new WiiUTitle() : DbObject.FirstOrDefault(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(name));
         }
 
         public static IEnumerable<WiiUTitle> FindTitles(string game_name)
@@ -169,13 +168,12 @@ namespace MapleLib
                 Toolbelt.AppendLog("  - Downloading TMD...");
                 await WebClient.DownloadFileAsync(Path.Combine(titleUrl, "tmd"), tmdFile);
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 var titleId = wiiUTitle.TitleID.ToLower();
                 var titleKey = wiiUTitle.TitleKey.ToLower();
                 var args = $"-title {titleId} -key {titleKey} -onlinetickets -onlinekeys -ticketsonly";
-                await WebClient.DownloadFileAsync("http://" + $"192.99.69.253/?args={args}&title={titleId}&type=tmd", tmdFile);
-
-                //Toolbelt.AppendLog($"   + Downloading TMD Failed...\n{ex.Message}");
+                await WebClient.DownloadFileAsync("http://" + $"192.99.69.253/?args={args}&title={titleId}&type=tmd",
+                    tmdFile);
             }
 
             Toolbelt.AppendLog("  - Loading TMD...");
@@ -197,20 +195,19 @@ namespace MapleLib
             try {
                 await WebClient.DownloadFileAsync($"{titleUrl}cetk", cetk);
             }
-            catch (Exception ex) {
-                try
-                {
+            catch (Exception) {
+                try {
                     var titleId = wiiUTitle.TitleID.ToLower();
                     var titleKey = wiiUTitle.TitleKey.ToLower();
                     var args = $"-title {titleId} -key {titleKey} -ticketsonly";
-                    await WebClient.DownloadFileAsync("http://" + $"192.99.69.253/?args={args}&title={titleId}&type=tik", cetk);
+                    await WebClient.DownloadFileAsync(
+                        "http://" + $"192.99.69.253/?args={args}&title={titleId}&type=tik", cetk);
                 }
                 catch (Exception e) {
                     Toolbelt.AppendLog($"   + Downloading Ticket Failed...\n{e.Message}");
                 }
             }
-
-            // Parse Ticket
+            
             Toolbelt.AppendLog("   + Loading Ticket...");
             Ticket.Load(File.ReadAllBytes(cetk));
             return 1;
@@ -218,29 +215,35 @@ namespace MapleLib
 
         private async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl, string name)
         {
+            int result = 0;
             for (var i = 0; i < tmd.NumOfContents; i++) {
-                var numc = tmd.NumOfContents;
-                var size = Toolbelt.SizeSuffix((long) tmd.Contents[i].Size);
-                Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc}... ({size})");
-                Toolbelt.SetStatus($"Downloading '{name}' Content #{i + 1} of {numc}... ({size})", Color.OrangeRed);
+                result = await Task.Run(async () => {
+                    var numc = tmd.NumOfContents;
+                    var size = Toolbelt.SizeSuffix((long) tmd.Contents[i].Size);
+                    Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc}... ({size})");
+                    //Toolbelt.SetStatus($"Downloading '{name}' Content #{i + 1} of {numc}... ({size})", Color.OrangeRed);
 
-                var contentPath = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
-                if (Toolbelt.IsValid(tmd.Contents[i], contentPath))
-                    Toolbelt.AppendLog("   + Using Local File, Skipping...");
-                else
-                    try {
-                        var downloadUrl = $"{titleUrl}/{tmd.Contents[i].ContentID:x8}";
-                        var outputdir = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
-                        await WebClient.DownloadFileAsync(downloadUrl, outputdir);
+                    var contentPath = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
+                    if (Toolbelt.IsValid(tmd.Contents[i], contentPath))
+                        Toolbelt.AppendLog("   + Using Local File, Skipping...");
+                    else {
+                        try {
+                            var downloadUrl = $"{titleUrl}/{tmd.Contents[i].ContentID:x8}";
+                            var outputdir = Path.Combine(outputDir, tmd.Contents[i].ContentID.ToString("x8"));
+                            await WebClient.DownloadFileAsync(downloadUrl, outputdir);
+                        }
+                        catch (Exception ex) {
+                            Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc} failed...\n{ex.Message}");
+                            Toolbelt.SetStatus($"Downloading '{name}' Content #{i + 1} of {numc} failed. Check Console");
+                            return 0;
+                        }
                     }
-                    catch (Exception ex) {
-                        Toolbelt.AppendLog($"  - Downloading Content #{i + 1} of {numc} failed...\n{ex.Message}");
-                        Toolbelt.SetStatus(
-                            $"Downloading '{name}' Content #{i + 1} of {numc} failed... Check Console for Error!");
-                        return 0;
-                    }
+                    return 1;
+                });
+                
+                //AppUpdate.Instance.InvokeProgressChangedEventHandler(this, (i * 100.0 / tmd.NumOfContents), tmd.NumOfContents, i);
             }
-            return 1;
+            return result;
         }
 
         private async Task DownloadTitle(string titleId, string fullPath)
@@ -259,8 +262,6 @@ namespace MapleLib
                 Directory.CreateDirectory(outputDir);
 
             Toolbelt.AppendLog($"Output Directory '{outputDir}'");
-
-            Toolbelt.AppendLog($"Downloading Title {title.TitleID} v[Latest]...");
 
             var nusUrls = new List<string>
             {
@@ -284,23 +285,29 @@ namespace MapleLib
                     break;
             }
 
+            if (tmd == null) return;
+
+            Toolbelt.AppendLog($"Downloading '{title.ContentType}' Content for '{title}' v[{tmd.TitleVersion}]");
+            Toolbelt.SetStatus($"Downloading '{title.ContentType}' Content for '{title}' v[{tmd.TitleVersion}]");
+
             foreach (var nusUrl in nusUrls) {
-                if (tmd == null) continue;
                 var url = nusUrl + title.TitleID.ToLower();
                 if (await DownloadContent(tmd, outputDir, url, title.ToString()) != 1)
                     continue;
 
-                Toolbelt.AppendLog("  - Decrypting Content...");
-                await Toolbelt.CDecrypt(outputDir, tmd);
+                Toolbelt.AppendLog(string.Empty);
+                Toolbelt.AppendLog("  - Decrypting Content");
+                Toolbelt.AppendLog("  + This may take a minute. Please wait...");
+                Toolbelt.SetStatus("Decrypting Content. This may take a minute. Please wait...", Color.OrangeRed);
+                Toolbelt.AppendLog(string.Empty);
+                await Toolbelt.CDecrypt(outputDir);
                 CleanUpdate(outputDir, tmd);
                 break;
             }
 
             WebClient.ResetDownloadProgressChanged();
-
-            if (tmd == null) return;
-            Toolbelt.AppendLog($"Downloading Title '{title}' v{tmd.TitleVersion} Finished.");
-            Toolbelt.SetStatus($"Downloading Title '{title}' v{tmd.TitleVersion} Finished.", Color.Green);
+            Toolbelt.AppendLog($"Downloading Title '{title}' v{tmd?.TitleVersion} Finished.");
+            Toolbelt.SetStatus($"Downloading Title '{title}' v{tmd?.TitleVersion} Finished.", Color.Green);
         }
     }
 }
