@@ -8,7 +8,7 @@ using Discord;
 using MapleLib.Common;
 using Color = System.Drawing.Color;
 
-namespace MapleLib
+namespace MapleLib.Network
 {
     public class Discord
     {

@@ -15,8 +15,10 @@ using System.Xml;
 using libWiiSharp;
 using MapleLib.Common;
 using MapleLib.Network.Web;
+using MapleLib.Properties;
 using MapleLib.Structs;
 using Newtonsoft.Json;
+using RestSharp.Deserializers;
 
 #endregion
 
@@ -27,6 +29,7 @@ namespace MapleLib
         private static string TitleKeys => "https://wiiu.titlekeys.com";
         private static string DatabaseFile => Path.Combine(Path.GetTempPath(), "MapleSeed_DB.json");
         private static List<WiiUTitle> DbObject { get; set; } = new List<WiiUTitle>();
+        public static List<TitleUpdate> UpdateDbObject { get; private set; } = new List<TitleUpdate>();
 
         public static async Task Initialize()
         {
@@ -39,6 +42,8 @@ namespace MapleLib
 
                 if (DateTime.Now > new FileInfo(DatabaseFile).LastWriteTime.AddDays(1))
                     await WebClient.DownloadFileAsync(TitleKeys + "/json", DatabaseFile);
+
+                LoadDatabase();
             }
             catch (Exception e) {
                 Toolbelt.AppendLog($"{e.Message}\n{e.StackTrace}");
@@ -50,6 +55,36 @@ namespace MapleLib
             Toolbelt.AppendLog("Database Update to date!");
         }
 
+        private static void LoadDatabase()
+        {
+            LoadUpdates();
+        }
+
+        private static void LoadUpdates()
+        {
+            var updatesFile = Path.GetFullPath("updates.db");
+
+            if (File.Exists(Path.GetFullPath(updatesFile))) {
+                //var data = File.ReadAllText(updatesFile);
+                //UpdateDbObject = JsonConvert.DeserializeObject<List<TitleUpdate>>(data);
+                //return;
+            }
+
+            var games = new List<string>(Resources.database.Split('\n'));
+            UpdateDbObject = games.Select(game => game.Split('|')).Select(parts => new TitleUpdate
+            {
+                Title_ID = parts[0].Trim(),
+                Title_Name = Toolbelt.RIC(parts[1]).Trim(),
+                Versions = new List<string>(parts[2].Split(',')),
+                Region = parts[3].Trim()
+            }).ToList();
+
+            using (var file = File.CreateText(updatesFile)) {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, UpdateDbObject);
+            }
+        }
+
         public void updateGame(string titleId, string fullPath)
         {
             titleId = titleId.Replace("00050000", "0005000e");
@@ -58,7 +93,7 @@ namespace MapleLib
 #pragma warning restore 4014
         }
 
-        public async Task UpdateGame(string titleId, string fullPath, string contentType)
+        public async Task UpdateGame(string titleId, string fullPath, string contentType, string version = "0")
         {
             var cemu = Toolbelt.Settings.CemuDirectory;
             var basePatchDir = Path.Combine(cemu, "mlc01", "usr", "title", "00050000");
@@ -89,7 +124,7 @@ namespace MapleLib
                 Toolbelt.AppendLog($"Downloading {contentType} Content for '{titleId}'");
                 Toolbelt.SetStatus($"Downloading {contentType} Content for '{titleId}'", Color.Green);
 
-                await DownloadTitle(game.TitleID.ToLower(), fullPath);
+                await DownloadTitle(game.TitleID.ToLower(), fullPath, version);
             }
         }
 
@@ -115,12 +150,6 @@ namespace MapleLib
 
             return new WiiUTitle {Name = "NULL"};
         }
-        
-        public static WiiUTitle FindByName(string game_name)
-        {
-            var name = Toolbelt.RIC(game_name).ToLower();
-            return game_name == null ? new WiiUTitle() : DbObject.FirstOrDefault(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(name));
-        }
 
         public static IEnumerable<WiiUTitle> FindTitles(string game_name)
         {
@@ -138,7 +167,7 @@ namespace MapleLib
             return titleId.IsNullOrEmpty() || title.ToString().IsNullOrEmpty() ? new WiiUTitle() : title;
         }
 
-        private void CleanUpdate(string outputDir, TMD tmd)
+        private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
                 Toolbelt.AppendLog("  - Deleting Encrypted Contents...");
@@ -160,13 +189,13 @@ namespace MapleLib
             }
         }
 
-        private async Task<TMD> LoadTmd(WiiUTitle wiiUTitle, string outputDir, string titleUrl)
+        private static async Task<TMD> LoadTmd(WiiUTitle wiiUTitle, string outputDir, string titleUrl, string version)
         {
             var tmdFile = Path.Combine(outputDir, "tmd");
 
             try {
                 Toolbelt.AppendLog("  - Downloading TMD...");
-                await WebClient.DownloadFileAsync(Path.Combine(titleUrl, "tmd"), tmdFile);
+                await WebClient.DownloadFileAsync(Path.Combine(titleUrl, "tmd."+ version), tmdFile);
             }
             catch (Exception) {
                 var titleId = wiiUTitle.TitleID.ToLower();
@@ -246,7 +275,7 @@ namespace MapleLib
             return result;
         }
 
-        private async Task DownloadTitle(string titleId, string fullPath)
+        private async Task DownloadTitle(string titleId, string fullPath, string version)
         {
             var title = FindByTitleId(titleId);
 
@@ -274,7 +303,7 @@ namespace MapleLib
             foreach (var nusUrl in nusUrls) {
                 string titleUrl = $"{nusUrl}{title.TitleID.ToLower()}/";
 
-                if ((tmd = await LoadTmd(title, outputDir, titleUrl)) != null)
+                if ((tmd = await LoadTmd(title, outputDir, titleUrl, version)) != null)
                     break;
             }
 

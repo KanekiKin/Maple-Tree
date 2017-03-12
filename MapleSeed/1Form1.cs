@@ -21,6 +21,7 @@ using MapleLib.Common;
 using MapleLib.Enums;
 using MapleLib.Network;
 using MapleLib.Network.Events;
+using MapleLib.Network.Web;
 using MapleLib.Properties;
 using MapleLib.Structs;
 using ProtoBuf;
@@ -36,7 +37,6 @@ namespace MapleSeed
         public Form1()
         {
             InitializeComponent();
-            //MapleServer.Init();
         }
 
         private static bool IsLive { get; set; } = true;
@@ -76,9 +76,9 @@ namespace MapleSeed
                         ListBoxAddItem(fi.Name);
                 }
                 else if (fi.Attributes.HasFlag(FileAttributes.Archive)) {
-                    if (fi.Extension == ".wud" || fi.Extension == ".wux")
-                        if (!titleList.Items.Contains(fi.Name))
-                            ListBoxAddItem(fi.Name);
+                    if (fi.Extension != ".wud" && fi.Extension != ".wux") continue;
+                    if (!titleList.Items.Contains(fi.Name))
+                        ListBoxAddItem(fi.Name);
                 }
             }
 
@@ -223,7 +223,6 @@ namespace MapleSeed
 
             switch (header.Type) {
                 case MessageType.Userlist:
-                    HandleUserList(header.Data);
                     break;
                 case MessageType.ChatMessage:
                     HandleChatMessage(header.Data);
@@ -235,7 +234,6 @@ namespace MapleSeed
                     ConfirmStorageUpload(e.Header);
                     break;
                 case MessageType.ShaderData:
-                    HandleShaderData(e.Header);
                     break;
                 case MessageType.ReceiveFile:
                     break;
@@ -243,7 +241,6 @@ namespace MapleSeed
                     HandleRequestDownload(e.Header);
                     break;
                 case MessageType.RequestSearch:
-                    HandleRequestSearch(e.Header.Data);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -324,27 +321,18 @@ namespace MapleSeed
             }
         }
 
-        private void HandleRequestSearch(byte[] data)
-        {
-
-        }
-
-        private void HandleShaderData(MessageHeader eHeader)
-        {
-
-        }
-
-        private void HandleUserList(byte[] data)
-        {
-
-        }
-
         private void ListBoxAddItem(object obj)
         {
             if (titleList.InvokeRequired)
                 titleList.BeginInvoke(new Action(() => { titleList.Items.Add(obj); }));
             else
                 titleList.Items.Add(obj);
+        }
+
+        private void titleList_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            e.Graphics.DrawString(titleList.Items[e.Index].ToString(), titleList.Font, Brushes.Black, e.Bounds);
         }
 
         private void connectBtn_Click(object sender, EventArgs e)
@@ -363,7 +351,9 @@ namespace MapleSeed
                 try {
                     proc.Kill();
                 }
-                catch {}
+                catch {
+                    // ignored
+                }
             }
 
             Application.Exit();
@@ -383,7 +373,7 @@ namespace MapleSeed
         {
             try {
                 if (
-                    MessageBox.Show(@"This action will overwrite pre-existing files!", @"Confirm Update",
+                    MessageBox.Show(@"This action will download update content files!", @"Confirm Update",
                         MessageBoxButtons.OKCancel) == DialogResult.OK) {
                     updateBtn.Enabled = false;
                     foreach (var item in titleList.SelectedItems) {
@@ -395,7 +385,7 @@ namespace MapleSeed
 
                         if (Toolbelt.Database == null) continue;
                         var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "Patch");
+                        await Toolbelt.Database.UpdateGame(title.TitleID, fullPath, "Patch", titleVersion.Text);
                     }
                 }
             }
@@ -653,6 +643,21 @@ namespace MapleSeed
             }
 
             cleanTitleBtn.Enabled = true;
+        }
+
+        private void titleList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var item = titleList.SelectedItem as string;
+            var title = Database.Find(item);
+
+            var results = Database.UpdateDbObject.Where(t => string.Equals(t.Lower8Digits, title.Lower8Digits, StringComparison.CurrentCultureIgnoreCase));
+            results = new List<TitleUpdate>(results);
+
+            var titleUpdates = results.ToArray();
+            if (!titleUpdates.Any()) return;
+            
+            var updatesStr = titleUpdates[0].Versions.Aggregate(string.Empty, (current, update) => current + $"| v{update.Trim()} |");
+            TextLog.StatusLog.WriteLog($"{titleUpdates[0].Lower8Digits}|Available Updates: {updatesStr}", Color.Green);
         }
     }
 }

@@ -71,6 +71,25 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0005000E10100600|TEKKEN TAG TOURNAMENT 2Wii U EDITION|16|JAP
+        ///0005000E10101B00|LEGO� CITY UNDERCOVER|16|EUR
+        ///0005000E10101C00|New SUPER MARIO BROS. U|32, 48, 65|JAP
+        ///0005000E10101D00|New SUPER MARIO BROS. U|32, 48, 64|USA
+        ///0005000E10101E00|New SUPER MARIO BROS. U|32, 48, 64, 80|EUR
+        ///0005000E10101F00|Nintendo Land|32|JAP
+        ///0005000E10102000|Nintendo Land|32|USA
+        ///0005000E10102100|Nintendo Land|32|EUR
+        ///0005000E10102200|Wii Fit U|32, 48, 64, 81|JAP
+        ///0005000E10102300|Wii Fit U|16, 48, 64, 81|USA
+        ///0005000E10102400| [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string database {
+            get {
+                return ResourceManager.GetString("database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap download {
@@ -132,7 +151,7 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 87144db
+        ///   Looks up a localized string similar to a2bbd51
         ///.
         /// </summary>
         public static string version {

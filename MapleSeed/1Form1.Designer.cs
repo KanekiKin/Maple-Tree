@@ -43,10 +43,10 @@
             this.username = new System.Windows.Forms.TextBox();
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.chatbox = new System.Windows.Forms.RichTextBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.discordPass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.discordEmail = new System.Windows.Forms.TextBox();
@@ -65,10 +65,12 @@
             this.discordConnect = new System.Windows.Forms.Button();
             this.dlcBtn = new System.Windows.Forms.Button();
             this.cleanTitleBtn = new System.Windows.Forms.Button();
+            this.titleVersion = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
-            this.tabPage3.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage4.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar
@@ -82,10 +84,11 @@
             // status
             // 
             this.status.AutoSize = true;
+            this.status.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.status.Location = new System.Drawing.Point(9, 664);
             this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(108, 13);
+            this.status.Size = new System.Drawing.Size(112, 13);
             this.status.TabIndex = 2;
             this.status.Text = "GitHub.com/Tsumes";
             this.status.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -100,6 +103,8 @@
             // 
             // titleList
             // 
+            this.titleList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.titleList.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.titleList.FormattingEnabled = true;
             this.titleList.Location = new System.Drawing.Point(12, 36);
             this.titleList.Name = "titleList";
@@ -108,6 +113,8 @@
             this.titleList.Sorted = true;
             this.titleList.TabIndex = 10;
             this.titleList.TabStop = false;
+            this.titleList.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.titleList_DrawItem);
+            this.titleList.SelectedIndexChanged += new System.EventHandler(this.titleList_SelectedIndexChanged);
             this.titleList.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick);
             // 
             // richTextBox1
@@ -115,14 +122,13 @@
             this.richTextBox1.BackColor = System.Drawing.SystemColors.HighlightText;
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.DetectUrls = false;
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox1.ForeColor = System.Drawing.SystemColors.WindowFrame;
             this.richTextBox1.Location = new System.Drawing.Point(3, 3);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
             this.richTextBox1.ShortcutsEnabled = false;
-            this.richTextBox1.Size = new System.Drawing.Size(855, 490);
+            this.richTextBox1.Size = new System.Drawing.Size(852, 490);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -139,7 +145,7 @@
             // 
             // updateBtn
             // 
-            this.updateBtn.Location = new System.Drawing.Point(173, 7);
+            this.updateBtn.Location = new System.Drawing.Point(253, 7);
             this.updateBtn.Name = "updateBtn";
             this.updateBtn.Size = new System.Drawing.Size(74, 23);
             this.updateBtn.TabIndex = 12;
@@ -196,24 +202,24 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(268, 36);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(869, 522);
             this.tabControl1.TabIndex = 18;
             // 
-            // tabPage3
+            // tabPage2
             // 
-            this.tabPage3.Controls.Add(this.chatbox);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(861, 496);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Chat";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPage2.Controls.Add(this.chatbox);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Size = new System.Drawing.Size(861, 496);
+            this.tabPage2.TabIndex = 2;
+            this.tabPage2.Text = "Chat";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // chatbox
             // 
@@ -236,29 +242,29 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(861, 496);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Console";
+            this.tabPage1.Text = "Dashboard";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // tabPage4
+            // tabPage3
             // 
-            this.tabPage4.Controls.Add(this.discordPass);
-            this.tabPage4.Controls.Add(this.label6);
-            this.tabPage4.Controls.Add(this.discordEmail);
-            this.tabPage4.Controls.Add(this.label5);
-            this.tabPage4.Controls.Add(this.checkUpdateBtn);
-            this.tabPage4.Controls.Add(this.serverHub);
-            this.tabPage4.Controls.Add(this.label4);
-            this.tabPage4.Controls.Add(this.cemuDir);
-            this.tabPage4.Controls.Add(this.label3);
-            this.tabPage4.Controls.Add(this.titleDir);
-            this.tabPage4.Controls.Add(this.label2);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(861, 496);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Settings";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.tabPage3.Controls.Add(this.discordPass);
+            this.tabPage3.Controls.Add(this.label6);
+            this.tabPage3.Controls.Add(this.discordEmail);
+            this.tabPage3.Controls.Add(this.label5);
+            this.tabPage3.Controls.Add(this.checkUpdateBtn);
+            this.tabPage3.Controls.Add(this.serverHub);
+            this.tabPage3.Controls.Add(this.label4);
+            this.tabPage3.Controls.Add(this.cemuDir);
+            this.tabPage3.Controls.Add(this.label3);
+            this.tabPage3.Controls.Add(this.titleDir);
+            this.tabPage3.Controls.Add(this.label2);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(861, 496);
+            this.tabPage3.TabIndex = 3;
+            this.tabPage3.Text = "Settings";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // discordPass
             // 
@@ -417,7 +423,7 @@
             // 
             // dlcBtn
             // 
-            this.dlcBtn.Location = new System.Drawing.Point(253, 7);
+            this.dlcBtn.Location = new System.Drawing.Point(173, 7);
             this.dlcBtn.Name = "dlcBtn";
             this.dlcBtn.Size = new System.Drawing.Size(74, 23);
             this.dlcBtn.TabIndex = 25;
@@ -435,12 +441,34 @@
             this.cleanTitleBtn.UseVisualStyleBackColor = true;
             this.cleanTitleBtn.Click += new System.EventHandler(this.cleanTitleBtn_Click);
             // 
+            // titleVersion
+            // 
+            this.titleVersion.Location = new System.Drawing.Point(351, 8);
+            this.titleVersion.MaxLength = 3;
+            this.titleVersion.Name = "titleVersion";
+            this.titleVersion.Size = new System.Drawing.Size(39, 22);
+            this.titleVersion.TabIndex = 27;
+            this.titleVersion.Text = "0";
+            this.titleVersion.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(333, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(16, 19);
+            this.label1.TabIndex = 28;
+            this.label1.Text = "v";
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.titleVersion);
             this.Controls.Add(this.cleanTitleBtn);
             this.Controls.Add(this.dlcBtn);
             this.Controls.Add(this.discordConnect);
@@ -468,10 +496,10 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -495,10 +523,10 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.Button connectBtn;
         private System.Windows.Forms.Button sendChat;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.RichTextBox chatbox;
         private System.Windows.Forms.Label progressOverlay;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TextBox cemuDir;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox titleDir;
@@ -514,6 +542,8 @@
         private System.Windows.Forms.Button discordConnect;
         private System.Windows.Forms.Button dlcBtn;
         private System.Windows.Forms.Button cleanTitleBtn;
+        private System.Windows.Forms.TextBox titleVersion;
+        private System.Windows.Forms.Label label1;
     }
 }
 

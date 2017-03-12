@@ -5,11 +5,10 @@
 
 using System;
 using System.Deployment.Application;
-using System.Diagnostics;
 using System.Windows;
 using Application = System.Windows.Forms.Application;
 
-namespace MapleLib
+namespace MapleLib.Network.Web
 {
     public class AppUpdate
     {
@@ -53,7 +52,8 @@ namespace MapleLib
             });
         }
 
-        public void InvokeProgressChangedEventHandler(object sender, double percentage, long bytesTotal, long bytesCompleted)
+        public void InvokeProgressChangedEventHandler(object sender, double percentage, long bytesTotal,
+            long bytesCompleted)
         {
             ProgressChangedEventHandler?.Invoke(sender, new ProgressChangedEventArgs
             {

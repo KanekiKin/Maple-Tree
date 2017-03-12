@@ -125,9 +125,10 @@
     <Compile Include="Config.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Enums\MessageType.cs" />
-    <Compile Include="Discord.cs" />
+    <Compile Include="Network\Discord.cs" />
     <Compile Include="Network\Web\WebClient.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Structs\TitleUpdate.cs" />
     <Compile Include="Structs\WiiUTitle.cs" />
     <Compile Include="Common\TextLog.cs" />
     <Compile Include="Network\Events\OnMessageReceivedEventArgs.cs" />
@@ -332,7 +333,7 @@
     <Compile Include="ThirdParty\protobuf-net\WireType.cs" />
     <Compile Include="Common\Toolkit.cs" />
     <Compile Include="Common\Toolbelt.cs" />
-    <Compile Include="AppUpdate.cs" />
+    <Compile Include="Network\Web\AppUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\MapleClient.cs" />
@@ -342,6 +343,7 @@
     <None Include="ThirdParty\protobuf-net\protobuf_net.xproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\database.txt" />
     <Content Include="version.txt" />
     <None Include="Resources\CDecrypt.exe" />
     <Content Include="Resources\images\download.png" />
