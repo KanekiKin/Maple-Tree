@@ -152,15 +152,15 @@
             this.userList.Location = new System.Drawing.Point(1120, 34);
             this.userList.Name = "userList";
             this.userList.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.userList.Size = new System.Drawing.Size(109, 459);
+            this.userList.Size = new System.Drawing.Size(109, 433);
             this.userList.Sorted = true;
             this.userList.TabIndex = 14;
             // 
             // chatInput
             // 
-            this.chatInput.Location = new System.Drawing.Point(268, 564);
+            this.chatInput.Location = new System.Drawing.Point(12, 564);
             this.chatInput.Name = "chatInput";
-            this.chatInput.Size = new System.Drawing.Size(865, 22);
+            this.chatInput.Size = new System.Drawing.Size(1121, 22);
             this.chatInput.TabIndex = 0;
             // 
             // username
@@ -212,6 +212,7 @@
             this.tabPage2.Controls.Add(this.chatbox);
             this.tabPage2.Controls.Add(this.username);
             this.tabPage2.Controls.Add(this.userList);
+            this.tabPage2.Controls.Add(this.discordConnect);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Size = new System.Drawing.Size(1232, 496);
@@ -385,7 +386,7 @@
             // 
             // discordConnect
             // 
-            this.discordConnect.Location = new System.Drawing.Point(1143, 592);
+            this.discordConnect.Location = new System.Drawing.Point(1120, 470);
             this.discordConnect.Name = "discordConnect";
             this.discordConnect.Size = new System.Drawing.Size(109, 23);
             this.discordConnect.TabIndex = 24;
@@ -454,7 +455,6 @@
             this.Controls.Add(this.titleVersion);
             this.Controls.Add(this.cleanTitleBtn);
             this.Controls.Add(this.dlcBtn);
-            this.Controls.Add(this.discordConnect);
             this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.sendChat);
             this.Controls.Add(this.cemu173Patch);

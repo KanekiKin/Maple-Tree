@@ -86,6 +86,7 @@ namespace MapleLib
                     var parts2 = title.Split('|');
                     if (parts2.Length >= 0) {
                         titleObj.ProductCode = parts2[2];
+                        titleObj.CDN = title.Contains("|Yes");
                     }
                 }
 
@@ -115,14 +116,6 @@ namespace MapleLib
             return title?.Versions.Count > 0;
         }
 
-        public static void updateGame(string titleId, string fullPath)
-        {
-            titleId = titleId.Replace("00050000", "0005000e");
-#pragma warning disable 4014
-            UpdateGame(titleId, fullPath, "Patch");
-#pragma warning restore 4014
-        }
-
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
@@ -146,44 +139,6 @@ namespace MapleLib
             }
         }
 
-        public static async Task UpdateGame(string titleId, string fullPath, string contentType, string version = "0")
-        {
-            fullPath = Path.GetFullPath(fullPath);
-            var cemu = Toolbelt.Settings.CemuDirectory;
-            var basePatchDir = Path.Combine(cemu, "mlc01", "usr", "title", "00050000");
-
-            var lower8Digits = titleId.Substring(8).ToUpper();
-            var tempId = string.Empty;
-
-            if (contentType == "eShop/Application") {
-                tempId = $"00050000{lower8Digits}";
-            }
-
-            if (contentType == "Patch") {
-                tempId = $"0005000e{lower8Digits}";
-
-                if (Settings.Instance.Cemu173Patch)
-                    fullPath = Path.Combine(basePatchDir, lower8Digits);
-            }
-
-            if (contentType == "DLC") {
-                tempId = $"0005000c{lower8Digits}";
-
-                if (Settings.Instance.Cemu173Patch)
-                    fullPath = Path.Combine(basePatchDir, lower8Digits, "aoc");
-            }
-
-            var game = FindByTitleId(tempId);
-
-            if (game == null) {
-                TextLog.MesgLog.WriteError($"Unable to locate title content: {contentType}");
-                TextLog.MesgLog.WriteError($"Please verify this title Id is correct: {tempId}");
-            }
-            else {
-                await DownloadTitle(game, fullPath, version);
-            }
-        }
-
         public static Title Find(string game_name)
         {
             if (game_name == null) return new Title();
@@ -197,10 +152,10 @@ namespace MapleLib
             using (var titleIdTag = xml.GetElementsByTagName("title_id")) {
                 if (titleIdTag.Count <= 0) return new Title {Name = "NULL"};
 
-                var titleId = titleIdTag[0].InnerText;
+                var titleId = titleIdTag[0].InnerText.ToLower();
 
-                var id = titleId.Substring(8).ToUpper();
-                var title = TitleDbObject.Find(t => t.Lower8Digits == id);
+                //titleId = titleId.Substring(8);
+                var title = TitleDbObject.Find(t => t.Id.Contains(titleId));
 
                 return title;
             }
@@ -230,7 +185,7 @@ namespace MapleLib
                 data = await WebClient.DownloadData(url);
             }
             catch (WebException e) {
-                //TextLog.MesgLog.WriteError($"{e.Message}\n{e.StackTrace}");
+                TextLog.MesgLog.AddHistory($"{e.Message}\n{e.StackTrace}");
             }
 
             return data;
@@ -432,6 +387,43 @@ namespace MapleLib
             WebClient.ResetDownloadProgressChanged();
             Toolbelt.AppendLog($"Downloading {title.ContentType} Content for '{title}' v{tmd.TitleVersion} Finished.");
             Toolbelt.SetStatus($"Downloading {title.ContentType} Content for '{title}' v{tmd.TitleVersion} Finished.", Color.Green);
+        }
+
+        public static async Task UpdateGame(string titleId, string fullPath, string contentType, string version = "0")
+        {
+            fullPath = Path.GetFullPath(fullPath);
+            var cemu = Toolbelt.Settings.CemuDirectory;
+            var basePatchDir = Path.Combine(cemu, "mlc01", "usr", "title", "00050000");
+
+            var lower8Digits = titleId.Substring(8).ToUpper();
+            var tempId = string.Empty;
+
+            if (contentType == "eShop/Application") {
+                tempId = $"00050000{lower8Digits}";
+            }
+
+            if (contentType == "Patch") {
+                tempId = $"0005000e{lower8Digits}";
+
+                if (Settings.Instance.Cemu173Patch)
+                    fullPath = Path.Combine(basePatchDir, lower8Digits);
+            }
+
+            if (contentType == "DLC") {
+                tempId = $"0005000c{lower8Digits}";
+
+                if (Settings.Instance.Cemu173Patch)
+                    fullPath = Path.Combine(basePatchDir, lower8Digits, "aoc");
+            }
+
+            var game = FindByTitleId(tempId);
+
+            if (game == null) {
+                TextLog.MesgLog.WriteError($"{contentType} Content for Title Id {tempId}, is unavailable. Skipping...");
+            }
+            else {
+                await DownloadTitle(game, fullPath, version);
+            }
         }
     }
 }

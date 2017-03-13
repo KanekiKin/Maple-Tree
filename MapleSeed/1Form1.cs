@@ -130,6 +130,8 @@ namespace MapleSeed
 
             RegisterDefaults();
 
+            ReadLibrary();
+
             CheckUpdate();
 
             AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
@@ -146,7 +148,7 @@ namespace MapleSeed
             try {
                 username.Invoke(new Action(() => username.Text = Discord.Nickname));
 
-                ReadLibrary();
+                //ReadLibrary();
             }
             catch (Exception ex) {
                 AppendLog(ex.StackTrace);
@@ -207,16 +209,13 @@ namespace MapleSeed
         {
             var title = Database.Find(obj as string);
 
-            if (titleList.InvokeRequired)
+            if (titleList.InvokeRequired) {
                 titleList.Invoke(new Action(() => {
-                    if (title != null) {
-                    }
-                    titleList.Items.Add(obj);
+                    titleList.Items.Add(title ?? obj);
                 }));
+            }
             else {
-                if (title != null) {
-                }
-                titleList.Items.Add(obj);
+                titleList.Items.Add(title ?? obj);
             }
         }
 
@@ -243,23 +242,28 @@ namespace MapleSeed
             TextLog.MesgLog.WriteLog(msg, color);
         }
 
-        private async void updateBtn_Click(object sender, EventArgs e)
+        private async Task DownloadContentClick(Control btn, string message, string contentType, string version = "0")
         {
+            btn.Enabled = false;
+
             try {
-                if (
-                    MessageBox.Show(@"This action will download update content files!", @"Confirm Update",
-                        MessageBoxButtons.OKCancel) == DialogResult.OK) {
-                    updateBtn.Enabled = false;
-                    foreach (var item in titleList.SelectedItems) {
-                        var fullPath = item as string;
-                        if (fullPath.IsNullOrEmpty()) continue;
+                if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
+
+                    foreach (var item in titleList.CheckedItems) {
+                        var title = item as Title;
+                        var titleStr = item as string;
+
+                        if (titleStr.IsNullOrEmpty() && title == null) continue;
 
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
+                        var fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, title?.Name ?? titleStr);
 
-                        if (Database.TitleDbObject == null) continue;
-                        var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Database.UpdateGame(title.Id, fullPath, "Patch", titleVersion.Text);
+                        if (title == null) {
+                            if (Database.TitleDbObject == null) continue;
+                            title = Database.Find(Path.GetFileName(fullPath));
+                        }
+
+                        await Database.UpdateGame(title.Id, fullPath, contentType, version);
                     }
                 }
             }
@@ -267,8 +271,20 @@ namespace MapleSeed
                 MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
             }
 
-            updateBtn.Enabled = true;
+            btn.Enabled = true;
             titleList.Enabled = true;
+        }
+
+        private async void dlcBtn_Click(object sender, EventArgs e)
+        {
+            await DownloadContentClick(dlcBtn, @"This action may overwrite current DLC files!", "DLC");
+        }
+
+        private async void updateBtn_Click(object sender, EventArgs e)
+        {
+            int ver;
+            var version = int.TryParse(titleVersion.Text, out ver) ? ver.ToString() : "0";
+            await DownloadContentClick(updateBtn, @"This action will update content files!", "Patch", version);
         }
 
         private void titleList_DoubleClick(object sender, EventArgs e)
@@ -289,7 +305,7 @@ namespace MapleSeed
         private void playBtn_Click(object sender, EventArgs e)
         {
             var title = titleList.SelectedItem as string;
-            if (!Toolbelt.LaunchCemu(title)) return;
+            if (!Toolbelt.LaunchCemu(title) || string.IsNullOrEmpty(title)) return;
             TextLog.MesgLog.WriteLog($"[{Settings.Instance.Username}] Has started playing {title}!");
         }
 
@@ -409,33 +425,6 @@ namespace MapleSeed
         {
             if (!Discord.Connected)
                 await Discord.Connect();
-        }
-
-        private async void dlcBtn_Click(object sender, EventArgs e)
-        {
-            try {
-                if (MessageBox.Show(@"This action will overwrite pre-existing files!",
-                        @"Confirm DLC Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
-                    dlcBtn.Enabled = false;
-
-                    foreach (var item in titleList.SelectedItems) {
-                        var fullPath = item as string;
-                        if (fullPath.IsNullOrEmpty()) continue;
-
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
-
-                        if (Database.TitleDbObject == null) continue;
-                        var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Database.UpdateGame(title.Id, fullPath, "DLC");
-                    }
-                }
-            }
-            catch (Exception ex) {
-                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
-            }
-
-            dlcBtn.Enabled = true;
         }
 
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
