@@ -1,5 +1,5 @@
 ﻿// Project: MapleLib
-// File: MList.cs
+// File: MapleList.cs
 // Updated By: Jared
 // 
 
@@ -9,7 +9,7 @@ using System.Drawing;
 
 namespace MapleLib.Collections
 {
-    public class MList<T> : List<T>
+    public class MapleList<T> : List<T>
     {
         public event EventHandler<OnAddItemEventArgs<T>> OnAddItem; 
         

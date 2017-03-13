@@ -15,10 +15,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using libWiiSharp;
+using MapleLib.Collections;
 using MapleLib.Common;
-using MapleLib.Properties;
 using MapleLib.Structs;
-using Newtonsoft.Json;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 #endregion
@@ -27,95 +26,8 @@ namespace MapleLib
 {
     public static class Database
     {
-        private static string TitleKeys => "https://wiiu.titlekeys.com";
-        private static List<WiiUTitle> DbObject { get; set; } = new List<WiiUTitle>();
-        public static List<Title> TitleDbObject { get; } = new List<Title>();
-
-        public static async Task Initialize()
-        {
-            try {
-                Toolbelt.AppendLog("[Database] Rebuilding Title Cache Entries", Color.DarkViolet);
-                
-                if (Toolbelt.Settings == null)
-                    Toolbelt.Settings = new Settings();
-
-                var data = await WebClient.DownloadData(TitleKeys + "/json");
-
-                if (data.Length <= 0)
-                    throw new WebException("[Database] Unable to download Wii U title database.");
-
-                File.WriteAllBytes("titlekeys.json", data);
-
-                var json = Encoding.UTF8.GetString(data);
-                DbObject = JsonConvert.DeserializeObject<List<WiiUTitle>>(json);
-                DbObject.RemoveAll(t => t.ToString().Contains("()"));
-
-                LoadDatabase(DbObject);
-                Toolbelt.AppendLog($"[Database] Valid Title Entries Added: {TitleDbObject.Count}", Color.DarkViolet);
-            }
-            catch (Exception e) {
-                Toolbelt.AppendLog($"{e.Message}\n{e.StackTrace}");
-            }
-        }
-
-        private static void LoadDatabase(List<WiiUTitle> dbObject)
-        {
-            LoadTitles(dbObject);
-        }
-
-        private static void LoadTitles(List<WiiUTitle> dbObject)
-        {
-            var titles = new List<string>(Resources.titles.Split('\n'));
-            var updates = new List<string>(Resources.updates.Split('\n'));
-
-            foreach (var title in dbObject) {
-                TitleDbObject.Add(new Title
-                {
-                    Id = title.TitleID,
-                    Key = title.TitleKey,
-                    Name = title.Name,
-                    Region = title.Region
-                });
-            }
-
-            foreach (var titleObj in TitleDbObject) {
-                var update = updates.Find(x => x.Contains(titleObj.Lower8Digits));
-                var title = titles.Find(x => x.Contains(titleObj.Id.ToUpper()));
-                
-                if (!string.IsNullOrEmpty(title)) {
-                    var parts2 = title.Split('|');
-                    if (parts2.Length >= 0) {
-                        titleObj.ProductCode = parts2[2];
-                        titleObj.CDN = title.Contains("|Yes");
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(update))
-                {
-                    var parts1 = update.Split('|');
-                    if (parts1.Length >= 0) {
-                        titleObj.Versions = parts1[2].Split(',').Select(s => s.Trim()).ToList();
-                    }
-                }
-            }
-        }
-
-        public static bool HasDLC(string titleId)
-        {
-            var lower8Digits = titleId.Substring(8);
-            titleId = $"0005000c{lower8Digits}".ToLower();
-            var title = DbObject.Find(y => y.TitleID.ToLower() == titleId);
-            return title != null;
-        }
-
-        public static bool HasUpdates(string titleId)
-        {
-            var lower8Digits = titleId.Substring(8);
-            titleId = $"0005000e{lower8Digits}".ToLower();
-            var title = TitleDbObject.Find(y => y.Id.ToLower() == titleId);
-            return title?.Versions.Count > 0;
-        }
-
+        public static MapleLoadiine TitleDb { get; } = new MapleLoadiine();
+        
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
@@ -141,21 +53,25 @@ namespace MapleLib
 
         public static Title Find(string game_name)
         {
-            if (game_name == null) return new Title();
+            if (game_name == null)
+                return null;
+            
+            var searchPath = Path.GetFullPath(Settings.Instance.TitleDirectory);
+            var entries = Directory.GetFileSystemEntries(searchPath, game_name, SearchOption.AllDirectories);
+            if (!entries.Any())
+                return null;
 
-            var fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, game_name);
-            var entries = Directory.GetFileSystemEntries(fullPath, "meta.xml", SearchOption.AllDirectories);
-            if (entries.Length <= 0) return new Title { Name = "No meta.xml found!"};
+            var metaXml = Path.Combine(entries[0], "meta", "meta.xml");
+            if (!File.Exists(metaXml))
+                return null;
 
             var xml = new XmlDocument();
-            xml.Load(entries[0]);
+            xml.Load(metaXml);
             using (var titleIdTag = xml.GetElementsByTagName("title_id")) {
-                if (titleIdTag.Count <= 0) return new Title {Name = "NULL"};
+                if (titleIdTag.Count <= 0) return null;
 
                 var titleId = titleIdTag[0].InnerText.ToLower();
-
-                //titleId = titleId.Substring(8);
-                var title = TitleDbObject.Find(t => t.Id.Contains(titleId));
+                var title = TitleDb[titleId];
 
                 return title;
             }
@@ -165,14 +81,14 @@ namespace MapleLib
         {
             if (game_name == null) return new List<Title>();
 
-            var titles = TitleDbObject.FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
+            var titles = TitleDb.Values.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
 
             return new List<Title>(titles);
         }
 
         public static Title FindByTitleId(string titleId)
         {
-            var title = TitleDbObject.Find(t => t.Id.ToLower() == titleId.ToLower());
+            var title = TitleDb[titleId];
 
             return titleId.IsNullOrEmpty() || title == null ? null : title;
         }
@@ -206,28 +122,6 @@ namespace MapleLib
             return tmd;
         }
 
-        private static async Task<TMD> LoadTmd(Title wiiUTitle, string outputDir, string titleUrl, string version)
-        {
-            var tmdFile = Path.Combine(outputDir, "tmd");
-
-            var tmd = await DownloadTmd(titleUrl + "tmd." + version, tmdFile);
-
-            if (tmd == null) {
-                var titleId = wiiUTitle.Id.ToLower();
-                var titleKey = wiiUTitle.Key.ToLower();
-                var address = "192.99.69.253";
-                var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tmd";
-
-                tmd = await DownloadTmd(url, tmdFile);
-            }
-
-            var file = new FileInfo(tmdFile);
-            if (!file.Exists || file.Length <= 0)
-                return null;
-
-            return tmd;
-        }
-
         private static async Task<Ticket> DownloadTicket(string url, string saveTo)
         {
             var data = await DownloadData(url);
@@ -242,26 +136,46 @@ namespace MapleLib
             return tik;
         }
 
-        private static async Task<Ticket> LoadTicket(Title wiiUTitle, string outputDir, string titleUrl)
+        private static async Task<TMD> LoadTmd(Title title, string outputDir, string titleUrl, string version)
+        {
+            var tmdFile = Path.Combine(outputDir, "tmd");
+
+            version = int.Parse(version) == 0 ? "" : $".{version}";
+            if (await DownloadTmd(titleUrl + $"tmd{version}", tmdFile) == null)
+            {
+                var titleId = title.Id.ToLower();
+                var titleKey = title.Key.ToLower();
+                var address = "192.99.69.253";
+                var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tmd";
+
+                await DownloadTmd(url, tmdFile);
+            }
+
+            var file = new FileInfo(tmdFile);
+            if (!file.Exists || file.Length <= 0)
+                return null;
+
+            return TMD.Load(tmdFile);
+        }
+
+        private static async Task<Ticket> LoadTicket(Title title, string outputDir, string titleUrl)
         {
             var cetkFile = Path.Combine(outputDir, "cetk");
-
-            var tik = await DownloadTicket($"{titleUrl}cetk", cetkFile);
-
-            if (tik == null) {
-                var titleId = wiiUTitle.Id.ToLower();
-                var titleKey = wiiUTitle.Key.ToLower();
+            
+            if (await DownloadTicket($"{titleUrl}cetk", cetkFile) == null) {
+                var titleId = title.Id.ToLower();
+                var titleKey = title.Key.ToLower();
                 var address = "192.99.69.253";
                 var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tik";
 
-                tik = await DownloadTicket(url, cetkFile);
+                await DownloadTicket(url, cetkFile);
             }
 
             var file = new FileInfo(cetkFile);
             if (!file.Exists || file.Length <= 0)
                 return null;
 
-            return tik;
+            return Ticket.Load(cetkFile);
         }
 
         private static async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl, string name)
@@ -273,16 +187,15 @@ namespace MapleLib
                     var numc = tmd.NumOfContents;
                     var size = Toolbelt.SizeSuffix((long)tmd.Contents[i1].Size);
                     Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc}... ({size})");
-
                     var contentPath = Path.Combine(outputDir, tmd.Contents[i1].ContentID.ToString("x8"));
+
                     if (Toolbelt.IsValid(tmd.Contents[i1], contentPath))
                         Toolbelt.AppendLog("   + Using Local File, Skipping...");
                     else
                         try
                         {
                             var downloadUrl = $"{titleUrl}/{tmd.Contents[i1].ContentID:x8}";
-                            var outputdir = Path.Combine(outputDir, tmd.Contents[i1].ContentID.ToString("x8"));
-                            await WebClient.DownloadFileAsync(downloadUrl, outputdir);
+                            await WebClient.DownloadFileAsync(downloadUrl, contentPath);
                         }
                         catch (Exception ex)
                         {
@@ -298,23 +211,20 @@ namespace MapleLib
             return result;
         }
 
-        private static async Task DownloadTitle(Title title, string fullPath, string version)
+        public static async Task DownloadTitle(Title title, string outputDir, string contentType, string version)
         {
             #region Setup
 
-            var outputDir = Path.GetFullPath(fullPath);
+            var workingId = title.Id.ToLower();
 
-            if (fullPath.EndsWith(".rpx"))
-            {
-                var folder = Path.GetDirectoryName(fullPath);
-                if (folder.EndsWith("code"))
-                    outputDir = Path.GetDirectoryName(folder);
+            if (contentType == "Patch") {
+                workingId = $"0005000E{title.Lower8Digits}".ToLower();
+                if (Settings.Instance.Cemu173Patch)
+                    outputDir = Path.Combine(Title.BasePatchDir, title.Lower8Digits);
             }
 
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
-
-            Toolbelt.AppendLog($"Output Directory '{outputDir}'");
 
             var nusUrls = new List<string>
             {
@@ -323,14 +233,17 @@ namespace MapleLib
                 "http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/"
             };
 
+            Toolbelt.AppendLog($"Output Directory '{outputDir}'");
+
             #endregion
 
             #region TMD
+
             Toolbelt.AppendLog("  - Loading TMD...");
             TMD tmd = null;
 
             foreach (var nusUrl in nusUrls) {
-                string titleUrl = $"{nusUrl}{title.Id.ToLower()}/";
+                string titleUrl = $"{nusUrl}{workingId}/";
                 tmd = await LoadTmd(title, outputDir, titleUrl, version);
 
                 if (tmd != null)
@@ -341,14 +254,16 @@ namespace MapleLib
                 TextLog.MesgLog.WriteError("Could not locate TMD. Is this content request valid?");
                 return;
             }
+
             #endregion
 
             #region Ticket
+
             Toolbelt.AppendLog("  - Loading Ticket...");
             Ticket ticket = null;
 
             foreach (var nusUrl in nusUrls) {
-                string titleUrl = $"{nusUrl}{title.Id.ToLower()}/";
+                string titleUrl = $"{nusUrl}{workingId}/";
                 ticket = await LoadTicket(title, outputDir, titleUrl);
 
                 if (ticket != null)
@@ -359,17 +274,17 @@ namespace MapleLib
                 TextLog.MesgLog.WriteError("Could not locate Ticket. Is this content request valid?");
                 return;
             }
+
             #endregion
 
             #region Content
 
-            Toolbelt.AppendLog($"Downloading '{title.ContentType}' Content for '{title}' v[{tmd.TitleVersion}]");
-            Toolbelt.SetStatus($"Downloading '{title.ContentType}' Content for '{title}' v[{tmd.TitleVersion}]");
+            Toolbelt.AppendLog($"Downloading [{contentType} Content] {title.Name} v[{tmd.TitleVersion}]");
+            Toolbelt.SetStatus($"Downloading [{contentType} Content] {title.Name} v[{tmd.TitleVersion}]");
 
-            foreach (var nusUrl in nusUrls)
-            {
-                var url = nusUrl + title.Id.ToLower();
-                if (await DownloadContent(tmd, outputDir, url, title.ToString()) != 1)
+            foreach (var nusUrl in nusUrls) {
+                var url = nusUrl + workingId;
+                if (await DownloadContent(tmd, outputDir, url, title.Name) != 1)
                     continue;
 
                 Toolbelt.AppendLog(string.Empty);
@@ -385,45 +300,8 @@ namespace MapleLib
             #endregion
 
             WebClient.ResetDownloadProgressChanged();
-            Toolbelt.AppendLog($"Downloading {title.ContentType} Content for '{title}' v{tmd.TitleVersion} Finished.");
-            Toolbelt.SetStatus($"Downloading {title.ContentType} Content for '{title}' v{tmd.TitleVersion} Finished.", Color.Green);
-        }
-
-        public static async Task UpdateGame(string titleId, string fullPath, string contentType, string version = "0")
-        {
-            fullPath = Path.GetFullPath(fullPath);
-            var cemu = Toolbelt.Settings.CemuDirectory;
-            var basePatchDir = Path.Combine(cemu, "mlc01", "usr", "title", "00050000");
-
-            var lower8Digits = titleId.Substring(8).ToUpper();
-            var tempId = string.Empty;
-
-            if (contentType == "eShop/Application") {
-                tempId = $"00050000{lower8Digits}";
-            }
-
-            if (contentType == "Patch") {
-                tempId = $"0005000e{lower8Digits}";
-
-                if (Settings.Instance.Cemu173Patch)
-                    fullPath = Path.Combine(basePatchDir, lower8Digits);
-            }
-
-            if (contentType == "DLC") {
-                tempId = $"0005000c{lower8Digits}";
-
-                if (Settings.Instance.Cemu173Patch)
-                    fullPath = Path.Combine(basePatchDir, lower8Digits, "aoc");
-            }
-
-            var game = FindByTitleId(tempId);
-
-            if (game == null) {
-                TextLog.MesgLog.WriteError($"{contentType} Content for Title Id {tempId}, is unavailable. Skipping...");
-            }
-            else {
-                await DownloadTitle(game, fullPath, version);
-            }
+            Toolbelt.AppendLog($"Downloading [{contentType} Content] {title.Name} v{tmd.TitleVersion} Finished.");
+            Toolbelt.SetStatus($"Downloading [{contentType} Content] {title.Name} v{tmd.TitleVersion} Finished.");
         }
     }
 }

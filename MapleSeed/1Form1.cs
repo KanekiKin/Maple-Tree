@@ -6,7 +6,6 @@
 #region usings
 
 using System;
-using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.Drawing;
@@ -16,9 +15,11 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using MapleLib;
+using MapleLib.Collections;
 using MapleLib.Common;
 using MapleLib.Network;
 using MapleLib.Network.Web;
+using MapleLib.Properties;
 using MapleLib.Structs;
 using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
 using WebClient = MapleLib.Network.Web.WebClient;
@@ -34,10 +35,10 @@ namespace MapleSeed
             InitializeComponent();
         }
 
-        private static List<string> Library { get; set; }
-
         private void RegisterEvents()
         {
+            MapleLoadiine.OnAddTitle += MapleLoadiine_OnAddTitle;
+
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
@@ -46,41 +47,6 @@ namespace MapleSeed
 
             Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
             GlobalTimer_Elapsed(null, null);
-        }
-
-        private void ReadLibrary()
-        {
-            if (Toolbelt.Settings == null) return;
-
-            var dir = Toolbelt.Settings.TitleDirectory;
-            if (dir.IsNullOrEmpty()) return;
-
-            Library = new List<string>(Directory.GetFileSystemEntries(dir));
-            foreach (var item in Library) {
-                var fi = new FileInfo(item);
-
-                if (fi.Attributes.HasFlag(FileAttributes.Directory)) {
-                    if (!File.Exists(Path.Combine(item, "meta", "meta.xml")))
-                        continue;
-
-                    if (!titleList.Items.Contains(fi.Name))
-                        ListBoxAddItem(fi.Name);
-                }
-                else if (fi.Attributes.HasFlag(FileAttributes.Archive)) {
-                    if (fi.Extension != ".wud" && fi.Extension != ".wux") continue;
-                    if (!titleList.Items.Contains(fi.Name))
-                        ListBoxAddItem(fi.Name);
-                }
-            }
-
-            var cache = new object[titleList.Items.Count];
-            titleList.Items.CopyTo(cache, 0);
-
-            foreach (var item in cache) {
-                var path = Path.Combine(dir, item.ToString());
-                if (!Directory.Exists(path) && !File.Exists(path))
-                    titleList.Invoke(new Action(() => titleList.Items.Remove(item)));
-            }
         }
 
         private void RegisterDefaults()
@@ -122,25 +88,46 @@ namespace MapleSeed
         {
             MinimumSize = MaximumSize = Size;
 
+            MessageBox.Show(Resources.EdgeBuildNotice, @"MapleSeed - Edge Build");
+
             RegisterEvents();
 
-            titleList.Enabled = false;
-            await Database.Initialize();
-            titleList.Enabled = true;
+            TextLog.MesgLog.WriteLog("[Database] Populating Title Library", Color.DarkViolet);
+
+            await Database.TitleDb.Init(Settings.Instance.TitleDirectory);
 
             RegisterDefaults();
 
-            ReadLibrary();
+            //ReadLibrary();
 
             CheckUpdate();
 
-            AppendLog($"Game Directory [{Toolbelt.Settings.TitleDirectory}]");
+            AppendLog($"Game Directory [{Settings.Instance.TitleDirectory}]");
             AppendChat(@"Welcome to Maple Tree.");
             AppendChat(@"Enter /help for a list of possible commands.");
 
             Discord.UpdateUserlist(userList);
 
             await Discord.Connect();
+        }
+
+        private void MapleLoadiine_OnAddTitle(object sender, Title e)
+        {
+            ListBoxAddItem(e);
+        }
+
+        private void ListBoxAddItem(object obj)
+        {
+            var title = obj as Title;
+
+            if (titleList.InvokeRequired) {
+                titleList.Invoke(new Action(() => {
+                    titleList.Items.Add(title ?? obj);
+                }));
+            }
+            else {
+                titleList.Items.Add(title ?? obj);
+            }
         }
 
         private void GlobalTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -205,20 +192,6 @@ namespace MapleSeed
             }
         }
 
-        private void ListBoxAddItem(object obj)
-        {
-            var title = Database.Find(obj as string);
-
-            if (titleList.InvokeRequired) {
-                titleList.Invoke(new Action(() => {
-                    titleList.Items.Add(title ?? obj);
-                }));
-            }
-            else {
-                titleList.Items.Add(title ?? obj);
-            }
-        }
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             foreach (var proc in Process.GetProcessesByName("CDecrypt"))
@@ -251,19 +224,22 @@ namespace MapleSeed
 
                     foreach (var item in titleList.CheckedItems) {
                         var title = item as Title;
-                        var titleStr = item as string;
+                        if (title == null) continue;
 
-                        if (titleStr.IsNullOrEmpty() && title == null) continue;
+                        switch (contentType) {
+                            case "DLC":
+                                foreach (var _dlc in title.DLC)
+                                    await _dlc.DownloadContent();
+                                break;
 
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        var fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, title?.Name ?? titleStr);
+                            case "Patch":
+                                await title.DownloadUpdate(version);
+                                break;
 
-                        if (title == null) {
-                            if (Database.TitleDbObject == null) continue;
-                            title = Database.Find(Path.GetFileName(fullPath));
+                            case "eShop/Application":
+                                await title.DownloadContent(version);
+                                break;
                         }
-
-                        await Database.UpdateGame(title.Id, fullPath, contentType, version);
                     }
                 }
             }
@@ -294,7 +270,7 @@ namespace MapleSeed
 
         private void fullScreen_CheckedChanged(object sender, EventArgs e)
         {
-            Toolbelt.Settings.FullScreenMode = fullScreen.Checked;
+            Settings.Instance.FullScreenMode = fullScreen.Checked;
         }
 
         private void username_TextChanged(object sender, EventArgs e)
@@ -326,9 +302,8 @@ namespace MapleSeed
                 if (s.StartsWith("/dl")) {
                     var titleId = s.Substring(3).Trim();
                     var title = Database.FindByTitleId(titleId);
-                    var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
                     if (title.Id.IsNullOrEmpty()) return false;
-                    Invoke(new Action(async () => await Database.UpdateGame(title.Id, fullPath, "eShop/Application")));
+                    Invoke(new Action(async () => await title.DownloadContent()));
                     return true;
                 }
 
@@ -376,17 +351,17 @@ namespace MapleSeed
 
         private void titleDir_TextChanged(object sender, EventArgs e)
         {
-            Toolbelt.Settings.TitleDirectory = titleDir.Text;
+            Settings.Instance.TitleDirectory = titleDir.Text;
         }
 
         private void cemuDir_TextChanged(object sender, EventArgs e)
         {
-            Toolbelt.Settings.CemuDirectory = cemuDir.Text;
+            Settings.Instance.CemuDirectory = cemuDir.Text;
         }
 
         private void serverHub_TextChanged(object sender, EventArgs e)
         {
-            Toolbelt.Settings.Hub = serverHub.Text;
+            Settings.Instance.Hub = serverHub.Text;
         }
 
         private void checkUpdateBtn_Click(object sender, EventArgs e)
@@ -429,7 +404,7 @@ namespace MapleSeed
 
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
         {
-            Toolbelt.Settings.StoreEncryptedContent = storeEncCont.Checked;
+            Settings.Instance.StoreEncryptedContent = storeEncCont.Checked;
         }
 
         private async void cleanTitleBtn_Click(object sender, EventArgs e)
@@ -452,7 +427,7 @@ namespace MapleSeed
                     if (fullPath.IsNullOrEmpty()) continue;
 
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
+                    fullPath = Path.Combine(Settings.Instance.TitleDirectory, fullPath);
                     var title = Database.Find(Path.GetFileName(fullPath));
 
                     if (Directory.Exists(Path.Combine(fullPath, "code")))
@@ -461,7 +436,7 @@ namespace MapleSeed
                     if (Directory.Exists(Path.Combine(fullPath, "content")))
                         Directory.Delete(Path.Combine(fullPath, "content"), true);
 
-                    await Database.UpdateGame(title.Id, fullPath, "eShop/Application");
+                    await title.DownloadContent();
                 }
             }
             catch (Exception ex) {
@@ -471,25 +446,32 @@ namespace MapleSeed
             cleanTitleBtn.Enabled = true;
         }
         
-        private void titleList_SelectedValueChanged(object sender, EventArgs e)
+        private async void titleList_SelectedValueChanged(object sender, EventArgs e)
         {
-            var item = titleList.SelectedItem as string;
-            var title = Database.Find(item);
-            if (string.IsNullOrEmpty(title?.Lower8Digits)) return;
+            var title = titleList.SelectedItem as Title;
+            if (string.IsNullOrEmpty(title?.Lower8Digits)) {
+                dlcBtn.Enabled = updateBtn.Enabled = false;
+                return;
+            }
 
-            dlcBtn.Enabled = Database.HasDLC(title.Id);
-            updateBtn.Enabled = Database.HasUpdates(title.Id);
+            dlcBtn.Enabled = title.DLC.Count > 0;
+            updateBtn.Enabled = title.Versions.Count > 0;
 
-            var compare = StringComparison.CurrentCultureIgnoreCase;
-            var results = Database.TitleDbObject.Where(t => string.Equals(t.Lower8Digits, title.Lower8Digits, compare));
-            results = new List<Title>(results);
-
-            var titleUpdates = results.ToArray();
-            if (!titleUpdates.Any()) return;
-
-            var updatesStr = titleUpdates[0].Versions.Aggregate(string.Empty,
+            var updatesStr = title.Versions.Aggregate(string.Empty,
                 (current, update) => current + $"| v{update.Trim()} ");
-            TextLog.StatusLog.WriteLog($"{titleUpdates[0].Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
+
+            var cache = Path.Combine("cache", $"{title.ImageCode}.jpg");
+            if (!Directory.Exists(Path.Combine("cache")))
+                Directory.CreateDirectory(Path.Combine("cache"));
+
+            if (!File.Exists(cache)) {
+                var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/US/{title.ImageCode}.jpg";
+                File.WriteAllBytes(cache, await WebClient.DownloadData(url));
+            }
+            
+            pictureBox1.ImageLocation = cache;
+
+            TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
         }
     }
 }

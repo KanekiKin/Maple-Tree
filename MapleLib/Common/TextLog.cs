@@ -4,7 +4,6 @@
 // 
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using MapleLib.Collections;
@@ -17,7 +16,7 @@ namespace MapleLib.Common
         public static TextLog ChatLog { get; } = new TextLog();
         public static TextLog StatusLog { get; } = new TextLog();
 
-        public MList<string> LogHistory { get; } = new MList<string>();
+        private MapleList<string> LogHistory { get; } = new MapleList<string>();
 
         private int index { get; set; }
         

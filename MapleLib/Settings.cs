@@ -18,7 +18,9 @@ namespace MapleLib
 {
     public class Settings
     {
-        public Settings()
+        private static Settings _instance;
+
+        private Settings()
         {
             if (!File.Exists(ConfigFile) || new FileInfo(ConfigFile).Length <= 0)
                 File.WriteAllText(ConfigFile, Resources.Settings_DefaultSettings);
@@ -52,7 +54,7 @@ namespace MapleLib
             get {
                 var value = GetKeyValue("CemuDirectory");
 
-                if (!string.IsNullOrEmpty(value) && File.Exists(Path.Combine(value,"cemu.exe"))) return value;
+                if (!string.IsNullOrEmpty(value) && File.Exists(Path.Combine(value, "cemu.exe"))) return value;
                 var ofd = new OpenFileDialog
                 {
                     CheckFileExists = true,
@@ -79,10 +81,8 @@ namespace MapleLib
             set { WriteKeyValue("Username", value); }
         }
 
-        public string DiscordEmail
-        {
-            get
-            {
+        public string DiscordEmail {
+            get {
                 var value = GetKeyValue("DiscordEmail");
                 if (string.IsNullOrEmpty(value))
                     WriteKeyValue("DiscordEmail", value = "");
@@ -92,8 +92,7 @@ namespace MapleLib
             set { WriteKeyValue("DiscordEmail", value); }
         }
 
-        public string DiscordPass
-        {
+        public string DiscordPass {
             get {
                 var value = GetKeyValue("DiscordPass");
                 if (string.IsNullOrEmpty(value))
@@ -136,10 +135,8 @@ namespace MapleLib
             set { WriteKeyValue("FullScreenMode", value.ToString()); }
         }
 
-        public bool Cemu173Patch
-        {
-            get
-            {
+        public bool Cemu173Patch {
+            get {
                 var value = GetKeyValue("Cemu173Patch");
                 if (string.IsNullOrEmpty(value))
                     WriteKeyValue("Cemu173Patch", true.ToString());
@@ -150,10 +147,8 @@ namespace MapleLib
             set { WriteKeyValue("Cemu173Patch", value.ToString()); }
         }
 
-        public bool StoreEncryptedContent
-        {
-            get
-            {
+        public bool StoreEncryptedContent {
+            get {
                 var value = GetKeyValue("StoreEncryptedContent");
                 if (string.IsNullOrEmpty(value))
                     WriteKeyValue("StoreEncryptedContent", true.ToString());
@@ -164,7 +159,8 @@ namespace MapleLib
             set { WriteKeyValue("StoreEncryptedContent", value.ToString()); }
         }
 
-        public static Settings Instance => Toolbelt.Settings;
+        public static Settings Instance => _instance ?? (_instance = new Settings());
+
         private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private static string ConfigFile => Path.Combine(AppFolder, "MapleSeed.ini");
         private static string ConfigName => "MapleTree";

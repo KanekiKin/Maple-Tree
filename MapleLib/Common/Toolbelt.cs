@@ -23,8 +23,6 @@ namespace MapleLib.Common
 {
     public static class Toolbelt
     {
-        public static Settings Settings { get; internal set; }
-
         public static bool LaunchCemu(string game)
         {
             try {
@@ -35,7 +33,7 @@ namespace MapleLib.Common
                     return false;
 
                 if (game != null) {
-                    gamePath = Path.Combine(Settings.TitleDirectory, game);
+                    gamePath = Path.Combine(Settings.Instance.TitleDirectory, game);
                 }
                 else {
                     RunCemu(Path.Combine(dir, "cemu.exe"), "");
@@ -70,7 +68,7 @@ namespace MapleLib.Common
                 if (workingDir == null) return;
 
                 using (TextWriter writer = File.CreateText(Path.GetFullPath("cemu.log"))) {
-                    var o1 = Settings.FullScreenMode ? "-f" : "";
+                    var o1 = Settings.Instance.FullScreenMode ? "-f" : "";
                     await StartProcess(cemuPath, $"{o1} -g \"{rpx}\"", workingDir, null, true, false, writer);
                 }
             }

@@ -6,6 +6,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Windows;
+using System.Xml;
 
 namespace MapleLib.Common
 {
@@ -22,6 +24,23 @@ namespace MapleLib.Common
                     return Assembly.Load(assemblyData);
                 }
             };
+        }
+
+        public static string XmlGetStringByTag(string file, string tag)
+        {
+            try {
+                var xml = new XmlDocument();
+                xml.Load(file);
+
+                using (var strTag = xml.GetElementsByTagName(tag)) {
+                    return strTag.Count <= 0 ? null : strTag[0].InnerText.ToUpper();
+                }
+            }
+            catch (Exception e) {
+                MessageBox.Show(e.Message);
+            }
+
+            return null;
         }
 
         public static bool IsFolder(string file)

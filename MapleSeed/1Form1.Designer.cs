@@ -66,10 +66,12 @@
             this.titleVersion = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.titleList = new System.Windows.Forms.CheckedListBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // progressBar
@@ -197,6 +199,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.pictureBox1);
             this.tabPage1.Controls.Add(this.titleList);
             this.tabPage1.Controls.Add(this.richTextBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -436,7 +439,6 @@
             // 
             // titleList
             // 
-            this.titleList.CheckOnClick = true;
             this.titleList.FormattingEnabled = true;
             this.titleList.Location = new System.Drawing.Point(3, 6);
             this.titleList.Name = "titleList";
@@ -444,6 +446,15 @@
             this.titleList.TabIndex = 29;
             this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
             this.titleList.DoubleClick += new System.EventHandler(this.titleList_DoubleClick);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(880, 6);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(346, 484);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 30;
+            this.pictureBox1.TabStop = false;
             // 
             // Form1
             // 
@@ -480,6 +491,7 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -523,6 +535,7 @@
         private System.Windows.Forms.TextBox titleVersion;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckedListBox titleList;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 

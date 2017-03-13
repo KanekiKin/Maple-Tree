@@ -81,6 +81,17 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edge is a very unstable build, that receives updates often and should be used with caution. Expect errors to shown, bugs to be present, and program crashes.
+        ///
+        ///Report any errors you come across at http://github.com/Tsume/Maple-Tree..
+        /// </summary>
+        public static string EdgeBuildNotice {
+            get {
+                return ResourceManager.GetString("EdgeBuildNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon Green_Light {

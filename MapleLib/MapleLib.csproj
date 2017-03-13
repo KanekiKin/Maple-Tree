@@ -118,7 +118,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\MList.cs" />
+    <Compile Include="Collections\MapleLoadiine.cs" />
+    <Compile Include="Collections\MapleList.cs" />
     <Compile Include="Common\Crypto.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\Helper.cs" />
@@ -129,7 +130,6 @@
     <Compile Include="Network\Web\WebClient.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Structs\Title.cs" />
-    <Compile Include="Structs\TitleUpdate.cs" />
     <Compile Include="Structs\WiiUTitle.cs" />
     <Compile Include="Common\TextLog.cs" />
     <Compile Include="Network\Events\OnMessageReceivedEventArgs.cs" />
