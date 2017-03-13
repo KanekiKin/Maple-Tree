@@ -23,7 +23,6 @@ namespace MapleLib.Common
 {
     public static class Toolbelt
     {
-        public static Database Database { get; internal set; }
         public static Settings Settings { get; internal set; }
 
         public static bool LaunchCemu(string game)

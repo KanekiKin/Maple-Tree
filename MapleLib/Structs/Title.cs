@@ -16,8 +16,8 @@ namespace MapleLib.Structs
         public string ProductCode { get; set; } = string.Empty;
         public string Region { get; set; } = string.Empty;
         public bool CDN { get; set; }
-        public string Upper8Digits => Id.Substring(0, 8).ToUpper();
-        public string Lower8Digits => Id.Substring(8).ToUpper();
+        public string Upper8Digits => Id?.Substring(0, 8).ToUpper();
+        public string Lower8Digits => Id?.Substring(8).ToUpper();
         public List<string> Versions { get; set; } = new List<string>();
         public string ContentType
         {

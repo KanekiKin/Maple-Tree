@@ -31,7 +31,6 @@ namespace MapleSeed
     {
         public Form1()
         {
-
             InitializeComponent();
         }
 
@@ -102,21 +101,21 @@ namespace MapleSeed
             if (ver != null) Text = $@"Maple Seed - Version: {ver}";
         }
 
-        private void CheckUpdate()
+        private static void CheckUpdate()
         {
-            if (AppUpdate.Instance.UpdateAvailable) {
-                var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
-                var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
+            if (!ApplicationDeployment.IsNetworkDeployed) return;
+            var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
 
-                TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Chocolate);
-                TextLog.ChatLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
-                TextLog.ChatLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
+            if (AppUpdate.Instance.UpdateAvailable) {
+                TextLog.MesgLog.WriteLog($"Current Version: {curVersion}", Color.Chocolate);
+
+                var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
+                TextLog.MesgLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
+                TextLog.MesgLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
             }
-            else {
-                if (AppUpdate.Instance.Ad == null) return;
-                var version = AppUpdate.Instance.Ad.CurrentVersion.ToString();
-                TextLog.ChatLog.WriteLog($"Current Version: {version}", Color.Green);
-            }
+
+            if (!AppUpdate.Instance.UpdateAvailable)
+                TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Green);
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -255,9 +254,9 @@ namespace MapleSeed
                         // ReSharper disable once AssignNullToNotNullAttribute
                         fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
 
-                        if (Toolbelt.Database == null) continue;
+                        if (Database.TitleDbObject == null) continue;
                         var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Toolbelt.Database.UpdateGame(title.Id, fullPath, "Patch", titleVersion.Text);
+                        await Database.UpdateGame(title.Id, fullPath, "Patch", titleVersion.Text);
                     }
                 }
             }
@@ -310,7 +309,7 @@ namespace MapleSeed
                     var title = Database.FindByTitleId(titleId);
                     var fullPath = Path.Combine(Settings.Instance.TitleDirectory, title.ToString());
                     if (title.Id.IsNullOrEmpty()) return false;
-                    Invoke(new Action(async () => await Toolbelt.Database.UpdateGame(title.Id, fullPath, null)));
+                    Invoke(new Action(async () => await Database.UpdateGame(title.Id, fullPath, "eShop/Application")));
                     return true;
                 }
 
@@ -423,9 +422,9 @@ namespace MapleSeed
                         // ReSharper disable once AssignNullToNotNullAttribute
                         fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
 
-                        if (Toolbelt.Database == null) continue;
+                        if (Database.TitleDbObject == null) continue;
                         var title = Database.Find(new FileInfo(fullPath).Name);
-                        await Toolbelt.Database.UpdateGame(title.Id, fullPath, "DLC");
+                        await Database.UpdateGame(title.Id, fullPath, "DLC");
                     }
                 }
             }
@@ -458,7 +457,7 @@ namespace MapleSeed
                     }
 
                     var fullPath = item as string;
-                    if (fullPath.IsNullOrEmpty() || Toolbelt.Database == null) continue;
+                    if (fullPath.IsNullOrEmpty()) continue;
 
                     // ReSharper disable once AssignNullToNotNullAttribute
                     fullPath = Path.Combine(Toolbelt.Settings.TitleDirectory, fullPath);
@@ -470,7 +469,7 @@ namespace MapleSeed
                     if (Directory.Exists(Path.Combine(fullPath, "content")))
                         Directory.Delete(Path.Combine(fullPath, "content"), true);
 
-                    await Toolbelt.Database.UpdateGame(title.Id, fullPath, "eShop/Application");
+                    await Database.UpdateGame(title.Id, fullPath, "eShop/Application");
                 }
             }
             catch (Exception ex) {
