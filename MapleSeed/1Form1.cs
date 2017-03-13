@@ -205,16 +205,19 @@ namespace MapleSeed
 
         private void ListBoxAddItem(object obj)
         {
-            if (titleList.InvokeRequired)
-                titleList.BeginInvoke(new Action(() => { titleList.Items.Add(obj); }));
-            else
-                titleList.Items.Add(obj);
-        }
+            var title = Database.Find(obj as string);
 
-        private void titleList_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            e.DrawBackground();
-            e.Graphics.DrawString(titleList.Items[e.Index].ToString(), titleList.Font, Brushes.Black, e.Bounds);
+            if (titleList.InvokeRequired)
+                titleList.Invoke(new Action(() => {
+                    if (title != null) {
+                    }
+                    titleList.Items.Add(obj);
+                }));
+            else {
+                if (title != null) {
+                }
+                titleList.Items.Add(obj);
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -268,7 +271,7 @@ namespace MapleSeed
             titleList.Enabled = true;
         }
 
-        private void listBox1_DoubleClick(object sender, EventArgs e)
+        private void titleList_DoubleClick(object sender, EventArgs e)
         {
             playBtn_Click(null, null);
         }
@@ -478,8 +481,8 @@ namespace MapleSeed
 
             cleanTitleBtn.Enabled = true;
         }
-
-        private void titleList_SelectedIndexChanged(object sender, EventArgs e)
+        
+        private void titleList_SelectedValueChanged(object sender, EventArgs e)
         {
             var item = titleList.SelectedItem as string;
             var title = Database.Find(item);

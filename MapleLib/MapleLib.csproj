@@ -346,7 +346,6 @@
   <ItemGroup>
     <None Include="Resources\database.txt" />
     <None Include="Resources\titles.txt" />
-    <Content Include="version.txt" />
     <None Include="Resources\CDecrypt.exe" />
     <Content Include="Resources\images\download.png" />
     <Content Include="Resources\images\Green_Light.ico" />
@@ -377,7 +376,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"C:\Program Files\Git\bin\git.exe" rev-parse --short HEAD &gt; "$(ProjectDir)\version.txt"
-</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

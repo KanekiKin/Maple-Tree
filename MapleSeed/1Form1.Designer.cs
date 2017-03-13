@@ -32,7 +32,6 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.status = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.titleList = new System.Windows.Forms.ListBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.storeEncCont = new System.Windows.Forms.CheckBox();
@@ -43,15 +42,14 @@
             this.username = new System.Windows.Forms.TextBox();
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.chatbox = new System.Windows.Forms.RichTextBox();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.discordPass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.discordEmail = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.checkUpdateBtn = new System.Windows.Forms.Button();
             this.serverHub = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -59,6 +57,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.titleDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
             this.discordConnect = new System.Windows.Forms.Button();
@@ -66,9 +65,10 @@
             this.cleanTitleBtn = new System.Windows.Forms.Button();
             this.titleVersion = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.titleList = new System.Windows.Forms.CheckedListBox();
             this.tabControl1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,33 +100,17 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             // 
-            // titleList
-            // 
-            this.titleList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.titleList.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleList.FormattingEnabled = true;
-            this.titleList.Location = new System.Drawing.Point(12, 36);
-            this.titleList.Name = "titleList";
-            this.titleList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.titleList.Size = new System.Drawing.Size(250, 550);
-            this.titleList.Sorted = true;
-            this.titleList.TabIndex = 10;
-            this.titleList.TabStop = false;
-            this.titleList.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.titleList_DrawItem);
-            this.titleList.SelectedIndexChanged += new System.EventHandler(this.titleList_SelectedIndexChanged);
-            this.titleList.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick);
-            // 
             // richTextBox1
             // 
             this.richTextBox1.BackColor = System.Drawing.SystemColors.HighlightText;
             this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.DetectUrls = false;
             this.richTextBox1.ForeColor = System.Drawing.SystemColors.WindowFrame;
-            this.richTextBox1.Location = new System.Drawing.Point(3, 3);
+            this.richTextBox1.Location = new System.Drawing.Point(370, 6);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
-            this.richTextBox1.Size = new System.Drawing.Size(967, 490);
+            this.richTextBox1.Size = new System.Drawing.Size(504, 480);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -165,7 +149,7 @@
             // userList
             // 
             this.userList.FormattingEnabled = true;
-            this.userList.Location = new System.Drawing.Point(864, 34);
+            this.userList.Location = new System.Drawing.Point(1120, 34);
             this.userList.Name = "userList";
             this.userList.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.userList.Size = new System.Drawing.Size(109, 459);
@@ -181,7 +165,7 @@
             // 
             // username
             // 
-            this.username.Location = new System.Drawing.Point(864, 6);
+            this.username.Location = new System.Drawing.Point(1120, 6);
             this.username.MaxLength = 12;
             this.username.Name = "username";
             this.username.ReadOnly = true;
@@ -205,11 +189,23 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(268, 36);
+            this.tabControl1.Location = new System.Drawing.Point(12, 36);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(984, 522);
+            this.tabControl1.Size = new System.Drawing.Size(1240, 522);
             this.tabControl1.TabIndex = 18;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.titleList);
+            this.tabPage1.Controls.Add(this.richTextBox1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1232, 496);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Dashboard";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
@@ -218,7 +214,7 @@
             this.tabPage2.Controls.Add(this.userList);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(976, 496);
+            this.tabPage2.Size = new System.Drawing.Size(1232, 496);
             this.tabPage2.TabIndex = 2;
             this.tabPage2.Text = "Community";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -231,20 +227,9 @@
             this.chatbox.Location = new System.Drawing.Point(3, 3);
             this.chatbox.Name = "chatbox";
             this.chatbox.ReadOnly = true;
-            this.chatbox.Size = new System.Drawing.Size(855, 490);
+            this.chatbox.Size = new System.Drawing.Size(1111, 490);
             this.chatbox.TabIndex = 0;
             this.chatbox.Text = "";
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.richTextBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(976, 496);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Dashboard";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
@@ -262,7 +247,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(976, 496);
+            this.tabPage3.Size = new System.Drawing.Size(1232, 496);
             this.tabPage3.TabIndex = 3;
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -303,22 +288,9 @@
             this.label5.TabIndex = 8;
             this.label5.Text = "Discord E-Mail";
             // 
-            // cemu173Patch
-            // 
-            this.cemu173Patch.AutoSize = true;
-            this.cemu173Patch.Checked = true;
-            this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cemu173Patch.Location = new System.Drawing.Point(291, 592);
-            this.cemu173Patch.Name = "cemu173Patch";
-            this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
-            this.cemu173Patch.TabIndex = 7;
-            this.cemu173Patch.Text = "Cemu 1.7.3 Patch Support";
-            this.cemu173Patch.UseVisualStyleBackColor = true;
-            this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
-            // 
             // checkUpdateBtn
             // 
-            this.checkUpdateBtn.Location = new System.Drawing.Point(895, 6);
+            this.checkUpdateBtn.Location = new System.Drawing.Point(9, 467);
             this.checkUpdateBtn.Name = "checkUpdateBtn";
             this.checkUpdateBtn.Size = new System.Drawing.Size(75, 23);
             this.checkUpdateBtn.TabIndex = 6;
@@ -376,6 +348,19 @@
             this.label2.Size = new System.Drawing.Size(77, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Title Directory";
+            // 
+            // cemu173Patch
+            // 
+            this.cemu173Patch.AutoSize = true;
+            this.cemu173Patch.Checked = true;
+            this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cemu173Patch.Location = new System.Drawing.Point(291, 592);
+            this.cemu173Patch.Name = "cemu173Patch";
+            this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
+            this.cemu173Patch.TabIndex = 7;
+            this.cemu173Patch.Text = "Cemu 1.7.3 Patch Support";
+            this.cemu173Patch.UseVisualStyleBackColor = true;
+            this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
             // 
             // sendChat
             // 
@@ -448,6 +433,17 @@
             this.label1.TabIndex = 28;
             this.label1.Text = "v";
             // 
+            // titleList
+            // 
+            this.titleList.CheckOnClick = true;
+            this.titleList.FormattingEnabled = true;
+            this.titleList.Location = new System.Drawing.Point(3, 6);
+            this.titleList.Name = "titleList";
+            this.titleList.Size = new System.Drawing.Size(361, 480);
+            this.titleList.TabIndex = 29;
+            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
+            this.titleList.DoubleClick += new System.EventHandler(this.titleList_DoubleClick);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
@@ -468,7 +464,6 @@
             this.Controls.Add(this.fullScreen);
             this.Controls.Add(this.updateBtn);
             this.Controls.Add(this.storeEncCont);
-            this.Controls.Add(this.titleList);
             this.Controls.Add(this.status);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.groupBox2);
@@ -480,9 +475,9 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
@@ -494,7 +489,6 @@
         internal System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label status;
         private System.Windows.Forms.GroupBox groupBox2;
-        internal System.Windows.Forms.ListBox titleList;
         internal System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.RichTextBox richTextBox1;
         internal System.Windows.Forms.CheckBox storeEncCont;
@@ -528,6 +522,7 @@
         private System.Windows.Forms.Button cleanTitleBtn;
         private System.Windows.Forms.TextBox titleVersion;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckedListBox titleList;
     }
 }
 

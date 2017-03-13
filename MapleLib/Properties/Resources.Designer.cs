@@ -133,14 +133,14 @@ namespace MapleLib.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 0005000010013000|Nintendo TVii|WUP-X-HBCJ|JAP|No TMD
-        ///0005000010100600|鉄拳タッグトーナメント2 Wii U EDITION|WUP-N-AKNJ|00AF|v16|JAP|Yes
-        ///0005000010100D00|Nintendo×JOYSOUND Wii カラオケ U|WUP-N-WAHJ|v112|JAP|Yes
-        ///0005000010101800|SiNG PARTY|WUP-N-ASWE|v0|USA|Yes
-        ///0005000010101900|SiNG PARTY|WUP-P-ASWP|v0|EUR|Yes
-        ///0005000010101A00|LEGO City: Undercover|WUP-N-APLE|v0|USA|Yes
-        ///0005000010101B00|LEGO City Undercover|WUP-P-APLP|v16|EUR|Yes
-        ///0005000010101C00|New スーパーマリオブラザーズ U|WUP-N-ARPJ|v16|JAP|Yes
-        ///0005000010101D00|New Super M [rest of string was truncated]&quot;;.
+        ///0005000010100600|鉄拳タッグトーナメント2 Wii U EDITION|WUP-N-AKNJ|00AF|16|JAP|Yes
+        ///0005000010100D00|Nintendo×JOYSOUND Wii カラオケ U|WUP-N-WAHJ|112|JAP|Yes
+        ///0005000010101800|SiNG PARTY|WUP-N-ASWE|0|USA|Yes
+        ///0005000010101900|SiNG PARTY|WUP-P-ASWP|0|EUR|Yes
+        ///0005000010101A00|LEGO City: Undercover|WUP-N-APLE|0|USA|Yes
+        ///0005000010101B00|LEGO City Undercover|WUP-P-APLP|16|EUR|Yes
+        ///0005000010101C00|New スーパーマリオブラザーズ U|WUP-N-ARPJ|16|JAP|Yes
+        ///0005000010101D00|New Super Mario Br [rest of string was truncated]&quot;;.
         /// </summary>
         public static string titles {
             get {
@@ -164,16 +164,6 @@ namespace MapleLib.Properties {
         public static string updates {
             get {
                 return ResourceManager.GetString("updates", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 3337000
-        ///.
-        /// </summary>
-        public static string version {
-            get {
-                return ResourceManager.GetString("version", resourceCulture);
             }
         }
     }
