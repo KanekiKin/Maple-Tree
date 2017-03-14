@@ -6,6 +6,7 @@
 #region usings
 
 using System;
+using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.Drawing;
@@ -118,7 +119,7 @@ namespace MapleSeed
                 Settings.TitleDirectory = fbd.SelectedPath;
             }
         }
-
+        
         private async void Form1_Load(object sender, EventArgs e)
         {
             InitSettings();

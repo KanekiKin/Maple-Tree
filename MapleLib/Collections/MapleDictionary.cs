@@ -129,13 +129,10 @@ namespace MapleLib.Collections
         {
             try {
                 if (_jsonObj == null) {
-                    var jsonFile = Path.GetFullPath("titlekeys.json");
+                    var jsonFile = Path.Combine(Settings.ConfigFolder, "titlekeys.json");
 
                     if (!File.Exists(jsonFile)) {
-                        Toolbelt.AppendLog("[Database] Rebuilding Title Cache Entries", Color.DarkViolet);
-
                         var data = await WebClient.DownloadDataAsync("https://wiiu.titlekeys.com" + "/json");
-
                         if (data.Length <= 0)
                             throw new WebException("[Database] Unable to download Wii U title database.");
 
@@ -150,7 +147,8 @@ namespace MapleLib.Collections
                 if ((jtitle = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
-                var folder = newTitle ? Path.Combine(Settings.TitleDirectory, jtitle.Name) : Path.GetDirectoryName(Path.GetDirectoryName(location));
+                var folder = newTitle ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(jtitle.Name)) :
+                    Path.GetDirectoryName(Path.GetDirectoryName(location));
                 
                 if (!Directory.Exists(folder) && !newTitle)
                     throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
@@ -220,7 +218,7 @@ namespace MapleLib.Collections
             var pCode = strs[2].Substring(6);
 
             string imageCode;
-            if (!string.IsNullOrEmpty(metaFile)) {
+            if (!string.IsNullOrEmpty(metaFile) && File.Exists(metaFile)) {
                 var cCode = Helper.XmlGetStringByTag(metaFile, "company_code") ?? "01";
                 imageCode = pCode.Substring(pCode.Length - 4) + cCode.Substring(cCode.Length - 2);
             }
