@@ -512,12 +512,12 @@ namespace MapleSeed
             await Database.TitleDb.BuildDatabase();
         }
 
-        private void titleIdTextBox_TextChanged(object sender, EventArgs e)
+        private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
         {
             if (titleIdTextBox.Text.Length != 16)
                 return;
 
-            var image = MapleDictionary.FindImage(titleIdTextBox.Text, null);
+            var image = await MapleDictionary.FindImage(titleIdTextBox.Text, null);
             if (image == null)
                 return;
 

@@ -5,12 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MapleLib.Common;
-using MapleLib.Network.Web;
 
 namespace MapleLib.Structs
 {
@@ -31,7 +28,7 @@ namespace MapleLib.Structs
         public List<string> Versions { get; set; } = new List<string>();
         public List<Title> DLC { get; } = new List<Title>();
 
-        public string Image { get; private set; }
+        public string Image { get; set; }
 
         public string ContentType {
             get {
@@ -62,42 +59,6 @@ namespace MapleLib.Structs
         public override string ToString()
         {
             return Toolbelt.RIC($"[{Region}][{ImageCode}] {Name}");
-        }
-
-        private string GetImage()
-        {
-            try {
-                var cacheDir = Path.Combine(Settings.ConfigFolder, "cache");
-                var cachedFile = Path.Combine(cacheDir, $"{ImageCode}.jpg");
-
-                if (!Directory.Exists(cacheDir))
-                    Directory.CreateDirectory(cacheDir);
-
-                var langCodes = "US,EN,FR,DE,ES,IT,RU,JA,NL,SE,DK,NO,FI".Split(',').ToList();
-
-                foreach (var langCode in langCodes) {
-                    if (File.Exists(cachedFile)) {
-                        break;
-                    }
-
-                    var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/{langCode}/{ImageCode}.jpg";
-                    try {
-                        File.WriteAllBytes(cachedFile, WebClient.DownloadData(url));
-                    }
-                    catch {}
-                }
-
-                return Image = cachedFile;
-            }
-            catch (Exception e) {
-                TextLog.MesgLog.AddHistory(e.Message);
-                return Image = string.Empty;
-            }
-        }
-
-        public async Task<string> GetImageAsync()
-        {
-            return await Task.Run(()=> GetImage());
         }
 
         public async Task DownloadContent(string version = "0")

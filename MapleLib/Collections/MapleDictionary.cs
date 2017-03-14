@@ -48,7 +48,8 @@ namespace MapleLib.Collections
             await Task.Run(() => {
                 _directories = Directory.GetDirectories(_baseDir).ToList();
 
-                foreach (var loadiineDirectory in _directories) BuildTitleList(loadiineDirectory);
+                foreach (var loadiineDirectory in _directories)
+                    BuildTitleList(loadiineDirectory);
 
                 if (notice)
                     Toolbelt.AppendLog($"[Database] [+] Loadiine Titles: {Count}", Color.DarkViolet);
@@ -73,7 +74,7 @@ namespace MapleLib.Collections
         private async Task PreloadImages()
         {
             foreach (var value in Values) {
-                await value.GetImageAsync();
+                await Task.Run(async () => value.Image = await FindImage(value.Id, value.MetaLocation));
             }
         }
 
@@ -154,7 +155,7 @@ namespace MapleLib.Collections
                 if (!Directory.Exists(folder))
                     throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
 
-                var _title = new Title
+                var title = new Title
                 {
                     Id = titleId,
                     MetaLocation = location,
@@ -165,17 +166,19 @@ namespace MapleLib.Collections
                     WTKTicket = jtitle.Ticket == "1"
                 };
 
-                if (newTitle)
-                    return _title;
+                if (newTitle) {
+                    title.Image = await FindImage(title.Id, title.MetaLocation);
+                    return title;
+                }
 
-                SetImageCode(_title);
+                SetCodes(title);
 
-                var update = Updates.Find(x => x.Contains(_title.Lower8Digits));
-                if (string.IsNullOrEmpty(update)) return _title;
+                var update = Updates.Find(x => x.Contains(title.Lower8Digits));
+                if (string.IsNullOrEmpty(update)) return title;
                 var parts1 = update.Split('|');
-                if (parts1.Length >= 0) _title.Versions = parts1[2].Split(',').Select(s => s.Trim()).ToList();
+                if (parts1.Length >= 0) title.Versions = parts1[2].Split(',').Select(s => s.Trim()).ToList();
 
-                return _title;
+                return title;
             }
             catch (Exception e) {
                 Toolbelt.AppendLog($"{e.Message}\n{e.StackTrace}");
@@ -184,25 +187,23 @@ namespace MapleLib.Collections
             return null;
         }
 
-        private static string SetImageCode(Title _title)
+        private static void SetCodes(Title _title)
         {
             var title = Titles.Find(x => x.Contains(_title.Id.ToUpper()));
-            if (string.IsNullOrEmpty(title)) return string.Empty;
+            if (string.IsNullOrEmpty(title)) return;
 
             var parts2 = title.Split('|');
-            if (parts2.Length < 0) return string.Empty;
+            if (parts2.Length < 0) return;
             
             var pcode = Helper.XmlGetStringByTag(_title.MetaLocation, "product_code") ?? "0000";
-            var ccode = Helper.XmlGetStringByTag(_title.MetaLocation, "company_code") ?? "00";
+            var ccode = Helper.XmlGetStringByTag(_title.MetaLocation, "company_code") ?? "01";
 
             _title.ImageCode = pcode.Substring(pcode.Length - 4) + ccode.Substring(ccode.Length - 2);
             _title.ProductCode = Helper.XmlGetStringByTag(_title.MetaLocation, "product_code");
             _title.CDN = title.Contains("|Yes");
-
-            return pcode.Substring(pcode.Length - 4) + ccode.Substring(ccode.Length - 2);
         }
 
-        public static string FindImage(string titleId, string metaFile)
+        public static async Task<string> FindImage(string titleId, string metaFile)
         {
             var str = Titles.Find(x => x.Contains(titleId.ToUpper()));
             if (string.IsNullOrEmpty(str))
@@ -213,9 +214,15 @@ namespace MapleLib.Collections
                 return string.Empty;
 
             var pCode = strs[2].Substring(6);
-            //var cCode = Helper.XmlGetStringByTag(metaFile, "company_code") ?? "00";
-            //var imageCode = pCode.Substring(pCode.Length - 4) + cCode.Substring(cCode.Length - 2);
-            var imageCode = pCode.Substring(pCode.Length - 4) + "01";
+
+            string imageCode;
+            if (!string.IsNullOrEmpty(metaFile)) {
+                var cCode = Helper.XmlGetStringByTag(metaFile, "company_code") ?? "01";
+                imageCode = pCode.Substring(pCode.Length - 4) + cCode.Substring(cCode.Length - 2);
+            }
+            else {
+                imageCode = pCode.Substring(pCode.Length - 4) + "01";
+            }
 
             var cacheDir = Path.Combine(Settings.ConfigFolder, "cache");
             var cachedFile = Path.Combine(cacheDir, $"{imageCode}.jpg");
@@ -232,13 +239,12 @@ namespace MapleLib.Collections
 
                 try {
                     var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
-                    File.WriteAllBytes(cachedFile, WebClient.DownloadData(url));
+                    File.WriteAllBytes(cachedFile, await WebClient.DownloadDataAsync(url));
                 }
                 catch {
                     // ignored
                 }
             }
-
 
             return string.Empty;
         }
