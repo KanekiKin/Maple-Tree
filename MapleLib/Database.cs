@@ -11,7 +11,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using libWiiSharp;
@@ -27,7 +26,7 @@ namespace MapleLib
     public static class Database
     {
         public static MapleLoadiine TitleDb { get; } = new MapleLoadiine();
-        
+
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
@@ -55,7 +54,7 @@ namespace MapleLib
         {
             if (game_name == null)
                 return null;
-            
+
             var searchPath = Path.GetFullPath(Settings.Instance.TitleDirectory);
             var entries = Directory.GetFileSystemEntries(searchPath, game_name, SearchOption.AllDirectories);
             if (!entries.Any())
@@ -81,7 +80,8 @@ namespace MapleLib
         {
             if (game_name == null) return new List<Title>();
 
-            var titles = TitleDb.Values.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
+            var titles =
+                TitleDb.Values.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
 
             return new List<Title>(titles);
         }
@@ -141,8 +141,7 @@ namespace MapleLib
             var tmdFile = Path.Combine(outputDir, "tmd");
 
             version = int.Parse(version) == 0 ? "" : $".{version}";
-            if (await DownloadTmd(titleUrl + $"tmd{version}", tmdFile) == null)
-            {
+            if (await DownloadTmd(titleUrl + $"tmd{version}", tmdFile) == null) {
                 var titleId = title.Id.ToLower();
                 var titleKey = title.Key.ToLower();
                 var address = "192.99.69.253";
@@ -161,7 +160,7 @@ namespace MapleLib
         private static async Task<Ticket> LoadTicket(Title title, string outputDir, string titleUrl)
         {
             var cetkFile = Path.Combine(outputDir, "cetk");
-            
+
             if (await DownloadTicket($"{titleUrl}cetk", cetkFile) == null) {
                 var titleId = title.Id.ToLower();
                 var titleKey = title.Key.ToLower();
@@ -185,20 +184,18 @@ namespace MapleLib
                 var i1 = i;
                 result = await Task.Run(async () => {
                     var numc = tmd.NumOfContents;
-                    var size = Toolbelt.SizeSuffix((long)tmd.Contents[i1].Size);
+                    var size = Toolbelt.SizeSuffix((long) tmd.Contents[i1].Size);
                     Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc}... ({size})");
                     var contentPath = Path.Combine(outputDir, tmd.Contents[i1].ContentID.ToString("x8"));
 
                     if (Toolbelt.IsValid(tmd.Contents[i1], contentPath))
                         Toolbelt.AppendLog("   + Using Local File, Skipping...");
                     else
-                        try
-                        {
+                        try {
                             var downloadUrl = $"{titleUrl}/{tmd.Contents[i1].ContentID:x8}";
                             await WebClient.DownloadFileAsync(downloadUrl, contentPath);
                         }
-                        catch (Exception ex)
-                        {
+                        catch (Exception ex) {
                             Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc} failed...\n{ex.Message}");
                             Toolbelt.SetStatus($"Downloading '{name}' Content #{i1 + 1} of {numc} failed. Check Console");
                             return 0;

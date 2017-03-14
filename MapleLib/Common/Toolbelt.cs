@@ -26,28 +26,24 @@ namespace MapleLib.Common
         public static bool LaunchCemu(string game)
         {
             try {
-                string rpx = null, gamePath;
-                var dir = Settings.Instance.CemuDirectory;
-
+                string rpx = null;
+                var dir = Path.GetDirectoryName(Path.GetDirectoryName(game));
+                
                 if (string.IsNullOrEmpty(dir))
                     return false;
 
-                if (game != null) {
-                    gamePath = Path.Combine(Settings.Instance.TitleDirectory, game);
-                }
-                else {
+                if (game == null) {
                     RunCemu(Path.Combine(dir, "cemu.exe"), "");
                     return true;
                 }
 
-                string[] files;
-                var fi = new FileInfo(game);
+                var files = Directory.GetFiles(dir, "*.rpx", SearchOption.AllDirectories);
 
-                if (fi.Extension == ".wud" || fi.Extension == ".wux") files = new[] {gamePath};
-                else files = Directory.GetFiles(gamePath, "*.rpx", SearchOption.AllDirectories);
+                if (files.Any())
+                    rpx = files.First();
 
-                if (files.Length > 0) rpx = files[0];
-                var cemuPath = Path.Combine(dir, "cemu.exe");
+                var cemuPath = Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe");
+
                 if (File.Exists(cemuPath) && File.Exists(rpx))
                     RunCemu(cemuPath, rpx);
                 else

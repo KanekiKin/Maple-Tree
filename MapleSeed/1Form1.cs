@@ -96,10 +96,11 @@ namespace MapleSeed
 
             await Database.TitleDb.Init(Settings.Instance.TitleDirectory);
 
+            var random = new Random().Next(Database.TitleDb.Values.Count);
+            await SetCurrentImage(Database.TitleDb.Values.ToArray()[random]);
+
             RegisterDefaults();
-
-            //ReadLibrary();
-
+            
             CheckUpdate();
 
             AppendLog($"Game Directory [{Settings.Instance.TitleDirectory}]");
@@ -134,8 +135,6 @@ namespace MapleSeed
         {
             try {
                 username.Invoke(new Action(() => username.Text = Discord.Nickname));
-
-                //ReadLibrary();
             }
             catch (Exception ex) {
                 AppendLog(ex.StackTrace);
@@ -280,8 +279,8 @@ namespace MapleSeed
 
         private void playBtn_Click(object sender, EventArgs e)
         {
-            var title = titleList.SelectedItem as string;
-            if (!Toolbelt.LaunchCemu(title) || string.IsNullOrEmpty(title)) return;
+            var title = titleList.SelectedItem as Title;
+            if (!Toolbelt.LaunchCemu(title?.Location)) return;
             TextLog.MesgLog.WriteLog($"[{Settings.Instance.Username}] Has started playing {title}!");
         }
 
@@ -423,12 +422,12 @@ namespace MapleSeed
                             continue;
                     }
 
-                    var fullPath = item as string;
-                    if (fullPath.IsNullOrEmpty()) continue;
+                    var title = item as Title;
 
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    fullPath = Path.Combine(Settings.Instance.TitleDirectory, fullPath);
-                    var title = Database.Find(Path.GetFileName(fullPath));
+                    var fullPath = Path.GetDirectoryName(Path.GetDirectoryName(title?.Location));
+                    if (string.IsNullOrEmpty(fullPath))
+                        return;
 
                     if (Directory.Exists(Path.Combine(fullPath, "code")))
                         Directory.Delete(Path.Combine(fullPath, "code"), true);
@@ -436,6 +435,7 @@ namespace MapleSeed
                     if (Directory.Exists(Path.Combine(fullPath, "content")))
                         Directory.Delete(Path.Combine(fullPath, "content"), true);
 
+                    title.Location = fullPath;
                     await title.DownloadContent();
                 }
             }
@@ -460,18 +460,56 @@ namespace MapleSeed
             var updatesStr = title.Versions.Aggregate(string.Empty,
                 (current, update) => current + $"| v{update.Trim()} ");
 
-            var cache = Path.Combine("cache", $"{title.ImageCode}.jpg");
-            if (!Directory.Exists(Path.Combine("cache")))
-                Directory.CreateDirectory(Path.Combine("cache"));
-
-            if (!File.Exists(cache)) {
-                var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/US/{title.ImageCode}.jpg";
-                File.WriteAllBytes(cache, await WebClient.DownloadData(url));
-            }
-            
-            pictureBox1.ImageLocation = cache;
+            await SetCurrentImage(title);
 
             TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
+        }
+
+        private async Task SetCurrentImage(Title title)
+        {
+            try {
+                var cache = Path.Combine("cache", $"{title.ImageCode}.jpg");
+                if (!Directory.Exists(Path.Combine("cache")))
+                    Directory.CreateDirectory(Path.Combine("cache"));
+
+                if (!File.Exists(cache)) {
+                    var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/US/{title.ImageCode}.jpg";
+                    File.WriteAllBytes(cache, await WebClient.DownloadData(url));
+                }
+
+                pictureBox1.ImageLocation = cache;
+            }
+            catch (Exception e) {
+                TextLog.MesgLog.AddHistory(e.Message);
+                pictureBox1.ImageLocation = string.Empty;
+            }
+        }
+
+        private async void newdlbtn_Click(object sender, EventArgs e)
+        {
+            var dir = Path.Combine(Settings.Instance.TitleDirectory);
+            if (string.IsNullOrEmpty(titleIdTextBox.Text))
+                return;
+
+            var title = await MapleLoadiine.BuildTitle(titleIdTextBox.Text, string.Empty, true);
+            if (title == null)
+                return;
+
+            await Database.DownloadTitle(title, Path.Combine(dir, Toolbelt.RIC(title.Name)), "eShop/Application", "0");
+
+            await Database.TitleDb.BuildDatabase(false);
+        }
+
+        private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (titleIdTextBox.Text.Length != 16)
+                return;
+
+            var title = await MapleLoadiine.BuildTitle(titleIdTextBox.Text, string.Empty, true);
+            if (title == null)
+                return;
+
+            //await SetCurrentImage(title);
         }
     }
 }

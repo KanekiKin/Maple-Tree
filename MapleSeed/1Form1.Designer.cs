@@ -67,6 +67,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.titleList = new System.Windows.Forms.CheckedListBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.titleIdTextBox = new System.Windows.Forms.TextBox();
+            this.newdlbtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -456,12 +458,36 @@
             this.pictureBox1.TabIndex = 30;
             this.pictureBox1.TabStop = false;
             // 
+            // titleIdTextBox
+            // 
+            this.titleIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.titleIdTextBox.Location = new System.Drawing.Point(1112, 7);
+            this.titleIdTextBox.MaxLength = 16;
+            this.titleIdTextBox.Name = "titleIdTextBox";
+            this.titleIdTextBox.Size = new System.Drawing.Size(130, 22);
+            this.titleIdTextBox.TabIndex = 30;
+            this.titleIdTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.titleIdTextBox.TextChanged += new System.EventHandler(this.titleIdTextBox_TextChanged);
+            // 
+            // newdlbtn
+            // 
+            this.newdlbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.newdlbtn.Location = new System.Drawing.Point(1032, 7);
+            this.newdlbtn.Name = "newdlbtn";
+            this.newdlbtn.Size = new System.Drawing.Size(74, 23);
+            this.newdlbtn.TabIndex = 31;
+            this.newdlbtn.Text = "[+] Library";
+            this.newdlbtn.UseVisualStyleBackColor = true;
+            this.newdlbtn.Click += new System.EventHandler(this.newdlbtn_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.newdlbtn);
+            this.Controls.Add(this.titleIdTextBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.titleVersion);
             this.Controls.Add(this.cleanTitleBtn);
@@ -536,6 +562,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckedListBox titleList;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TextBox titleIdTextBox;
+        private System.Windows.Forms.Button newdlbtn;
     }
 }
 

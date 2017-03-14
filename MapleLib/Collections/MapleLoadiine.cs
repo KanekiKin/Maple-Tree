@@ -34,34 +34,48 @@ namespace MapleLib.Collections
             if (string.IsNullOrEmpty(baseDir))
                 throw new Exception("MapleLoadiine.Init(baseDir) cannot be null");
 
-            var loadiine = new MapleLoadiine {_baseDir = baseDir};
+            _baseDir = baseDir;
 
-            await Task.Run(() => {
-                loadiine._directories = Directory.GetDirectories(loadiine._baseDir).ToList();
+            await BuildDatabase();
 
-                foreach (var loadiineDirectory in loadiine._directories) loadiine.BuildTitleList(loadiineDirectory);
+            return this;
+        }
 
-                Toolbelt.AppendLog($"[Database] [+] Loadiine Titles: {loadiine.Count}", Color.DarkViolet);
-            });
-
-            await Task.Run(() => {
-                loadiine.BuildDLCList();
-                int count = loadiine.Values.Sum(title => title.DLC.Count);
-                Toolbelt.AppendLog($"[Database] [+] DLC Titles: {count}", Color.DarkViolet);
-            });
-
-            return loadiine;
+        public void Add(Title title)
+        {
+            Add(title.Id, title);
+            OnAddTitle?.Invoke(this, title);
         }
 
         public static event EventHandler<Title> OnAddTitle;
+
+        public async Task BuildDatabase(bool notice = true)
+        {
+            await Task.Run(() => {
+                _directories = Directory.GetDirectories(_baseDir).ToList();
+
+                foreach (var loadiineDirectory in _directories) BuildTitleList(loadiineDirectory);
+
+                if (notice)
+                    Toolbelt.AppendLog($"[Database] [+] Loadiine Titles: {Count}", Color.DarkViolet);
+            });
+
+            await Task.Run(() => {
+                BuildDLCList();
+                var count = Values.Sum(title => title.DLC.Count);
+
+                if (notice)
+                    Toolbelt.AppendLog($"[Database] [+] DLC Titles: {count}", Color.DarkViolet);
+            });
+        }
 
         private void BuildDLCList()
         {
             foreach (var value in Values) {
                 var id = value.Lower8Digits;
                 var wtitles = _jsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
-                
-                foreach (var wiiUTitle in wtitles) {
+
+                foreach (var wiiUTitle in wtitles)
                     value.DLC.Add(new Title
                     {
                         Id = wiiUTitle.TitleID.ToUpper(),
@@ -71,7 +85,6 @@ namespace MapleLib.Collections
                         WTKTicket = wiiUTitle.Ticket == "1",
                         Location = Path.Combine(Title.BasePatchDir, id, "aoc")
                     });
-                }
             }
         }
 
@@ -95,7 +108,7 @@ namespace MapleLib.Collections
             }
         }
 
-        private static async Task<Title> BuildTitle(string titleId, string location)
+        public static async Task<Title> BuildTitle(string titleId, string location, bool newTitle = false)
         {
             try {
                 if (_jsonObj == null) {
@@ -117,7 +130,7 @@ namespace MapleLib.Collections
                 }
 
                 WiiUTitle jtitle;
-                if ((jtitle = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId)) == null)
+                if ((jtitle = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
                     throw new Exception("MapleLoadiine.BuildTitleList.jtitle cannot return null");
 
                 var _title = new Title
@@ -130,12 +143,15 @@ namespace MapleLib.Collections
                     WTKTicket = jtitle.Ticket == "1"
                 };
 
+                if (newTitle)
+                    return _title;
+
                 var title = Titles.Find(x => x.Contains(_title.Id.ToUpper()));
                 if (!string.IsNullOrEmpty(title)) {
                     var parts2 = title.Split('|');
                     if (parts2.Length >= 0) {
-                        var pcode = Helper.XmlGetStringByTag(location, "product_code");
-                        var ccode = Helper.XmlGetStringByTag(location, "company_code");
+                        var pcode = Helper.XmlGetStringByTag(location, "product_code") ?? "0000";
+                        var ccode = Helper.XmlGetStringByTag(location, "company_code") ?? "00";
 
                         _title.ImageCode = pcode.Substring(pcode.Length - 4) + ccode.Substring(ccode.Length - 2);
                         _title.ProductCode = $"{Helper.XmlGetStringByTag(location, "product_code")}";
