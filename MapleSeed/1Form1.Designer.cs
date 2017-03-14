@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.status = new System.Windows.Forms.Label();
@@ -43,8 +44,13 @@
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.titleList = new System.Windows.Forms.CheckedListBox();
+            this.titeListMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.chatbox = new System.Windows.Forms.RichTextBox();
+            this.discordConnect = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.discordPass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -60,20 +66,19 @@
             this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
-            this.discordConnect = new System.Windows.Forms.Button();
             this.dlcBtn = new System.Windows.Forms.Button();
             this.cleanTitleBtn = new System.Windows.Forms.Button();
             this.titleVersion = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.titleList = new System.Windows.Forms.CheckedListBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
+            this.organizeBtn = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.titeListMenuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // progressBar
@@ -131,7 +136,7 @@
             // 
             // updateBtn
             // 
-            this.updateBtn.Location = new System.Drawing.Point(253, 7);
+            this.updateBtn.Location = new System.Drawing.Point(331, 7);
             this.updateBtn.Name = "updateBtn";
             this.updateBtn.Size = new System.Drawing.Size(74, 23);
             this.updateBtn.TabIndex = 12;
@@ -212,6 +217,38 @@
             this.tabPage1.Text = "Dashboard";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(880, 6);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(346, 484);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 30;
+            this.pictureBox1.TabStop = false;
+            // 
+            // titleList
+            // 
+            this.titleList.ContextMenuStrip = this.titeListMenuStrip1;
+            this.titleList.FormattingEnabled = true;
+            this.titleList.Location = new System.Drawing.Point(3, 6);
+            this.titleList.Name = "titleList";
+            this.titleList.Size = new System.Drawing.Size(361, 480);
+            this.titleList.TabIndex = 29;
+            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
+            // 
+            // titeListMenuStrip1
+            // 
+            this.titeListMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem});
+            this.titeListMenuStrip1.Name = "titeListMenuStrip1";
+            this.titeListMenuStrip1.Size = new System.Drawing.Size(108, 26);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.chatbox);
@@ -236,6 +273,16 @@
             this.chatbox.Size = new System.Drawing.Size(1111, 490);
             this.chatbox.TabIndex = 0;
             this.chatbox.Text = "";
+            // 
+            // discordConnect
+            // 
+            this.discordConnect.Location = new System.Drawing.Point(1120, 470);
+            this.discordConnect.Name = "discordConnect";
+            this.discordConnect.Size = new System.Drawing.Size(109, 23);
+            this.discordConnect.TabIndex = 24;
+            this.discordConnect.Text = "Connect To Chat";
+            this.discordConnect.UseVisualStyleBackColor = true;
+            this.discordConnect.Click += new System.EventHandler(this.discordConnect_Click);
             // 
             // tabPage3
             // 
@@ -389,19 +436,9 @@
             this.progressOverlay.TabIndex = 23;
             this.progressOverlay.Text = "0 bytes / 0 bytes";
             // 
-            // discordConnect
-            // 
-            this.discordConnect.Location = new System.Drawing.Point(1120, 470);
-            this.discordConnect.Name = "discordConnect";
-            this.discordConnect.Size = new System.Drawing.Size(109, 23);
-            this.discordConnect.TabIndex = 24;
-            this.discordConnect.Text = "Connect To Chat";
-            this.discordConnect.UseVisualStyleBackColor = true;
-            this.discordConnect.Click += new System.EventHandler(this.discordConnect_Click);
-            // 
             // dlcBtn
             // 
-            this.dlcBtn.Location = new System.Drawing.Point(173, 7);
+            this.dlcBtn.Location = new System.Drawing.Point(251, 7);
             this.dlcBtn.Name = "dlcBtn";
             this.dlcBtn.Size = new System.Drawing.Size(74, 23);
             this.dlcBtn.TabIndex = 25;
@@ -411,7 +448,7 @@
             // 
             // cleanTitleBtn
             // 
-            this.cleanTitleBtn.Location = new System.Drawing.Point(93, 7);
+            this.cleanTitleBtn.Location = new System.Drawing.Point(171, 7);
             this.cleanTitleBtn.Name = "cleanTitleBtn";
             this.cleanTitleBtn.Size = new System.Drawing.Size(74, 23);
             this.cleanTitleBtn.TabIndex = 26;
@@ -421,7 +458,7 @@
             // 
             // titleVersion
             // 
-            this.titleVersion.Location = new System.Drawing.Point(351, 8);
+            this.titleVersion.Location = new System.Drawing.Point(429, 8);
             this.titleVersion.MaxLength = 3;
             this.titleVersion.Name = "titleVersion";
             this.titleVersion.Size = new System.Drawing.Size(39, 22);
@@ -433,30 +470,11 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(333, 11);
+            this.label1.Location = new System.Drawing.Point(411, 11);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(16, 19);
             this.label1.TabIndex = 28;
             this.label1.Text = "v";
-            // 
-            // titleList
-            // 
-            this.titleList.FormattingEnabled = true;
-            this.titleList.Location = new System.Drawing.Point(3, 6);
-            this.titleList.Name = "titleList";
-            this.titleList.Size = new System.Drawing.Size(361, 480);
-            this.titleList.TabIndex = 29;
-            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
-            this.titleList.DoubleClick += new System.EventHandler(this.titleList_DoubleClick);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(880, 6);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(346, 484);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 30;
-            this.pictureBox1.TabStop = false;
             // 
             // titleIdTextBox
             // 
@@ -476,9 +494,19 @@
             this.newdlbtn.Name = "newdlbtn";
             this.newdlbtn.Size = new System.Drawing.Size(74, 23);
             this.newdlbtn.TabIndex = 31;
-            this.newdlbtn.Text = "[+] Library";
+            this.newdlbtn.Text = "[+] Title";
             this.newdlbtn.UseVisualStyleBackColor = true;
             this.newdlbtn.Click += new System.EventHandler(this.newdlbtn_Click);
+            // 
+            // organizeBtn
+            // 
+            this.organizeBtn.Location = new System.Drawing.Point(91, 7);
+            this.organizeBtn.Name = "organizeBtn";
+            this.organizeBtn.Size = new System.Drawing.Size(74, 23);
+            this.organizeBtn.TabIndex = 33;
+            this.organizeBtn.Text = "Organize";
+            this.organizeBtn.UseVisualStyleBackColor = true;
+            this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
             // 
             // Form1
             // 
@@ -486,6 +514,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.organizeBtn);
             this.Controls.Add(this.newdlbtn);
             this.Controls.Add(this.titleIdTextBox);
             this.Controls.Add(this.label1);
@@ -513,11 +542,12 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.titeListMenuStrip1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -564,6 +594,9 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TextBox titleIdTextBox;
         private System.Windows.Forms.Button newdlbtn;
+        private System.Windows.Forms.ContextMenuStrip titeListMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.Button organizeBtn;
     }
 }
 

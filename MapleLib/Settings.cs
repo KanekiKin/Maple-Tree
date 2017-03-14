@@ -16,72 +16,27 @@ using MapleLib.Properties;
 
 namespace MapleLib
 {
-    public class Settings
+    public static class Settings
     {
-        private static Settings _instance;
-
-        private Settings()
-        {
-            if (!File.Exists(ConfigFile) || new FileInfo(ConfigFile).Length <= 0)
-                File.WriteAllText(ConfigFile, Resources.Settings_DefaultSettings);
-        }
-
-        public string TitleDirectory {
-            get {
-                var value = GetKeyValue("TitleDirectory");
-
-                if (!string.IsNullOrEmpty(value) && Directory.Exists(value)) return value;
-                var fbd = new FolderBrowserDialog
-                {
-                    Description = @"Cemu Title Directory" + Environment.NewLine + @"(Where you store games)"
-                };
-                var result = fbd.ShowDialog();
-
-                if (string.IsNullOrWhiteSpace(fbd.SelectedPath) || result == DialogResult.Cancel) {
-                    MessageBox.Show(@"Title Directory is required. Shutting down.");
-                    Application.Exit();
-                }
-
-                value = fbd.SelectedPath;
-                WriteKeyValue("TitleDirectory", value);
-                return value;
-            }
+        public static string TitleDirectory {
+            get { return GetKeyValue("TitleDirectory"); }
 
             set { WriteKeyValue("TitleDirectory", Path.GetFullPath(value)); }
         }
 
-        public string CemuDirectory {
-            get {
-                var value = GetKeyValue("CemuDirectory");
-
-                if (!string.IsNullOrEmpty(value) && File.Exists(Path.Combine(value, "cemu.exe"))) return value;
-                var ofd = new OpenFileDialog
-                {
-                    CheckFileExists = true,
-                    Filter = @"Cemu Excutable |cemu.exe"
-                };
-
-                var result = ofd.ShowDialog();
-                if (string.IsNullOrWhiteSpace(ofd.FileName) || result != DialogResult.OK) {
-                    MessageBox.Show(@"Cemu Directory is required to launch titles.");
-                    return string.Empty;
-                }
-
-                value = Path.GetDirectoryName(ofd.FileName);
-                WriteKeyValue("CemuDirectory", value);
-                return value;
-            }
+        public static string CemuDirectory {
+            get { return GetKeyValue("CemuDirectory"); }
 
             set { WriteKeyValue("CemuDirectory", Path.GetFullPath(value)); }
         }
 
-        public string Username {
+        public static string Username {
             get { return GetKeyValue("Username"); }
 
             set { WriteKeyValue("Username", value); }
         }
 
-        public string DiscordEmail {
+        public static string DiscordEmail {
             get {
                 var value = GetKeyValue("DiscordEmail");
                 if (string.IsNullOrEmpty(value))
@@ -92,7 +47,7 @@ namespace MapleLib
             set { WriteKeyValue("DiscordEmail", value); }
         }
 
-        public string DiscordPass {
+        public static string DiscordPass {
             get {
                 var value = GetKeyValue("DiscordPass");
                 if (string.IsNullOrEmpty(value))
@@ -104,7 +59,7 @@ namespace MapleLib
             set { WriteKeyValue("DiscordPass", Helper.EncryptStr(value)); }
         }
 
-        public string Hub {
+        public static string Hub {
             get {
                 var value = GetKeyValue("Hub");
                 if (string.IsNullOrEmpty(value))
@@ -115,7 +70,7 @@ namespace MapleLib
             set { WriteKeyValue("Hub", value); }
         }
 
-        public string Serial {
+        public static string Serial {
             get {
                 var value = GetKeyValue("Serial");
                 if (string.IsNullOrEmpty(value)) WriteKeyValue("Serial", Toolkit.UniqueID());
@@ -123,7 +78,7 @@ namespace MapleLib
             }
         }
 
-        public bool FullScreenMode {
+        public static bool FullScreenMode {
             get {
                 var value = GetKeyValue("FullScreenMode");
                 if (string.IsNullOrEmpty(value))
@@ -135,7 +90,7 @@ namespace MapleLib
             set { WriteKeyValue("FullScreenMode", value.ToString()); }
         }
 
-        public bool Cemu173Patch {
+        public static bool Cemu173Patch {
             get {
                 var value = GetKeyValue("Cemu173Patch");
                 if (string.IsNullOrEmpty(value))
@@ -147,7 +102,7 @@ namespace MapleLib
             set { WriteKeyValue("Cemu173Patch", value.ToString()); }
         }
 
-        public bool StoreEncryptedContent {
+        public static bool StoreEncryptedContent {
             get {
                 var value = GetKeyValue("StoreEncryptedContent");
                 if (string.IsNullOrEmpty(value))
@@ -159,20 +114,35 @@ namespace MapleLib
             set { WriteKeyValue("StoreEncryptedContent", value.ToString()); }
         }
 
-        public static Settings Instance => _instance ?? (_instance = new Settings());
+        private static string ConfigFile {
+            get {
+                var configFile = Path.Combine(ConfigFolder, "MapleSeed.ini");
 
-        private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private static string ConfigFile => Path.Combine(AppFolder, "MapleSeed.ini");
+                if (!Directory.Exists(ConfigFolder))
+                    Directory.CreateDirectory(ConfigFolder);
+
+                if (!File.Exists(configFile) || new FileInfo(configFile).Length <= 0)
+                    File.WriteAllText(configFile, Resources.Settings_DefaultSettings);
+
+                return configFile;
+            }
+        }
+        
         private static string ConfigName => "MapleTree";
+        private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        public static string ConfigFolder => Path.Combine(AppFolder, ConfigName);
 
-        private string GetKeyValue(string key)
+        private static string CemuPatchPath => Path.Combine("mlc01", "usr", "title", "00050000");
+        public static string BasePatchDir => Path.Combine(CemuDirectory, CemuPatchPath);
+
+        private static string GetKeyValue(string key)
         {
             var parser = new FileIniDataParser();
             var data = parser.ReadFile(ConfigFile);
             return data[ConfigName][key] ?? "";
         }
 
-        private void WriteKeyValue(string key, string value)
+        private static void WriteKeyValue(string key, string value)
         {
             var parser = new FileIniDataParser();
             var data = parser.ReadFile(ConfigFile);

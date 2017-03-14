@@ -71,16 +71,6 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap download {
-            get {
-                object obj = ResourceManager.GetObject("download", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Edge is a very unstable build, that receives updates often and should be used with caution. Expect errors to shown, bugs to be present, and program crashes.
         ///
         ///Report any errors you come across at http://github.com/Tsume/Maple-Tree..
@@ -118,6 +108,17 @@ namespace MapleLib.Properties {
             get {
                 object obj = ResourceManager.GetObject("msvcr120d", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This action will rename all game folders to an organized format.
+        ///
+        ///See the log window for sample outputs..
+        /// </summary>
+        public static string OrganizeBtn_Click_ {
+            get {
+                return ResourceManager.GetString("OrganizeBtn_Click_", resourceCulture);
             }
         }
         

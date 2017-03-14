@@ -37,7 +37,7 @@ namespace MapleSeed
 
         private void RegisterEvents()
         {
-            MapleLoadiine.OnAddTitle += MapleLoadiine_OnAddTitle;
+            MapleDictionary.OnAddTitle += MapleLoadiine_OnAddTitle;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
@@ -51,16 +51,16 @@ namespace MapleSeed
 
         private void RegisterDefaults()
         {
-            fullScreen.Checked = Settings.Instance.FullScreenMode;
-            cemu173Patch.Checked = Settings.Instance.Cemu173Patch;
-            storeEncCont.Checked = Settings.Instance.StoreEncryptedContent;
+            fullScreen.Checked = Settings.FullScreenMode;
+            cemu173Patch.Checked = Settings.Cemu173Patch;
+            storeEncCont.Checked = Settings.StoreEncryptedContent;
 
-            titleDir.Text = Settings.Instance.TitleDirectory;
-            cemuDir.Text = Settings.Instance.CemuDirectory;
-            serverHub.Text = Settings.Instance.Hub;
+            titleDir.Text = Settings.TitleDirectory;
+            cemuDir.Text = Settings.CemuDirectory;
+            serverHub.Text = Settings.Hub;
 
-            discordEmail.Text = Settings.Instance.DiscordEmail;
-            discordPass.Text = Settings.Instance.DiscordPass;
+            discordEmail.Text = Settings.DiscordEmail;
+            discordPass.Text = Settings.DiscordPass;
 
             if (!ApplicationDeployment.IsNetworkDeployed) return;
             var ver = ApplicationDeployment.CurrentDeployment?.CurrentVersion;
@@ -84,8 +84,45 @@ namespace MapleSeed
                 TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Green);
         }
 
+        private static void InitSettings()
+        {
+            if (string.IsNullOrEmpty(Settings.CemuDirectory) &&
+                !File.Exists(Path.Combine(Settings.CemuDirectory, "cemu.exe"))) {
+                var ofd = new OpenFileDialog
+                {
+                    CheckFileExists = true,
+                    Filter = @"Cemu Excutable |cemu.exe"
+                };
+
+                var result = ofd.ShowDialog();
+                if (string.IsNullOrWhiteSpace(ofd.FileName) || result != DialogResult.OK) {
+                    MessageBox.Show(@"Cemu Directory is required to launch titles.");
+                    Settings.CemuDirectory = string.Empty;
+                }
+
+                Settings.CemuDirectory = Path.GetDirectoryName(ofd.FileName);
+            }
+
+            if (string.IsNullOrEmpty(Settings.TitleDirectory) && !Directory.Exists(Settings.TitleDirectory)) {
+                var fbd = new FolderBrowserDialog
+                {
+                    Description = @"Cemu Title Directory" + Environment.NewLine + @"(Where you store games)"
+                };
+
+                var result = fbd.ShowDialog();
+                if (string.IsNullOrWhiteSpace(fbd.SelectedPath) || result == DialogResult.Cancel) {
+                    MessageBox.Show(@"Title Directory is required. Shutting down.");
+                    Application.Exit();
+                }
+
+                Settings.TitleDirectory = fbd.SelectedPath;
+            }
+        }
+
         private async void Form1_Load(object sender, EventArgs e)
         {
+            InitSettings();
+
             MinimumSize = MaximumSize = Size;
 
             MessageBox.Show(Resources.EdgeBuildNotice, @"MapleSeed - Edge Build");
@@ -94,18 +131,16 @@ namespace MapleSeed
 
             TextLog.MesgLog.WriteLog("[Database] Populating Title Library", Color.DarkViolet);
 
-            await Database.TitleDb.Init(Settings.Instance.TitleDirectory);
-
-            var random = new Random().Next(Database.TitleDb.Values.Count);
-            await SetCurrentImage(Database.TitleDb.Values.ToArray()[random]);
+            await Database.TitleDb.Init(Settings.TitleDirectory);
+            await SetCurrentImage(Database.TitleDb.Values.ToArray()[0]);
 
             RegisterDefaults();
-            
+
             CheckUpdate();
 
-            AppendLog($"Game Directory [{Settings.Instance.TitleDirectory}]");
-            AppendChat(@"Welcome to Maple Tree.");
-            AppendChat(@"Enter /help for a list of possible commands.");
+            AppendLog($"Game Directory [{Settings.TitleDirectory}]");
+            AppendLog(@"Welcome to Maple Tree.");
+            AppendLog(@"Enter /help for a list of possible commands.");
 
             Discord.UpdateUserlist(userList);
 
@@ -121,14 +156,9 @@ namespace MapleSeed
         {
             var title = obj as Title;
 
-            if (titleList.InvokeRequired) {
-                titleList.Invoke(new Action(() => {
-                    titleList.Items.Add(title ?? obj);
-                }));
-            }
-            else {
-                titleList.Items.Add(title ?? obj);
-            }
+            if (titleList.InvokeRequired)
+                titleList.Invoke(new Action(() => { titleList.Items.Add(title ?? obj); }));
+            else titleList.Items.Add(title ?? obj);
         }
 
         private void GlobalTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -219,8 +249,7 @@ namespace MapleSeed
             btn.Enabled = false;
 
             try {
-                if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
-
+                if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK)
                     foreach (var item in titleList.CheckedItems) {
                         var title = item as Title;
                         if (title == null) continue;
@@ -240,7 +269,6 @@ namespace MapleSeed
                                 break;
                         }
                     }
-                }
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
@@ -261,27 +289,24 @@ namespace MapleSeed
             var version = int.TryParse(titleVersion.Text, out ver) ? ver.ToString() : "0";
             await DownloadContentClick(updateBtn, @"This action will update content files!", "Patch", version);
         }
-
-        private void titleList_DoubleClick(object sender, EventArgs e)
-        {
-            playBtn_Click(null, null);
-        }
-
+        
         private void fullScreen_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Instance.FullScreenMode = fullScreen.Checked;
+            Settings.FullScreenMode = fullScreen.Checked;
         }
 
         private void username_TextChanged(object sender, EventArgs e)
         {
-            Settings.Instance.Username = username.Text;
+            Settings.Username = username.Text;
         }
 
         private void playBtn_Click(object sender, EventArgs e)
         {
             var title = titleList.SelectedItem as Title;
-            if (!Toolbelt.LaunchCemu(title?.Location)) return;
-            TextLog.MesgLog.WriteLog($"[{Settings.Instance.Username}] Has started playing {title}!");
+            if (title == null) return;
+
+            if (!Toolbelt.LaunchCemu(title.MetaLocation)) return;
+            TextLog.MesgLog.WriteLog($"[{Settings.Username}] Has started playing {title.Name}!");
         }
 
         private async void sendChat_Click(object sender, EventArgs e)
@@ -335,7 +360,8 @@ namespace MapleSeed
                 if (s.StartsWith("/help")) {
                     TextLog.MesgLog.WriteLog("------------------------------------------");
                     TextLog.MesgLog.WriteLog("/dl <title id> - Download the specified title ID from NUS.");
-                    TextLog.MesgLog.WriteLog("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
+                    TextLog.MesgLog.WriteLog(
+                        "/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
                     TextLog.MesgLog.WriteLog("/clear - Clears the current chat log.");
                     TextLog.MesgLog.WriteLog("------------------Discord-----------------");
                     TextLog.MesgLog.WriteLog("/channel <channel name> - Switch your currently active Discord channel.");
@@ -350,17 +376,17 @@ namespace MapleSeed
 
         private void titleDir_TextChanged(object sender, EventArgs e)
         {
-            Settings.Instance.TitleDirectory = titleDir.Text;
+            Settings.TitleDirectory = titleDir.Text;
         }
 
         private void cemuDir_TextChanged(object sender, EventArgs e)
         {
-            Settings.Instance.CemuDirectory = cemuDir.Text;
+            Settings.CemuDirectory = cemuDir.Text;
         }
 
         private void serverHub_TextChanged(object sender, EventArgs e)
         {
-            Settings.Instance.Hub = serverHub.Text;
+            Settings.Hub = serverHub.Text;
         }
 
         private void checkUpdateBtn_Click(object sender, EventArgs e)
@@ -382,17 +408,17 @@ namespace MapleSeed
 
         private void cemu173Patch_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Instance.Cemu173Patch = cemu173Patch.Checked;
+            Settings.Cemu173Patch = cemu173Patch.Checked;
         }
 
         private void discordEmail_TextChanged(object sender, EventArgs e)
         {
-            Settings.Instance.DiscordEmail = discordEmail.Text;
+            Settings.DiscordEmail = discordEmail.Text;
         }
 
         private void discordPass_TextChanged(object sender, EventArgs e)
         {
-            Settings.Instance.DiscordPass = discordPass.Text;
+            Settings.DiscordPass = discordPass.Text;
         }
 
         private async void discordConnect_Click(object sender, EventArgs e)
@@ -403,7 +429,7 @@ namespace MapleSeed
 
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Instance.StoreEncryptedContent = storeEncCont.Checked;
+            Settings.StoreEncryptedContent = storeEncCont.Checked;
         }
 
         private async void cleanTitleBtn_Click(object sender, EventArgs e)
@@ -423,9 +449,10 @@ namespace MapleSeed
                     }
 
                     var title = item as Title;
+                    if (title == null) continue;
 
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    var fullPath = Path.GetDirectoryName(Path.GetDirectoryName(title?.Location));
+                    var fullPath = Path.GetFullPath(title.FolderLocation);
                     if (string.IsNullOrEmpty(fullPath))
                         return;
 
@@ -435,7 +462,6 @@ namespace MapleSeed
                     if (Directory.Exists(Path.Combine(fullPath, "content")))
                         Directory.Delete(Path.Combine(fullPath, "content"), true);
 
-                    title.Location = fullPath;
                     await title.DownloadContent();
                 }
             }
@@ -445,7 +471,7 @@ namespace MapleSeed
 
             cleanTitleBtn.Enabled = true;
         }
-        
+
         private async void titleList_SelectedValueChanged(object sender, EventArgs e)
         {
             var title = titleList.SelectedItem as Title;
@@ -465,51 +491,48 @@ namespace MapleSeed
             TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
         }
 
-        private async Task SetCurrentImage(Title title)
+        private Task SetCurrentImage(Title title)
         {
-            try {
-                var cache = Path.Combine("cache", $"{title.ImageCode}.jpg");
-                if (!Directory.Exists(Path.Combine("cache")))
-                    Directory.CreateDirectory(Path.Combine("cache"));
-
-                if (!File.Exists(cache)) {
-                    var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/US/{title.ImageCode}.jpg";
-                    File.WriteAllBytes(cache, await WebClient.DownloadData(url));
-                }
-
-                pictureBox1.ImageLocation = cache;
-            }
-            catch (Exception e) {
-                TextLog.MesgLog.AddHistory(e.Message);
-                pictureBox1.ImageLocation = string.Empty;
-            }
+            return Task.Run(() => pictureBox1.ImageLocation = title.Image);
         }
 
         private async void newdlbtn_Click(object sender, EventArgs e)
         {
-            var dir = Path.Combine(Settings.Instance.TitleDirectory);
+            var dir = Path.Combine(Settings.TitleDirectory);
             if (string.IsNullOrEmpty(titleIdTextBox.Text))
                 return;
 
-            var title = await MapleLoadiine.BuildTitle(titleIdTextBox.Text, string.Empty, true);
+            var title = await MapleDictionary.BuildTitle(titleIdTextBox.Text, string.Empty, true);
             if (title == null)
                 return;
 
-            await Database.DownloadTitle(title, Path.Combine(dir, Toolbelt.RIC(title.Name)), "eShop/Application", "0");
+            var name = Toolbelt.RIC($"{title.Name} [{title.Region}]");
+            await Database.DownloadTitle(title, Path.Combine(dir, name), "eShop/Application", "0");
 
-            await Database.TitleDb.BuildDatabase(true);
+            await Database.TitleDb.BuildDatabase();
         }
 
-        private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
+        private void titleIdTextBox_TextChanged(object sender, EventArgs e)
         {
             if (titleIdTextBox.Text.Length != 16)
                 return;
 
-            var title = await MapleLoadiine.BuildTitle(titleIdTextBox.Text, string.Empty, true);
-            if (title == null)
+            var image = MapleDictionary.FindImage(titleIdTextBox.Text, null);
+            if (image == null)
                 return;
 
-            //await SetCurrentImage(title);
+            pictureBox1.ImageLocation = image;
+        }
+
+        private void organizeBtn_Click(object sender, EventArgs e)
+        {
+            foreach (var value in Database.TitleDb.Values)
+                AppendLog(Path.Combine(Settings.TitleDirectory, value.ToString()));
+
+            var result = MessageBox.Show(Resources.OrganizeBtn_Click_, @"Confirm", MessageBoxButtons.OKCancel);
+
+            if (result == DialogResult.OK)
+                Database.TitleDb.OrganizeTitles();
         }
     }
 }

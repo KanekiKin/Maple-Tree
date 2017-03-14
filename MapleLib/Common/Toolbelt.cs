@@ -42,7 +42,7 @@ namespace MapleLib.Common
                 if (files.Any())
                     rpx = files.First();
 
-                var cemuPath = Path.Combine(Settings.Instance.CemuDirectory, "cemu.exe");
+                var cemuPath = Path.Combine(Settings.CemuDirectory, "cemu.exe");
 
                 if (File.Exists(cemuPath) && File.Exists(rpx))
                     RunCemu(cemuPath, rpx);
@@ -64,7 +64,7 @@ namespace MapleLib.Common
                 if (workingDir == null) return;
 
                 using (TextWriter writer = File.CreateText(Path.GetFullPath("cemu.log"))) {
-                    var o1 = Settings.Instance.FullScreenMode ? "-f" : "";
+                    var o1 = Settings.FullScreenMode ? "-f" : "";
                     await StartProcess(cemuPath, $"{o1} -g \"{rpx}\"", workingDir, null, true, false, writer);
                 }
             }

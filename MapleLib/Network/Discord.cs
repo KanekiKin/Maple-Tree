@@ -29,7 +29,7 @@ namespace MapleLib.Network
 
         public static bool Connected => Instance._connected;
 
-        public static Server Server => Instance?._server;
+        private static Server Server => Instance?._server;
 
         public static string Nickname => Instance?._server?.CurrentUser?.ToString();
 
@@ -91,14 +91,14 @@ namespace MapleLib.Network
 
         private async Task ConnectTask()
         {
-            if (string.IsNullOrEmpty(Settings.Instance.DiscordEmail) ||
-                string.IsNullOrEmpty(Settings.Instance.DiscordPass)) {
+            if (string.IsNullOrEmpty(Settings.DiscordEmail) ||
+                string.IsNullOrEmpty(Settings.DiscordPass)) {
                 TextLog.ChatLog.WriteError(
                     "Chat feature disabled!! Go to the Settings tab, fill in your Discord login, then click 'Connect to Chat'.");
                 return;
             }
 
-            await _client.Connect(Settings.Instance.DiscordEmail, Settings.Instance.DiscordPass);
+            await _client.Connect(Settings.DiscordEmail, Settings.DiscordPass);
         }
 
         public static void UpdateUserlist(ListBox listBox)

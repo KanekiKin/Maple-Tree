@@ -12,7 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Xml;
 using libWiiSharp;
 using MapleLib.Collections;
 using MapleLib.Common;
@@ -25,18 +24,16 @@ namespace MapleLib
 {
     public static class Database
     {
-        public static MapleLoadiine TitleDb { get; } = new MapleLoadiine();
+        public static MapleDictionary TitleDb { get; } = new MapleDictionary();
 
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
-                if (!Settings.Instance.StoreEncryptedContent) {
+                if (!Settings.StoreEncryptedContent) {
                     Toolbelt.AppendLog("  - Deleting Encrypted Contents...");
                     foreach (var t in tmd.Contents) {
                         if (!File.Exists(Path.Combine(outputDir, t.ContentID.ToString("x8")))) continue;
                         File.Delete(Path.Combine(outputDir, t.ContentID.ToString("x8")));
-                        //File.Delete(Path.Combine(outputDir, "cetk"));
-                        //File.Delete(Path.Combine(outputDir, "tmd"));
                     }
                 }
 
@@ -47,32 +44,6 @@ namespace MapleLib
             }
             catch {
                 // ignored
-            }
-        }
-
-        public static Title Find(string game_name)
-        {
-            if (game_name == null)
-                return null;
-
-            var searchPath = Path.GetFullPath(Settings.Instance.TitleDirectory);
-            var entries = Directory.GetFileSystemEntries(searchPath, game_name, SearchOption.AllDirectories);
-            if (!entries.Any())
-                return null;
-
-            var metaXml = Path.Combine(entries[0], "meta", "meta.xml");
-            if (!File.Exists(metaXml))
-                return null;
-
-            var xml = new XmlDocument();
-            xml.Load(metaXml);
-            using (var titleIdTag = xml.GetElementsByTagName("title_id")) {
-                if (titleIdTag.Count <= 0) return null;
-
-                var titleId = titleIdTag[0].InnerText.ToLower();
-                var title = TitleDb[titleId];
-
-                return title;
             }
         }
 
@@ -98,7 +69,7 @@ namespace MapleLib
             byte[] data = {};
 
             try {
-                data = await WebClient.DownloadData(url);
+                data = await WebClient.DownloadDataAsync(url);
             }
             catch (WebException e) {
                 TextLog.MesgLog.AddHistory($"{e.Message}\n{e.StackTrace}");
@@ -216,8 +187,8 @@ namespace MapleLib
 
             if (contentType == "Patch") {
                 workingId = $"0005000E{title.Lower8Digits}".ToLower();
-                if (Settings.Instance.Cemu173Patch)
-                    outputDir = Path.Combine(Title.BasePatchDir, title.Lower8Digits);
+                if (Settings.Cemu173Patch)
+                    outputDir = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
             }
 
             if (!Directory.Exists(outputDir))
@@ -276,8 +247,8 @@ namespace MapleLib
 
             #region Content
 
-            Toolbelt.AppendLog($"Downloading [{contentType} Content] {title.Name} v[{tmd.TitleVersion}]");
-            Toolbelt.SetStatus($"Downloading [{contentType} Content] {title.Name} v[{tmd.TitleVersion}]");
+            Toolbelt.AppendLog($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion}");
+            Toolbelt.SetStatus($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion}");
 
             foreach (var nusUrl in nusUrls) {
                 var url = nusUrl + workingId;
@@ -297,8 +268,8 @@ namespace MapleLib
             #endregion
 
             WebClient.ResetDownloadProgressChanged();
-            Toolbelt.AppendLog($"Downloading [{contentType} Content] {title.Name} v{tmd.TitleVersion} Finished.");
-            Toolbelt.SetStatus($"Downloading [{contentType} Content] {title.Name} v{tmd.TitleVersion} Finished.");
+            Toolbelt.AppendLog($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion} Finished.");
+            Toolbelt.SetStatus($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion} Finished.");
         }
     }
 }

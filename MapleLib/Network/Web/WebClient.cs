@@ -31,25 +31,24 @@ namespace MapleLib.Network.Web
             wc.Dispose();
         }
 
-        public static async Task<byte[]> DownloadData(string url)
+        public static byte[] DownloadData(string url)
         {
             using (var wc = new System.Net.WebClient()) {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
                 wc.DownloadDataCompleted += DownloadDataCompleted;
-                return await wc.DownloadDataTaskAsync(new Uri(url));
+                return wc.DownloadData(url);
             }
         }
 
-        public static async void DownloadData(string url, DownloadDataCompletedEventHandler downloadDataCompleted)
+        public static async Task<byte[]> DownloadDataAsync(string url)
         {
             using (var wc = new System.Net.WebClient())
             {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
-                wc.DownloadDataCompleted += downloadDataCompleted;
                 wc.DownloadDataCompleted += DownloadDataCompleted;
-                await wc.DownloadDataTaskAsync(new Uri(url));
+                return await wc.DownloadDataTaskAsync(new Uri(url));
             }
         }
 
