@@ -534,5 +534,10 @@ namespace MapleSeed
             if (result == DialogResult.OK)
                 Database.TitleDb.OrganizeTitles();
         }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            playBtn_Click(null, null);
+        }
     }
 }

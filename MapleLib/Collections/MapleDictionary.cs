@@ -166,9 +166,9 @@ namespace MapleLib.Collections
                     Name = jtitle.Name,
                     Region = jtitle.Region,
                     WTKTicket = jtitle.Ticket == "1",
-                    MetaLocation = Path.Combine(folder, "meta", "meta.xml")
+                    MetaLocation = Path.Combine(folder, "meta", "meta.xml"),
+                    FolderLocation = folder
                 };
-                title.FolderLocation = Path.Combine(Settings.TitleDirectory, Toolbelt.RIC($"[{title.Region}] {title.Name}"));
 
                 if (newTitle) {
                     title.Image = await FindImage(title.Id, title.MetaLocation);
