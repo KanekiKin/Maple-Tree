@@ -94,17 +94,23 @@ namespace MapleLib.Collections
 
             if (!fileSystemEntries.Any())
                 return;
+            
+            try {
+                foreach (var fileSystemEntry in fileSystemEntries) {
+                    var titleId = Helper.XmlGetStringByTag(fileSystemEntry, "title_id");
 
-            foreach (var fileSystemEntry in fileSystemEntries) {
-                var titleId = Helper.XmlGetStringByTag(fileSystemEntry, "title_id");
+                    if (string.IsNullOrEmpty(titleId))
+                        throw new Exception("MapleLoadiine.Init.titleId cannot return null");
 
-                if (string.IsNullOrEmpty(titleId))
-                    throw new Exception("MapleLoadiine.Init.titleId cannot return null");
+                    var title = await BuildTitle(titleId, fileSystemEntry);
 
-                var title = await BuildTitle(titleId, fileSystemEntry);
+                    Add(titleId, title);
+                    OnAddTitle?.Invoke(this, title);
 
-                Add(titleId, title);
-                OnAddTitle?.Invoke(this, title);
+                }
+            }
+            catch (Exception e) {
+                TextLog.MesgLog.AddHistory(e.Message);
             }
         }
 

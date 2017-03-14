@@ -497,7 +497,7 @@ namespace MapleSeed
 
             await Database.DownloadTitle(title, Path.Combine(dir, Toolbelt.RIC(title.Name)), "eShop/Application", "0");
 
-            await Database.TitleDb.BuildDatabase(false);
+            await Database.TitleDb.BuildDatabase(true);
         }
 
         private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
