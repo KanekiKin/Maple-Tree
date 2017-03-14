@@ -150,21 +150,25 @@ namespace MapleLib.Collections
                 if ((jtitle = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
-                var folder = Path.GetDirectoryName(Path.GetDirectoryName(location));
-
-                if (!Directory.Exists(folder))
+                var folder = newTitle ? Path.Combine(Settings.TitleDirectory, jtitle.Name) : Path.GetDirectoryName(Path.GetDirectoryName(location));
+                
+                if (!Directory.Exists(folder) && !newTitle)
                     throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
+
+                if (!Directory.Exists(folder)) {
+                    Directory.CreateDirectory(folder);
+                }
 
                 var title = new Title
                 {
                     Id = titleId,
-                    MetaLocation = location,
-                    FolderLocation = folder,
                     Key = jtitle.TitleKey,
                     Name = jtitle.Name,
                     Region = jtitle.Region,
-                    WTKTicket = jtitle.Ticket == "1"
+                    WTKTicket = jtitle.Ticket == "1",
+                    MetaLocation = Path.Combine(folder, "meta", "meta.xml")
                 };
+                title.FolderLocation = Path.Combine(Settings.TitleDirectory, Toolbelt.RIC($"[{title.Region}] {title.Name}"));
 
                 if (newTitle) {
                     title.Image = await FindImage(title.Id, title.MetaLocation);

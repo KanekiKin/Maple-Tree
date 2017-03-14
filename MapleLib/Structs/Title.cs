@@ -58,7 +58,7 @@ namespace MapleLib.Structs
 
         public override string ToString()
         {
-            return Toolbelt.RIC($"[{Region}][{ImageCode}] {Name}");
+            return Toolbelt.RIC($"[{Region}] {Name}");
         }
 
         public async Task DownloadContent(string version = "0")
