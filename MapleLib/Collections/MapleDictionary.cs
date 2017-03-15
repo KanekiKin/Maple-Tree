@@ -21,7 +21,7 @@ namespace MapleLib.Collections
 {
     public class MapleDictionary : Dictionary<string, Title>
     {
-        private static List<WiiUTitle> _jsonObj;
+        private static List<Title> _jsonObj;
         private static readonly List<string> Updates = new List<string>(Resources.updates.Split('\n'));
         private static readonly List<string> Titles = new List<string>(Resources.titles.Split('\n'));
 
@@ -74,7 +74,7 @@ namespace MapleLib.Collections
         private async Task PreloadImages()
         {
             foreach (var value in Values) {
-                await Task.Run(async () => value.Image = await FindImage(value.Id, value.MetaLocation));
+                await Task.Run(async () => value.Image = await FindImage(value.TitleID, value.MetaLocation));
             }
         }
 
@@ -88,11 +88,11 @@ namespace MapleLib.Collections
                     foreach (var wiiUTitle in wtitles) {
                         value.DLC.Add(new Title
                         {
-                            Id = wiiUTitle.TitleID.ToUpper(),
-                            Key = wiiUTitle.TitleKey,
+                            TitleID = wiiUTitle.TitleID.ToUpper(),
+                            TitleKey = wiiUTitle.TitleKey,
                             Name = wiiUTitle.Name,
                             Region = wiiUTitle.Region,
-                            WTKTicket = wiiUTitle.Ticket == "1",
+                            Ticket = wiiUTitle.Ticket,
                             FolderLocation = Path.Combine(Settings.BasePatchDir, id, "aoc")
                         });
                     }
@@ -140,16 +140,17 @@ namespace MapleLib.Collections
                     }
 
                     var json = Encoding.UTF8.GetString(File.ReadAllBytes(jsonFile));
-                    _jsonObj = JsonConvert.DeserializeObject<List<WiiUTitle>>(json);
+                    _jsonObj = JsonConvert.DeserializeObject<List<Title>>(json);
                 }
 
-                WiiUTitle jtitle;
+                Title jtitle;
                 if ((jtitle = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
-                var folder = newTitle ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(jtitle.Name)) :
-                    Path.GetDirectoryName(Path.GetDirectoryName(location));
-                
+                var folder = newTitle
+                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(jtitle.Name))
+                    : Path.GetDirectoryName(Path.GetDirectoryName(location));
+
                 if (!Directory.Exists(folder) && !newTitle)
                     throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
 
@@ -159,17 +160,17 @@ namespace MapleLib.Collections
 
                 var title = new Title
                 {
-                    Id = titleId,
-                    Key = jtitle.TitleKey,
-                    Name = jtitle.Name,
+                    TitleID = titleId,
+                    TitleKey = jtitle.TitleKey,
+                    Name = Toolbelt.RIC(jtitle.Name),
                     Region = jtitle.Region,
-                    WTKTicket = jtitle.Ticket == "1",
+                    Ticket = jtitle.Ticket,
                     MetaLocation = Path.Combine(folder, "meta", "meta.xml"),
                     FolderLocation = folder
                 };
 
                 if (newTitle) {
-                    title.Image = await FindImage(title.Id, title.MetaLocation);
+                    title.Image = await FindImage(title.TitleID, title.MetaLocation);
                     return title;
                 }
 
@@ -191,12 +192,13 @@ namespace MapleLib.Collections
 
         private static void SetCodes(Title _title)
         {
-            var title = Titles.Find(x => x.Contains(_title.Id.ToUpper()));
+            if (_title == null) throw new ArgumentNullException(nameof(_title));
+            var title = Titles.Find(x => x.Contains(_title.TitleID.ToUpper()));
             if (string.IsNullOrEmpty(title)) return;
 
             var parts2 = title.Split('|');
             if (parts2.Length < 0) return;
-            
+
             var pcode = Helper.XmlGetStringByTag(_title.MetaLocation, "product_code") ?? "0000";
             var ccode = Helper.XmlGetStringByTag(_title.MetaLocation, "company_code") ?? "01";
 
@@ -234,8 +236,7 @@ namespace MapleLib.Collections
 
             var langCodes = "US,EN,FR,DE,ES,IT,RU,JA,NL,SE,DK,NO,FI".Split(',').ToList();
 
-            foreach (var langCode in langCodes)
-            {
+            foreach (var langCode in langCodes) {
                 if (File.Exists(cachedFile))
                     return cachedFile;
 

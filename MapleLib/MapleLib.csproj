@@ -125,27 +125,17 @@
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Database.cs" />
-    <Compile Include="Enums\MessageType.cs" />
     <Compile Include="Network\Discord.cs" />
     <Compile Include="Network\Web\WebClient.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Structs\Title.cs" />
-    <Compile Include="Structs\WiiUTitle.cs" />
     <Compile Include="Common\TextLog.cs" />
-    <Compile Include="Network\Events\OnMessageReceivedEventArgs.cs" />
-    <Compile Include="Network\MapleBase.cs" />
-    <Compile Include="Network\MapleServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Storage.cs" />
-    <Compile Include="Structs\ShaderInfo.cs" />
-    <Compile Include="Structs\MessageHeader.cs" />
-    <Compile Include="Structs\StorageData.cs" />
-    <Compile Include="Structs\UserData.cs" />
     <Compile Include="ThirdParty\IniFileParser\Exceptions\ParsingException.cs" />
     <Compile Include="ThirdParty\IniFileParser\FileIniParser.cs" />
     <Compile Include="ThirdParty\IniFileParser\Helpers\Assert.cs" />
@@ -337,7 +327,6 @@
     <Compile Include="Network\Web\AppUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Network\MapleClient.cs" />
     <None Include="packages.config" />
     <None Include="ThirdParty\IniFileParser\Model\IniData.cs.rej" />
     <None Include="ThirdParty\protobuf-net\project.json" />
@@ -353,9 +342,6 @@
     <None Include="Resources\msvcr120d.dll" />
     <Content Include="Resources\Seed-icon.png" />
     <Content Include="Resources\Seed.ico" />
-    <Content Include="ThirdParty\CefSharp\CefSharp.Core.dll" />
-    <Content Include="ThirdParty\CefSharp\CefSharp.dll" />
-    <Content Include="ThirdParty\CefSharp\CefSharp.WinForms.dll" />
     <Content Include="ThirdParty\Lidgren.Network\Documentation\ChangedFromV2.txt" />
     <Content Include="ThirdParty\Lidgren.Network\Documentation\Discovery.html" />
     <Content Include="ThirdParty\Lidgren.Network\Documentation\Improvements.txt" />

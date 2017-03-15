@@ -113,8 +113,8 @@ namespace MapleLib
 
             version = int.Parse(version) == 0 ? "" : $".{version}";
             if (await DownloadTmd(titleUrl + $"tmd{version}", tmdFile) == null) {
-                var titleId = title.Id.ToLower();
-                var titleKey = title.Key.ToLower();
+                var titleId = title.TitleID.ToLower();
+                var titleKey = title.TitleKey.ToLower();
                 var address = "192.99.69.253";
                 var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tmd";
 
@@ -133,8 +133,8 @@ namespace MapleLib
             var cetkFile = Path.Combine(outputDir, "cetk");
 
             if (await DownloadTicket($"{titleUrl}cetk", cetkFile) == null) {
-                var titleId = title.Id.ToLower();
-                var titleKey = title.Key.ToLower();
+                var titleId = title.TitleID.ToLower();
+                var titleKey = title.TitleKey.ToLower();
                 var address = "192.99.69.253";
                 var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tik";
 
@@ -183,7 +183,7 @@ namespace MapleLib
         {
             #region Setup
 
-            var workingId = title.Id.ToLower();
+            var workingId = title.TitleID.ToLower();
 
             if (contentType == "Patch") {
                 workingId = $"0005000E{title.Lower8Digits}".ToLower();

@@ -13,18 +13,18 @@ namespace MapleLib.Structs
 {
     public class Title
     {
-        public string Id { get; set; }
-        public string Key { get; set; } = string.Empty;
+        public string TitleID { get; set; }
+        public string TitleKey { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
+        public string Ticket { get; set; }
         public string ProductCode { get; set; } = string.Empty;
         public string ImageCode { get; set; } = string.Empty;
-        public string Region { get; set; } = string.Empty;
-        public bool WTKTicket { get; set; }
         public bool CDN { get; set; }
         public string FolderLocation { get; set; }
         public string MetaLocation { get; set; }
-        public string Upper8Digits => Id.Length >= 8 ? Id.Substring(0, 8).ToUpper() : string.Empty;
-        public string Lower8Digits => Id.Length >= 8 ? Id.Substring(8).ToUpper() : string.Empty;
+        public string Upper8Digits => TitleID.Length >= 8 ? TitleID.Substring(0, 8).ToUpper() : string.Empty;
+        public string Lower8Digits => TitleID.Length >= 8 ? TitleID.Substring(8).ToUpper() : string.Empty;
         public List<string> Versions { get; set; } = new List<string>();
         public List<Title> DLC { get; } = new List<Title>();
 
@@ -32,7 +32,7 @@ namespace MapleLib.Structs
 
         public string ContentType {
             get {
-                var header = Id.Substring(0, 8).ToUpper();
+                var header = TitleID.Substring(0, 8).ToUpper();
 
                 switch (header) {
                     case "00050010":
@@ -64,7 +64,7 @@ namespace MapleLib.Structs
         public async Task DownloadContent(string version = "0")
         {
             try {
-                if (string.IsNullOrEmpty(Id))
+                if (string.IsNullOrEmpty(TitleID))
                     throw new Exception("Can't download content without a valid TItle ID.");
 
                 if (string.IsNullOrEmpty(FolderLocation))
@@ -80,7 +80,7 @@ namespace MapleLib.Structs
         public async Task DownloadUpdate(string version = "0")
         {
             try {
-                if (string.IsNullOrEmpty(Id))
+                if (string.IsNullOrEmpty(TitleID))
                     throw new Exception("Can't download content without a valid TItle ID.");
 
                 if (string.IsNullOrEmpty(FolderLocation))

@@ -6,7 +6,6 @@
 #region usings
 
 using System;
-using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.Drawing;
@@ -119,8 +118,8 @@ namespace MapleSeed
                 Settings.TitleDirectory = fbd.SelectedPath;
             }
         }
-        
-        private async void Form1_Load(object sender, EventArgs e)
+
+        private async void Form1_Load(object sender, EventArgs e) //TODO: Optimize FormLoad()
         {
             InitSettings();
 
@@ -133,7 +132,9 @@ namespace MapleSeed
             TextLog.MesgLog.WriteLog("[Database] Populating Title Library", Color.DarkViolet);
 
             await Database.TitleDb.Init(Settings.TitleDirectory);
-            await SetCurrentImage(Database.TitleDb.Values.ToArray()[0]);
+
+            if (Database.TitleDb.Any() && Database.TitleDb.Values.Any())
+                await SetCurrentImage(Database.TitleDb.Values.First());
 
             RegisterDefaults();
 
@@ -156,10 +157,11 @@ namespace MapleSeed
         private void ListBoxAddItem(object obj)
         {
             var title = obj as Title;
+            if (title == null) return;
 
             if (titleList.InvokeRequired)
-                titleList.Invoke(new Action(() => { titleList.Items.Add(title ?? obj); }));
-            else titleList.Items.Add(title ?? obj);
+                titleList.Invoke(new Action(() => { titleList.Items.Add(title); }));
+            else titleList.Items.Add(title);
         }
 
         private void GlobalTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -290,7 +292,7 @@ namespace MapleSeed
             var version = int.TryParse(titleVersion.Text, out ver) ? ver.ToString() : "0";
             await DownloadContentClick(updateBtn, @"This action will update content files!", "Patch", version);
         }
-        
+
         private void fullScreen_CheckedChanged(object sender, EventArgs e)
         {
             Settings.FullScreenMode = fullScreen.Checked;
@@ -327,7 +329,7 @@ namespace MapleSeed
                 if (s.StartsWith("/dl")) {
                     var titleId = s.Substring(3).Trim();
                     var title = Database.FindByTitleId(titleId);
-                    if (title.Id.IsNullOrEmpty()) return false;
+                    if (title.TitleID.IsNullOrEmpty()) return false;
                     Invoke(new Action(async () => await title.DownloadContent()));
                     return true;
                 }
@@ -336,7 +338,7 @@ namespace MapleSeed
                     var titleStr = s.Substring(5).Trim();
                     var titles = Database.FindTitles(titleStr);
                     foreach (var title in titles)
-                        TextLog.MesgLog.WriteLog($"{title}, TitleID: {title.Id}, [{title.ContentType}]", Color.Green);
+                        TextLog.MesgLog.WriteLog($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]", Color.Green);
                     return true;
                 }
 
