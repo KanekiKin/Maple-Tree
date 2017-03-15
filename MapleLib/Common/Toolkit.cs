@@ -5,13 +5,9 @@
 
 #region usings
 
-using System;
 using System.IO;
 using System.Management;
-using System.Threading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
-using Timer = System.Timers.Timer;
+using System.Timers;
 
 #endregion
 
@@ -31,16 +27,6 @@ namespace MapleLib.Common
 
         public static Timer GlobalTimer { get; }
 
-        public static void Sleep(int ms)
-        {
-            Thread.Sleep(ms);
-        }
-
-        public static string TempName()
-        {
-            return Environment.UserName;
-        }
-
         public static string UniqueID()
         {
             var drive = DriveInfo.GetDrives()[0].ToString().Replace(":", "").Replace("\\", "");
@@ -48,35 +34,6 @@ namespace MapleLib.Common
             dsk.Get();
             var volumeSerial = dsk["VolumeSerialNumber"].ToString();
             return volumeSerial;
-        }
-
-        public static byte[] ToBson<T>(T data)
-        {
-            using (var ms = new MemoryStream()) {
-                using (var writer = new BsonWriter(ms)) {
-                    var serializer = new JsonSerializer();
-                    serializer.Serialize(writer, data);
-                    return ms.ToArray();
-                }
-            }
-        }
-
-        public static T FromBson<T>(string file)
-        {
-            using (var reader = new BsonReader(File.OpenRead(file))) {
-                var serializer = new JsonSerializer();
-                return serializer.Deserialize<T>(reader);
-            }
-        }
-
-        public static T FromBson<T>(byte[] data)
-        {
-            using (var ms = new MemoryStream(data)) {
-                using (var reader = new BsonReader(ms)) {
-                    var serializer = new JsonSerializer();
-                    return serializer.Deserialize<T>(reader);
-                }
-            }
         }
     }
 }

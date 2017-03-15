@@ -25,18 +25,16 @@ namespace MapleLib.Collections
         private static readonly List<string> Updates = new List<string>(Resources.updates.Split('\n'));
         private static readonly List<string> Titles = new List<string>(Resources.titles.Split('\n'));
 
-        private string _baseDir { get; set; }
+        private string BaseDir { get; set; }
 
-        private List<string> _directories { get; set; }
+        private List<string> Directories { get; set; }
 
         public static event EventHandler<Title> OnAddTitle;
 
         public async Task<MapleDictionary> Init(string baseDir)
         {
-            if (string.IsNullOrEmpty(baseDir))
+            if (string.IsNullOrEmpty(BaseDir = baseDir))
                 throw new Exception("MapleDictionary.Init(baseDir) cannot be null");
-
-            _baseDir = baseDir;
 
             await BuildDatabase();
 
@@ -45,62 +43,52 @@ namespace MapleLib.Collections
 
         public async Task BuildDatabase(bool notice = true)
         {
-            await Task.Run(() => {
-                _directories = Directory.GetDirectories(_baseDir).ToList();
+            await LoadTitles(notice);
 
-                foreach (var loadiineDirectory in _directories)
-                    BuildTitleList(loadiineDirectory);
+            await LoadAddOns(notice);
 
-                if (notice)
-                    Toolbelt.AppendLog($"[Database] [+] Loadiine Titles: {Count}", Color.DarkViolet);
-            });
+            await LoadImages(notice);
+        }
+
+        private async Task LoadTitles(bool notice = true)
+        {
+            if (notice)
+                Toolbelt.AppendLog("[Database] [+] Loading Titles...", Color.DarkViolet);
+
+            Directories = Directory.GetDirectories(BaseDir).ToList();
+            await Task.Run(() => Directories.ForEach(LoadTitle));
 
             if (notice)
-                Toolbelt.AppendLog("[Database] Preloading Images", Color.DarkViolet);
-
-            await PreloadImages();
-
-            await BuildDLCList();
-
-            await Task.Run(() => {
-                var count = Values.Sum(title => title.DLC.Count);
-                count += Values.Sum(title => title.Versions.Count);
-
-                if (notice)
-                    Toolbelt.AppendLog($"[Database] [+] DLC & Updates: {count}", Color.DarkViolet);
-            });
+                Toolbelt.AppendLog($"[Database] [+] Loaded Titles: {Count}", Color.DarkViolet);
         }
 
-        private async Task PreloadImages()
+        private async Task LoadAddOns(bool notice = true)
         {
-            foreach (var value in Values) {
-                await Task.Run(async () => value.Image = await FindImage(value.TitleID, value.MetaLocation));
-            }
+            if (notice)
+                Toolbelt.AppendLog("[Database] [+] Loading DLC...", Color.DarkViolet);
+
+            await Task.Run(() => Values.ToList().ForEach(LoadAddOn));
+
+            if (notice)
+                Toolbelt.AppendLog($"[Database] [+] Loaded DLC: {Values.Sum(title => title.DLC.Count)}",
+                    Color.DarkViolet);
         }
 
-        private async Task BuildDLCList()
+        private async Task LoadImages(bool notice = true)
         {
-            await Task.Run(() => {
-                foreach (var value in Values) {
-                    var id = value.Lower8Digits;
-                    var wtitles = _jsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
+            if (notice)
+                Toolbelt.AppendLog("[Database] [+] Loading Images...", Color.DarkViolet);
 
-                    foreach (var wiiUTitle in wtitles) {
-                        value.DLC.Add(new Title
-                        {
-                            TitleID = wiiUTitle.TitleID.ToUpper(),
-                            TitleKey = wiiUTitle.TitleKey,
-                            Name = wiiUTitle.Name,
-                            Region = wiiUTitle.Region,
-                            Ticket = wiiUTitle.Ticket,
-                            FolderLocation = Path.Combine(Settings.BasePatchDir, id, "aoc")
-                        });
-                    }
-                }
-            });
+            await Task.Run(() => Values.ToList().ForEach(FindImage));
+
+            var count = Values.Count(value => !string.IsNullOrEmpty(value.Image));
+
+            if (notice)
+                Toolbelt.AppendLog($"[Database] [+] Loaded Images: {count}", Color.DarkViolet);
+
         }
 
-        private async void BuildTitleList(string path)
+        private async void LoadTitle(string path)
         {
             var fileSystemEntries = Directory.GetFiles(path, "meta.xml", SearchOption.AllDirectories).ToList();
 
@@ -108,73 +96,113 @@ namespace MapleLib.Collections
                 return;
 
             try {
-                foreach (var fileSystemEntry in fileSystemEntries) {
-                    var titleId = Helper.XmlGetStringByTag(fileSystemEntry, "title_id");
+                var fileSystemEntry = fileSystemEntries[0];
+                var titleId = Helper.XmlGetStringByTag(fileSystemEntry, "title_id");
 
-                    if (string.IsNullOrEmpty(titleId))
-                        throw new Exception("MapleDictionary.Init.titleId cannot return null");
+                if (string.IsNullOrEmpty(titleId))
+                    throw new Exception("MapleDictionary.Init.titleId cannot return null");
 
-                    var title = await BuildTitle(titleId, fileSystemEntry);
-                    if (title == null || title.ContentType != "eShop/Application") {
-                        TextLog.MesgLog.AddHistory($"Not a valid eShop/Application - TitleID: {titleId}");
-                        return;
-                    }
-
-                    Add(titleId, title);
-                    OnAddTitle?.Invoke(this, title);
+                var title = await BuildTitle(titleId, fileSystemEntry);
+                if (title == null || title.ContentType != "eShop/Application") {
+                    TextLog.MesgLog.AddHistory($"Not a valid eShop/Application - TitleID: {titleId}");
+                    return;
                 }
+
+                Add(titleId, title);
+                OnAddTitle?.Invoke(this, title);
             }
             catch (Exception e) {
                 TextLog.MesgLog.AddHistory(e.Message);
             }
         }
 
+        private static void LoadAddOn(Title value)
+        {
+            var id = value.Lower8Digits;
+            var titles = _jsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
+
+            foreach (var title in titles) {
+                value.DLC.Add(new Title
+                {
+                    TitleID = title.TitleID.ToUpper(),
+                    TitleKey = title.TitleKey,
+                    Name = title.Name,
+                    Region = title.Region,
+                    Ticket = title.Ticket,
+                    FolderLocation = Path.Combine(Settings.BasePatchDir, id, "aoc")
+                });
+            }
+        }
+
+        public static void FindImage(Title title)
+        {
+            var titleId = "00050000" + title.TitleID.Substring(8);
+            var str = Titles.Find(x => x.Contains(titleId.ToUpper()));
+            if (string.IsNullOrEmpty(str))
+                return;
+
+            var strs = str.Split('|');
+            if (strs.Length < 3 || !strs[2].Contains('-'))
+                return;
+
+            var pCode = strs[2].Substring(6);
+
+            string imageCode;
+            if (!string.IsNullOrEmpty(title.MetaLocation) && File.Exists(title.MetaLocation)) {
+                var cCode = Helper.XmlGetStringByTag(title.MetaLocation, "company_code") ?? "01";
+                imageCode = pCode.Substring(pCode.Length - 4) + cCode.Substring(cCode.Length - 2);
+            }
+            else {
+                imageCode = pCode.Substring(pCode.Length - 4) + "01";
+            }
+
+            var cacheDir = Path.Combine(Settings.ConfigFolder, "cache");
+            var cachedFile = Path.Combine(cacheDir, $"{imageCode}.jpg");
+
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+
+            var langCodes = "US,EN,FR,DE,ES,IT,RU,JA,NL,SE,DK,NO,FI".Split(',').ToList();
+
+            foreach (var langCode in langCodes) {
+                if (File.Exists(cachedFile)) {
+                    title.Image = cachedFile;
+                    break;
+                }
+
+                try {
+                    var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
+                    File.WriteAllBytes(title.Image = cachedFile, WebClient.DownloadData(url));
+                }
+                catch {
+                    // ignored
+                }
+            }
+        }
+
         public static async Task<Title> BuildTitle(string titleId, string location, bool newTitle = false)
         {
             try {
-                if (_jsonObj == null) {
-                    var jsonFile = Path.Combine(Settings.ConfigFolder, "titlekeys.json");
+                if (_jsonObj == null)
+                    _jsonObj = await LoadJsonTitles();
 
-                    if (!File.Exists(jsonFile)) {
-                        var data = await WebClient.DownloadDataAsync("https://wiiu.titlekeys.com" + "/json");
-                        if (data.Length <= 0)
-                            throw new WebException("[Database] Unable to download Wii U title database.");
-
-                        File.WriteAllBytes(jsonFile, data);
-                    }
-
-                    var json = Encoding.UTF8.GetString(File.ReadAllBytes(jsonFile));
-                    _jsonObj = JsonConvert.DeserializeObject<List<Title>>(json);
-                }
-
-                Title jtitle;
-                if ((jtitle = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
+                Title title;
+                if ((title = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
+                title.Name = Toolbelt.RIC(title.Name);
+
                 var folder = newTitle
-                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(jtitle.ToString()))
+                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(title.ToString()))
                     : Path.GetDirectoryName(Path.GetDirectoryName(location));
 
                 if (!Directory.Exists(folder) && !newTitle)
                     throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
 
-                if (!Directory.Exists(folder)) {
-                    Directory.CreateDirectory(folder);
-                }
-
-                var title = new Title
-                {
-                    TitleID = jtitle.TitleID,
-                    TitleKey = jtitle.TitleKey,
-                    Name = Toolbelt.RIC(jtitle.Name),
-                    Region = jtitle.Region,
-                    Ticket = jtitle.Ticket,
-                    MetaLocation = Path.Combine(folder, "meta", "meta.xml"),
-                    FolderLocation = folder
-                };
+                title.MetaLocation = Path.Combine(title.FolderLocation = folder, "meta", "meta.xml");
 
                 if (newTitle) {
-                    title.Image = await FindImage(title.TitleID, title.MetaLocation);
+                    FindImage(title);
                     return title;
                 }
 
@@ -194,6 +222,22 @@ namespace MapleLib.Collections
             return null;
         }
 
+        private static async Task<List<Title>> LoadJsonTitles()
+        {
+            var jsonFile = Path.Combine(Settings.ConfigFolder, "titlekeys.json");
+
+            if (!File.Exists(jsonFile)) {
+                var data = await WebClient.DownloadDataAsync("https://wiiu.titlekeys.com" + "/json");
+                if (data.Length <= 0)
+                    throw new WebException("[Database] Unable to download Wii U title database.");
+
+                File.WriteAllBytes(jsonFile, data);
+            }
+
+            var json = Encoding.UTF8.GetString(File.ReadAllBytes(jsonFile));
+            return JsonConvert.DeserializeObject<List<Title>>(json);
+        }
+
         private static void SetCodes(Title _title)
         {
             if (_title == null) throw new ArgumentNullException(nameof(_title));
@@ -209,52 +253,6 @@ namespace MapleLib.Collections
             _title.ImageCode = pcode.Substring(pcode.Length - 4) + ccode.Substring(ccode.Length - 2);
             _title.ProductCode = Helper.XmlGetStringByTag(_title.MetaLocation, "product_code");
             _title.CDN = title.Contains("|Yes");
-        }
-
-        public static async Task<string> FindImage(string _titleId, string metaFile)
-        {
-            var titleId = "00050000" + _titleId.Substring(8);
-            var str = Titles.Find(x => x.Contains(titleId.ToUpper()));
-            if (string.IsNullOrEmpty(str))
-                return string.Empty;
-
-            var strs = str.Split('|');
-            if (strs.Length < 3 || !strs[2].Contains('-'))
-                return string.Empty;
-
-            var pCode = strs[2].Substring(6);
-
-            string imageCode;
-            if (!string.IsNullOrEmpty(metaFile) && File.Exists(metaFile)) {
-                var cCode = Helper.XmlGetStringByTag(metaFile, "company_code") ?? "01";
-                imageCode = pCode.Substring(pCode.Length - 4) + cCode.Substring(cCode.Length - 2);
-            }
-            else {
-                imageCode = pCode.Substring(pCode.Length - 4) + "01";
-            }
-
-            var cacheDir = Path.Combine(Settings.ConfigFolder, "cache");
-            var cachedFile = Path.Combine(cacheDir, $"{imageCode}.jpg");
-
-            if (!Directory.Exists(cacheDir))
-                Directory.CreateDirectory(cacheDir);
-
-            var langCodes = "US,EN,FR,DE,ES,IT,RU,JA,NL,SE,DK,NO,FI".Split(',').ToList();
-
-            foreach (var langCode in langCodes) {
-                if (File.Exists(cachedFile))
-                    return cachedFile;
-
-                try {
-                    var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
-                    File.WriteAllBytes(cachedFile, await WebClient.DownloadDataAsync(url));
-                }
-                catch {
-                    // ignored
-                }
-            }
-
-            return string.Empty;
         }
 
         public Task OrganizeTitles()

@@ -69,15 +69,7 @@ namespace MapleLib
 
             set { WriteKeyValue("Hub", value); }
         }
-
-        public static string Serial {
-            get {
-                var value = GetKeyValue("Serial");
-                if (string.IsNullOrEmpty(value)) WriteKeyValue("Serial", Toolkit.UniqueID());
-                return value;
-            }
-        }
-
+        
         public static bool FullScreenMode {
             get {
                 var value = GetKeyValue("FullScreenMode");

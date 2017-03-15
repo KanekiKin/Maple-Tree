@@ -35,18 +35,15 @@ namespace MapleLib.Network
 
         private BindingList<string> Users {
             get {
-                return _channel?.Users != null ? new BindingList<string>(_channel.Users.Select(user => user.Name).ToList()) : null;
+                return _channel?.Users != null
+                    ? new BindingList<string>(_channel.Users.Select(user => user.Name).ToList())
+                    : null;
             }
-        }
-
-        public static DiscordClient Client()
-        {
-            return Instance?._client;
         }
 
         public static List<string> GetChannelList()
         {
-           return Server.TextChannels.Select(channel => channel.Name).ToList();
+            return Server.TextChannels.Select(channel => channel.Name).ToList();
         }
 
         public static void SetChannel(string channel)

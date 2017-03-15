@@ -46,23 +46,25 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.titleList = new System.Windows.Forms.CheckedListBox();
-            this.titeListMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.chatbox = new System.Windows.Forms.RichTextBox();
             this.discordConnect = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.clearCache = new System.Windows.Forms.Button();
+            this.checkUpdateBtn = new System.Windows.Forms.Button();
             this.discordPass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.discordEmail = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.checkUpdateBtn = new System.Windows.Forms.Button();
             this.serverHub = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cemuDir = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.titleDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.titeListMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
@@ -73,15 +75,13 @@
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
             this.organizeBtn = new System.Windows.Forms.Button();
-            this.clearCache = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.titeListMenuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.titeListMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar
@@ -232,26 +232,12 @@
             // 
             // titleList
             // 
-            this.titleList.ContextMenuStrip = this.titeListMenuStrip1;
             this.titleList.FormattingEnabled = true;
             this.titleList.Location = new System.Drawing.Point(3, 6);
             this.titleList.Name = "titleList";
             this.titleList.Size = new System.Drawing.Size(361, 480);
             this.titleList.TabIndex = 29;
             this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
-            // 
-            // titeListMenuStrip1
-            // 
-            this.titeListMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
-            this.titeListMenuStrip1.Name = "titeListMenuStrip1";
-            this.titeListMenuStrip1.Size = new System.Drawing.Size(108, 26);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // tabPage2
             // 
@@ -309,6 +295,37 @@
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.clearCache);
+            this.groupBox1.Controls.Add(this.checkUpdateBtn);
+            this.groupBox1.Location = new System.Drawing.Point(9, 6);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(281, 239);
+            this.groupBox1.TabIndex = 35;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Actions";
+            // 
+            // clearCache
+            // 
+            this.clearCache.Location = new System.Drawing.Point(195, 21);
+            this.clearCache.Name = "clearCache";
+            this.clearCache.Size = new System.Drawing.Size(80, 25);
+            this.clearCache.TabIndex = 34;
+            this.clearCache.Text = "Clear Cache";
+            this.clearCache.UseVisualStyleBackColor = true;
+            this.clearCache.Click += new System.EventHandler(this.clearCache_Click);
+            // 
+            // checkUpdateBtn
+            // 
+            this.checkUpdateBtn.Location = new System.Drawing.Point(6, 21);
+            this.checkUpdateBtn.Name = "checkUpdateBtn";
+            this.checkUpdateBtn.Size = new System.Drawing.Size(80, 25);
+            this.checkUpdateBtn.TabIndex = 6;
+            this.checkUpdateBtn.Text = "Update";
+            this.checkUpdateBtn.UseVisualStyleBackColor = true;
+            this.checkUpdateBtn.Click += new System.EventHandler(this.checkUpdateBtn_Click);
+            // 
             // discordPass
             // 
             this.discordPass.Location = new System.Drawing.Point(495, 90);
@@ -344,16 +361,6 @@
             this.label5.Size = new System.Drawing.Size(81, 13);
             this.label5.TabIndex = 8;
             this.label5.Text = "Discord E-Mail";
-            // 
-            // checkUpdateBtn
-            // 
-            this.checkUpdateBtn.Location = new System.Drawing.Point(6, 21);
-            this.checkUpdateBtn.Name = "checkUpdateBtn";
-            this.checkUpdateBtn.Size = new System.Drawing.Size(80, 25);
-            this.checkUpdateBtn.TabIndex = 6;
-            this.checkUpdateBtn.Text = "Update";
-            this.checkUpdateBtn.UseVisualStyleBackColor = true;
-            this.checkUpdateBtn.Click += new System.EventHandler(this.checkUpdateBtn_Click);
             // 
             // serverHub
             // 
@@ -405,6 +412,19 @@
             this.label2.Size = new System.Drawing.Size(77, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Title Directory";
+            // 
+            // titeListMenuStrip1
+            // 
+            this.titeListMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem});
+            this.titeListMenuStrip1.Name = "titeListMenuStrip1";
+            this.titeListMenuStrip1.Size = new System.Drawing.Size(108, 26);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // cemu173Patch
             // 
@@ -493,7 +513,6 @@
             // 
             // newdlbtn
             // 
-            this.newdlbtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.newdlbtn.Location = new System.Drawing.Point(1032, 7);
             this.newdlbtn.Name = "newdlbtn";
             this.newdlbtn.Size = new System.Drawing.Size(74, 23);
@@ -511,27 +530,6 @@
             this.organizeBtn.Text = "Organize";
             this.organizeBtn.UseVisualStyleBackColor = true;
             this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
-            // 
-            // clearCache
-            // 
-            this.clearCache.Location = new System.Drawing.Point(195, 21);
-            this.clearCache.Name = "clearCache";
-            this.clearCache.Size = new System.Drawing.Size(80, 25);
-            this.clearCache.TabIndex = 34;
-            this.clearCache.Text = "Clear Cache";
-            this.clearCache.UseVisualStyleBackColor = true;
-            this.clearCache.Click += new System.EventHandler(this.clearCache_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.clearCache);
-            this.groupBox1.Controls.Add(this.checkUpdateBtn);
-            this.groupBox1.Location = new System.Drawing.Point(9, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(281, 239);
-            this.groupBox1.TabIndex = 35;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Actions";
             // 
             // Form1
             // 
@@ -568,12 +566,12 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.titeListMenuStrip1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
+            this.titeListMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

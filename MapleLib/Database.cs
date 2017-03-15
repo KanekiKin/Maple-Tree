@@ -168,7 +168,6 @@ namespace MapleLib
                         }
                         catch (Exception ex) {
                             Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc} failed...\n{ex.Message}");
-                            Toolbelt.SetStatus($"Downloading '{name}' Content #{i1 + 1} of {numc} failed. Check Console");
                             return 0;
                         }
                     return 1;
@@ -187,6 +186,7 @@ namespace MapleLib
 
             if (contentType == "Patch") {
                 workingId = $"0005000E{title.Lower8Digits}".ToLower();
+
                 if (Settings.Cemu173Patch)
                     outputDir = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
             }
@@ -248,7 +248,7 @@ namespace MapleLib
             #region Content
 
             Toolbelt.AppendLog($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion}");
-            Toolbelt.SetStatus($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion}");
+            Toolbelt.SetStatus($"Output Directory: {outputDir}");
 
             foreach (var nusUrl in nusUrls) {
                 var url = nusUrl + workingId;

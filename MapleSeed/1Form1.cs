@@ -131,12 +131,10 @@ namespace MapleSeed
 
             RegisterEvents();
 
-            TextLog.MesgLog.WriteLog("[Database] Populating Title Library", Color.DarkViolet);
-
             await Database.TitleDb.Init(Settings.TitleDirectory);
 
             if (Database.TitleDb.Any() && Database.TitleDb.Values.Any())
-                await SetCurrentImage(Database.TitleDb.Values.First());
+                SetCurrentImage(Database.TitleDb.Values.First());
 
             RegisterDefaults();
 
@@ -478,7 +476,7 @@ namespace MapleSeed
             cleanTitleBtn.Enabled = true;
         }
 
-        private async void titleList_SelectedValueChanged(object sender, EventArgs e)
+        private void titleList_SelectedValueChanged(object sender, EventArgs e)
         {
             var title = titleList.SelectedItem as Title;
             if (string.IsNullOrEmpty(title?.Lower8Digits)) {
@@ -492,17 +490,16 @@ namespace MapleSeed
             var updatesStr = title.Versions.Aggregate(string.Empty,
                 (current, update) => current + $"| v{update.Trim()} ");
 
-            await SetCurrentImage(title);
+            SetCurrentImage(title);
 
             TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
         }
 
-        private Task SetCurrentImage(Title title)
+        private void SetCurrentImage(Title title)
         {
-            return Task.Run(async () => {
-                if (!File.Exists(title.Image)) {
-                    title.Image = await MapleDictionary.FindImage(title.TitleID, title.MetaLocation);
-                }
+            Task.Run(() => {
+                if (!File.Exists(title.Image))
+                    MapleDictionary.FindImage(title);
 
                 pictureBox1.ImageLocation = title.Image;
             });
@@ -513,6 +510,8 @@ namespace MapleSeed
             if (string.IsNullOrEmpty(titleIdTextBox.Text))
                 return;
 
+            newdlbtn.Enabled = false;
+
             var title = await MapleDictionary.BuildTitle(titleIdTextBox.Text, string.Empty, true);
             if (title == null)
                 return;
@@ -520,6 +519,8 @@ namespace MapleSeed
             await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
 
             await Database.TitleDb.BuildDatabase();
+
+            newdlbtn.Enabled = true;
         }
 
         private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
@@ -527,14 +528,16 @@ namespace MapleSeed
             if (titleIdTextBox.Text.Length != 16)
                 return;
 
-            var image = await MapleDictionary.FindImage(titleIdTextBox.Text, null);
-            if (image == null)
+            var title = new Title {TitleID = titleIdTextBox.Text, FolderLocation = null};
+            await Task.Run(() => MapleDictionary.FindImage(title));
+
+            if (title.Image == null)
                 return;
 
-            pictureBox1.ImageLocation = image;
+            pictureBox1.ImageLocation = title.Image;
         }
 
-        private void organizeBtn_Click(object sender, EventArgs e)
+        private async void organizeBtn_Click(object sender, EventArgs e)
         {
             foreach (var value in Database.TitleDb.Values)
                 AppendLog(Path.Combine(Settings.TitleDirectory, value.ToString()));
@@ -542,7 +545,7 @@ namespace MapleSeed
             var result = MessageBox.Show(Resources.OrganizeBtn_Click_, @"Confirm", MessageBoxButtons.OKCancel);
 
             if (result == DialogResult.OK)
-                Database.TitleDb.OrganizeTitles();
+                await Database.TitleDb.OrganizeTitles();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

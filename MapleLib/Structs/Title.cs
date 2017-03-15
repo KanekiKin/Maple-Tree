@@ -14,12 +14,12 @@ namespace MapleLib.Structs
     public class Title
     {
         public string TitleID { get; set; }
-        public string TitleKey { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Region { get; set; } = string.Empty;
+        public string TitleKey { get; set; }
+        public string Name { get; set; }
+        public string Region { get; set; }
         public string Ticket { get; set; }
-        public string ProductCode { get; set; } = string.Empty;
-        public string ImageCode { get; set; } = string.Empty;
+        public string ProductCode { get; set; }
+        public string ImageCode { get; set; }
         public bool CDN { get; set; }
         public string FolderLocation { get; set; }
         public string MetaLocation { get; set; }
