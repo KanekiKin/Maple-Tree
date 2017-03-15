@@ -10,7 +10,7 @@ A small application with a feature set aimed to make Wii U title management easi
 
 
 ***Edge Preview***
-![](https://pixxy.in/6gD9233.png)
+![](https://pixxy.in/9XJ9234.png)
 
 
 # MapleSeed Lite
