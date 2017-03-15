@@ -121,6 +121,8 @@ namespace MapleSeed
 
         private async void Form1_Load(object sender, EventArgs e) //TODO: Optimize FormLoad()
         {
+            Enabled = false;
+
             InitSettings();
 
             MinimumSize = MaximumSize = Size;
@@ -144,6 +146,7 @@ namespace MapleSeed
             AppendLog(@"Welcome to Maple Tree.");
             AppendLog(@"Enter /help for a list of possible commands.");
 
+            Enabled = true;
             Discord.UpdateUserlist(userList);
 
             await Discord.Connect();
@@ -496,21 +499,25 @@ namespace MapleSeed
 
         private Task SetCurrentImage(Title title)
         {
-            return Task.Run(() => pictureBox1.ImageLocation = title.Image);
+            return Task.Run(async () => {
+                if (!File.Exists(title.Image)) {
+                    title.Image = await MapleDictionary.FindImage(title.TitleID, title.MetaLocation);
+                }
+
+                pictureBox1.ImageLocation = title.Image;
+            });
         }
 
         private async void newdlbtn_Click(object sender, EventArgs e)
         {
-            var dir = Path.Combine(Settings.TitleDirectory);
             if (string.IsNullOrEmpty(titleIdTextBox.Text))
                 return;
 
             var title = await MapleDictionary.BuildTitle(titleIdTextBox.Text, string.Empty, true);
             if (title == null)
                 return;
-
-            var name = Toolbelt.RIC($"{title.Name} [{title.Region}]");
-            await Database.DownloadTitle(title, Path.Combine(dir, name), "eShop/Application", "0");
+            
+            await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
 
             await Database.TitleDb.BuildDatabase();
         }
@@ -541,6 +548,16 @@ namespace MapleSeed
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             playBtn_Click(null, null);
+        }
+
+        private void clearCache_Click(object sender, EventArgs e)
+        {
+            var deleteDir = Path.Combine(Settings.ConfigFolder, "cache");
+            var result = MessageBox.Show(string.Format(Resources.WillDeleteContents, deleteDir),
+                Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
+
+            if (result == DialogResult.OK)
+                Directory.Delete(deleteDir, true);
         }
     }
 }

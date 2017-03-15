@@ -115,6 +115,10 @@ namespace MapleLib.Collections
                         throw new Exception("MapleDictionary.Init.titleId cannot return null");
 
                     var title = await BuildTitle(titleId, fileSystemEntry);
+                    if (title == null || title.ContentType != "eShop/Application") {
+                        TextLog.MesgLog.AddHistory($"Not a valid eShop/Application - TitleID: {titleId}");
+                        return;
+                    }
 
                     Add(titleId, title);
                     OnAddTitle?.Invoke(this, title);
@@ -148,7 +152,7 @@ namespace MapleLib.Collections
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
                 var folder = newTitle
-                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(jtitle.Name))
+                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(jtitle.ToString()))
                     : Path.GetDirectoryName(Path.GetDirectoryName(location));
 
                 if (!Directory.Exists(folder) && !newTitle)
@@ -160,7 +164,7 @@ namespace MapleLib.Collections
 
                 var title = new Title
                 {
-                    TitleID = titleId,
+                    TitleID = jtitle.TitleID,
                     TitleKey = jtitle.TitleKey,
                     Name = Toolbelt.RIC(jtitle.Name),
                     Region = jtitle.Region,
@@ -207,8 +211,9 @@ namespace MapleLib.Collections
             _title.CDN = title.Contains("|Yes");
         }
 
-        public static async Task<string> FindImage(string titleId, string metaFile)
+        public static async Task<string> FindImage(string _titleId, string metaFile)
         {
+            var titleId = "00050000" + _titleId.Substring(8);
             var str = Titles.Find(x => x.Contains(titleId.ToUpper()));
             if (string.IsNullOrEmpty(str))
                 return string.Empty;

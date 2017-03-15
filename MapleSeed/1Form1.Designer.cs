@@ -73,12 +73,15 @@
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
             this.organizeBtn = new System.Windows.Forms.Button();
+            this.clearCache = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.titeListMenuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar
@@ -287,11 +290,11 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Controls.Add(this.discordPass);
             this.tabPage3.Controls.Add(this.label6);
             this.tabPage3.Controls.Add(this.discordEmail);
             this.tabPage3.Controls.Add(this.label5);
-            this.tabPage3.Controls.Add(this.checkUpdateBtn);
             this.tabPage3.Controls.Add(this.serverHub);
             this.tabPage3.Controls.Add(this.label4);
             this.tabPage3.Controls.Add(this.cemuDir);
@@ -308,7 +311,7 @@
             // 
             // discordPass
             // 
-            this.discordPass.Location = new System.Drawing.Point(435, 102);
+            this.discordPass.Location = new System.Drawing.Point(495, 90);
             this.discordPass.Name = "discordPass";
             this.discordPass.PasswordChar = '*';
             this.discordPass.Size = new System.Drawing.Size(174, 22);
@@ -319,7 +322,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(432, 85);
+            this.label6.Location = new System.Drawing.Point(492, 73);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(98, 13);
             this.label6.TabIndex = 10;
@@ -327,7 +330,7 @@
             // 
             // discordEmail
             // 
-            this.discordEmail.Location = new System.Drawing.Point(435, 43);
+            this.discordEmail.Location = new System.Drawing.Point(495, 31);
             this.discordEmail.Name = "discordEmail";
             this.discordEmail.Size = new System.Drawing.Size(174, 22);
             this.discordEmail.TabIndex = 9;
@@ -336,7 +339,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(432, 26);
+            this.label5.Location = new System.Drawing.Point(492, 14);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(81, 13);
             this.label5.TabIndex = 8;
@@ -344,9 +347,9 @@
             // 
             // checkUpdateBtn
             // 
-            this.checkUpdateBtn.Location = new System.Drawing.Point(9, 467);
+            this.checkUpdateBtn.Location = new System.Drawing.Point(6, 21);
             this.checkUpdateBtn.Name = "checkUpdateBtn";
-            this.checkUpdateBtn.Size = new System.Drawing.Size(75, 23);
+            this.checkUpdateBtn.Size = new System.Drawing.Size(80, 25);
             this.checkUpdateBtn.TabIndex = 6;
             this.checkUpdateBtn.Text = "Update";
             this.checkUpdateBtn.UseVisualStyleBackColor = true;
@@ -354,7 +357,7 @@
             // 
             // serverHub
             // 
-            this.serverHub.Location = new System.Drawing.Point(10, 158);
+            this.serverHub.Location = new System.Drawing.Point(315, 144);
             this.serverHub.Name = "serverHub";
             this.serverHub.Size = new System.Drawing.Size(174, 22);
             this.serverHub.TabIndex = 5;
@@ -363,7 +366,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 141);
+            this.label4.Location = new System.Drawing.Point(312, 127);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(63, 13);
             this.label4.TabIndex = 4;
@@ -371,7 +374,7 @@
             // 
             // cemuDir
             // 
-            this.cemuDir.Location = new System.Drawing.Point(10, 102);
+            this.cemuDir.Location = new System.Drawing.Point(315, 88);
             this.cemuDir.Name = "cemuDir";
             this.cemuDir.Size = new System.Drawing.Size(174, 22);
             this.cemuDir.TabIndex = 3;
@@ -380,7 +383,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 85);
+            this.label3.Location = new System.Drawing.Point(312, 71);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(85, 13);
             this.label3.TabIndex = 2;
@@ -388,7 +391,7 @@
             // 
             // titleDir
             // 
-            this.titleDir.Location = new System.Drawing.Point(10, 45);
+            this.titleDir.Location = new System.Drawing.Point(315, 31);
             this.titleDir.Name = "titleDir";
             this.titleDir.Size = new System.Drawing.Size(174, 22);
             this.titleDir.TabIndex = 1;
@@ -397,7 +400,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 28);
+            this.label2.Location = new System.Drawing.Point(312, 14);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(77, 13);
             this.label2.TabIndex = 0;
@@ -509,6 +512,27 @@
             this.organizeBtn.UseVisualStyleBackColor = true;
             this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
             // 
+            // clearCache
+            // 
+            this.clearCache.Location = new System.Drawing.Point(195, 21);
+            this.clearCache.Name = "clearCache";
+            this.clearCache.Size = new System.Drawing.Size(80, 25);
+            this.clearCache.TabIndex = 34;
+            this.clearCache.Text = "Clear Cache";
+            this.clearCache.UseVisualStyleBackColor = true;
+            this.clearCache.Click += new System.EventHandler(this.clearCache_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.clearCache);
+            this.groupBox1.Controls.Add(this.checkUpdateBtn);
+            this.groupBox1.Location = new System.Drawing.Point(9, 6);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(281, 239);
+            this.groupBox1.TabIndex = 35;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Actions";
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
@@ -549,6 +573,7 @@
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -598,6 +623,8 @@
         private System.Windows.Forms.ContextMenuStrip titeListMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Button organizeBtn;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button clearCache;
     }
 }
 

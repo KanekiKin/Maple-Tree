@@ -123,7 +123,6 @@
     <Compile Include="Common\Crypto.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\Helper.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Network\Discord.cs" />
     <Compile Include="Network\Web\WebClient.cs" />

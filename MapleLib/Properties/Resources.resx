@@ -154,4 +154,10 @@ Report any errors you come across at http://github.com/Tsume/Maple-Tree.</value>
 
 See the log window for sample outputs.</value>
   </data>
+  <data name="PleaseConfirmAction" xml:space="preserve">
+    <value>Please Confirm This Action - MapleSeed</value>
+  </data>
+  <data name="WillDeleteContents" xml:space="preserve">
+    <value>This action will delete all contents under the directory {0}</value>
+  </data>
 </root>

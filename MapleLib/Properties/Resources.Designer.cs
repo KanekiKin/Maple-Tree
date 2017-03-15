@@ -123,6 +123,15 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please Confirm This Action - MapleSeed.
+        /// </summary>
+        public static string PleaseConfirmAction {
+            get {
+                return ResourceManager.GetString("PleaseConfirmAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon Red_Light {
@@ -176,6 +185,15 @@ namespace MapleLib.Properties {
         public static string updates {
             get {
                 return ResourceManager.GetString("updates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This action will delete all contents under the directory {0}.
+        /// </summary>
+        public static string WillDeleteContents {
+            get {
+                return ResourceManager.GetString("WillDeleteContents", resourceCulture);
             }
         }
     }

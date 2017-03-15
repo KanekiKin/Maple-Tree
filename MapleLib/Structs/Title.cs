@@ -58,7 +58,8 @@ namespace MapleLib.Structs
 
         public override string ToString()
         {
-            return Toolbelt.RIC($"[{Region}] {Name}");
+            var cType = ContentType.Contains("App") ? "App" : ContentType;
+            return Toolbelt.RIC($"[{cType}][{Region}] {Name}");
         }
 
         public async Task DownloadContent(string version = "0")
