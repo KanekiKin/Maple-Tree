@@ -148,36 +148,6 @@ namespace MapleLib
             return Ticket.Load(cetkFile);
         }
 
-        private static async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl, string name)
-        {
-            var result = 0;
-            for (var i = 0; i < tmd.NumOfContents; i++) {
-                var i1 = i;
-                result = await Task.Run(async () => {
-                    var numc = tmd.NumOfContents;
-                    var size = Toolbelt.SizeSuffix((long) tmd.Contents[i1].Size);
-                    Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc}... ({size})");
-                    var contentPath = Path.Combine(outputDir, tmd.Contents[i1].ContentID.ToString("x8"));
-
-                    if (Toolbelt.IsValid(tmd.Contents[i1], contentPath))
-                        Toolbelt.AppendLog("   + Using Local File, Skipping...");
-                    else
-                        try {
-                            var downloadUrl = $"{titleUrl}/{tmd.Contents[i1].ContentID:x8}";
-                            await WebClient.DownloadFileAsync(downloadUrl, contentPath);
-                        }
-                        catch (Exception ex) {
-                            Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc} failed...\n{ex.Message}");
-                            return 0;
-                        }
-                    return 1;
-                });
-                if (result == 0)
-                    break;
-            }
-            return result;
-        }
-
         public static async Task DownloadTitle(Title title, string outputDir, string contentType, string version)
         {
             #region Setup
@@ -252,7 +222,7 @@ namespace MapleLib
 
             foreach (var nusUrl in nusUrls) {
                 var url = nusUrl + workingId;
-                if (await DownloadContent(tmd, outputDir, url, title.Name) != 1)
+                if (await DownloadContent(tmd, outputDir, url) != 1)
                     continue;
 
                 Toolbelt.AppendLog(string.Empty);
@@ -270,6 +240,36 @@ namespace MapleLib
             WebClient.ResetDownloadProgressChanged();
             Toolbelt.AppendLog($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion} Finished.");
             Toolbelt.SetStatus($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion} Finished.");
+        }
+
+        private static async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl)
+        {
+            var result = 0;
+            for (var i = 0; i < tmd.NumOfContents; i++) {
+                var i1 = i;
+                result = await Task.Run(async () => {
+                    var numc = tmd.NumOfContents;
+                    var size = Toolbelt.SizeSuffix((long) tmd.Contents[i1].Size);
+                    Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc}... ({size})");
+                    var contentPath = Path.Combine(outputDir, tmd.Contents[i1].ContentID.ToString("x8"));
+
+                    if (Toolbelt.IsValid(tmd.Contents[i1], contentPath))
+                        Toolbelt.AppendLog("   + Using Local File, Skipping...");
+                    else
+                        try {
+                            var downloadUrl = $"{titleUrl}/{tmd.Contents[i1].ContentID:x8}";
+                            await WebClient.DownloadFileAsync(downloadUrl, contentPath);
+                        }
+                        catch (Exception ex) {
+                            Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc} failed...\n{ex.Message}");
+                            return 0;
+                        }
+                    return 1;
+                });
+                if (result == 0)
+                    break;
+            }
+            return result;
         }
     }
 }

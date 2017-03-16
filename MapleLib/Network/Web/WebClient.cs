@@ -23,10 +23,8 @@ namespace MapleLib.Network.Web
         {
             var wc = new System.Net.WebClient { Headers = {[HttpRequestHeader.UserAgent] = WII_USER_AGENT } };
             wc.DownloadProgressChanged += DownloadProgressChanged;
-            wc.DownloadDataCompleted += DownloadDataCompleted;
 
             await wc.DownloadFileTaskAsync(new Uri(url), saveTo);
-
             while (wc.IsBusy) await Task.Delay(100);
             wc.Dispose();
         }
@@ -36,7 +34,6 @@ namespace MapleLib.Network.Web
             using (var wc = new System.Net.WebClient()) {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
-                wc.DownloadDataCompleted += DownloadDataCompleted;
                 return wc.DownloadData(url);
             }
         }
@@ -47,7 +44,6 @@ namespace MapleLib.Network.Web
             {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
-                wc.DownloadDataCompleted += DownloadDataCompleted;
                 return await wc.DownloadDataTaskAsync(new Uri(url));
             }
         }
@@ -60,11 +56,6 @@ namespace MapleLib.Network.Web
         private static void DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             DownloadProgressChangedEvent?.Invoke(sender, e);
-        }
-
-        private static void DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
-        {
-
         }
     }
 }

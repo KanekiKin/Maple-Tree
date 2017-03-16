@@ -175,14 +175,17 @@ namespace MapleSeed
             }
         }
 
-        private void UpdateProgressBar(int _progress, long _toReceive, long _received)
+        private void UpdateProgressBar(long _toReceive, long _received)
         {
             try {
-                Invoke(new Action(() => { progressBar.Value = _progress; }));
+                Invoke(new Action(() => {
+                    progressBar.Maximum = (int) _toReceive;
+                    progressBar.Value = (int) _received;
+                }));
 
                 var toReceive = Toolbelt.SizeSuffix(_toReceive);
                 var received = Toolbelt.SizeSuffix(_received);
-
+                
                 progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
             }
             catch (Exception ex) {
@@ -193,12 +196,12 @@ namespace MapleSeed
 
         private void Instance_ProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e)
         {
-            UpdateProgressBar(e?.ProgressPercentage ?? 0, e?.TotalBytesReceived ?? 0, e?.BytesReceived ?? 0);
+            UpdateProgressBar(e?.TotalBytesReceived ?? 0, e?.BytesReceived ?? 0);
         }
 
         private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
-            UpdateProgressBar(e?.ProgressPercentage ?? 0, e?.TotalBytesToReceive ?? 0, e?.BytesReceived ?? 0);
+            UpdateProgressBar(e?.TotalBytesToReceive ?? 0, e?.BytesReceived ?? 0);
         }
 
         private void ChatLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
