@@ -64,7 +64,7 @@
             this.titleDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.titeListMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uninstallUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
@@ -75,6 +75,12 @@
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
             this.organizeBtn = new System.Windows.Forms.Button();
+            this.installUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.installDLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uninstallDLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nameToolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+            this.deleteTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -143,7 +149,7 @@
             this.updateBtn.Name = "updateBtn";
             this.updateBtn.Size = new System.Drawing.Size(74, 23);
             this.updateBtn.TabIndex = 12;
-            this.updateBtn.Text = "Update";
+            this.updateBtn.Text = "[+] Update";
             this.updateBtn.UseVisualStyleBackColor = true;
             this.updateBtn.Click += new System.EventHandler(this.updateBtn_Click);
             // 
@@ -192,7 +198,7 @@
             this.playBtn.Name = "playBtn";
             this.playBtn.Size = new System.Drawing.Size(75, 23);
             this.playBtn.TabIndex = 17;
-            this.playBtn.Text = "Play!";
+            this.playBtn.Text = "Cemu!";
             this.playBtn.UseVisualStyleBackColor = true;
             this.playBtn.Click += new System.EventHandler(this.playBtn_Click);
             // 
@@ -238,6 +244,7 @@
             this.titleList.Size = new System.Drawing.Size(361, 480);
             this.titleList.TabIndex = 29;
             this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
+            this.titleList.MouseUp += new System.Windows.Forms.MouseEventHandler(this.titleList_MouseUp);
             // 
             // tabPage2
             // 
@@ -416,15 +423,23 @@
             // titeListMenuStrip1
             // 
             this.titeListMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
+            this.nameToolStripTextBox1,
+            this.installDLCToolStripMenuItem,
+            this.uninstallDLCToolStripMenuItem,
+            this.installUpdateToolStripMenuItem,
+            this.uninstallUpdateToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.deleteTitleToolStripMenuItem});
             this.titeListMenuStrip1.Name = "titeListMenuStrip1";
-            this.titeListMenuStrip1.Size = new System.Drawing.Size(108, 26);
+            this.titeListMenuStrip1.ShowImageMargin = false;
+            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 164);
             // 
-            // deleteToolStripMenuItem
+            // uninstallUpdateToolStripMenuItem
             // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
+            this.uninstallUpdateToolStripMenuItem.Name = "uninstallUpdateToolStripMenuItem";
+            this.uninstallUpdateToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.uninstallUpdateToolStripMenuItem.Text = "Uninstall Update";
+            this.uninstallUpdateToolStripMenuItem.Click += new System.EventHandler(this.uninstallToolStripMenuItem_Click);
             // 
             // cemu173Patch
             // 
@@ -466,7 +481,7 @@
             this.dlcBtn.Name = "dlcBtn";
             this.dlcBtn.Size = new System.Drawing.Size(74, 23);
             this.dlcBtn.TabIndex = 25;
-            this.dlcBtn.Text = "DLC";
+            this.dlcBtn.Text = "[+] DLC";
             this.dlcBtn.UseVisualStyleBackColor = true;
             this.dlcBtn.Click += new System.EventHandler(this.dlcBtn_Click);
             // 
@@ -531,6 +546,48 @@
             this.organizeBtn.UseVisualStyleBackColor = true;
             this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
             // 
+            // installUpdateToolStripMenuItem
+            // 
+            this.installUpdateToolStripMenuItem.Enabled = false;
+            this.installUpdateToolStripMenuItem.Name = "installUpdateToolStripMenuItem";
+            this.installUpdateToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.installUpdateToolStripMenuItem.Text = "Install Update";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
+            // 
+            // installDLCToolStripMenuItem
+            // 
+            this.installDLCToolStripMenuItem.Enabled = false;
+            this.installDLCToolStripMenuItem.Name = "installDLCToolStripMenuItem";
+            this.installDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.installDLCToolStripMenuItem.Text = "Add DLC";
+            // 
+            // uninstallDLCToolStripMenuItem
+            // 
+            this.uninstallDLCToolStripMenuItem.Enabled = false;
+            this.uninstallDLCToolStripMenuItem.Name = "uninstallDLCToolStripMenuItem";
+            this.uninstallDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.uninstallDLCToolStripMenuItem.Text = "Remove DLC";
+            // 
+            // nameToolStripTextBox1
+            // 
+            this.nameToolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold);
+            this.nameToolStripTextBox1.MaxLength = 16;
+            this.nameToolStripTextBox1.Name = "nameToolStripTextBox1";
+            this.nameToolStripTextBox1.ReadOnly = true;
+            this.nameToolStripTextBox1.Size = new System.Drawing.Size(100, 20);
+            this.nameToolStripTextBox1.Text = "Title ID";
+            // 
+            // deleteTitleToolStripMenuItem
+            // 
+            this.deleteTitleToolStripMenuItem.Name = "deleteTitleToolStripMenuItem";
+            this.deleteTitleToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.deleteTitleToolStripMenuItem.Text = "Delete Title";
+            this.deleteTitleToolStripMenuItem.Click += new System.EventHandler(this.deleteTitleToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.sendChat;
@@ -572,6 +629,7 @@
             this.tabPage3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.titeListMenuStrip1.ResumeLayout(false);
+            this.titeListMenuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -618,11 +676,17 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TextBox titleIdTextBox;
         private System.Windows.Forms.Button newdlbtn;
-        private System.Windows.Forms.ContextMenuStrip titeListMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uninstallUpdateToolStripMenuItem;
         private System.Windows.Forms.Button organizeBtn;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button clearCache;
+        private System.Windows.Forms.ToolStripMenuItem installUpdateToolStripMenuItem;
+        public System.Windows.Forms.ContextMenuStrip titeListMenuStrip1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem installDLCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uninstallDLCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox nameToolStripTextBox1;
+        private System.Windows.Forms.ToolStripMenuItem deleteTitleToolStripMenuItem;
     }
 }
 

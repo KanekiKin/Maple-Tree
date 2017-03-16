@@ -175,13 +175,10 @@ namespace MapleSeed
             }
         }
 
-        private void UpdateProgressBar(long _toReceive, long _received)
+        private void UpdateProgressBar(int percent, long _toReceive, long _received)
         {
             try {
-                Invoke(new Action(() => {
-                    progressBar.Maximum = (int) _toReceive;
-                    progressBar.Value = (int) _received;
-                }));
+                Invoke(new Action(() => progressBar.Value = percent));
 
                 var toReceive = Toolbelt.SizeSuffix(_toReceive);
                 var received = Toolbelt.SizeSuffix(_received);
@@ -190,18 +187,17 @@ namespace MapleSeed
             }
             catch (Exception ex) {
                 TextLog.MesgLog.WriteError($"{ex.Message}\n{ex.StackTrace}");
-                TextLog.StatusLog.WriteError($"{ex.Message}\n{ex.StackTrace}");
             }
         }
 
         private void Instance_ProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e)
         {
-            UpdateProgressBar(e?.TotalBytesReceived ?? 0, e?.BytesReceived ?? 0);
+            UpdateProgressBar(e.ProgressPercentage, e.TotalBytesReceived, e.BytesReceived);
         }
 
         private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
-            UpdateProgressBar(e?.TotalBytesToReceive ?? 0, e?.BytesReceived ?? 0);
+            UpdateProgressBar(e.ProgressPercentage,e.TotalBytesToReceive, e.BytesReceived);
         }
 
         private void ChatLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
@@ -564,6 +560,83 @@ namespace MapleSeed
 
             if (result == DialogResult.OK)
                 Directory.Delete(deleteDir, true);
+        }
+
+        private void titleList_MouseUp(object sender, MouseEventArgs e)
+        {
+            var location = titleList.IndexFromPoint(e.Location);
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            titleList.SelectedIndex = location;
+            if (titleList.SelectedItems.Count <= 0)
+                return;
+
+            var title = titleList.SelectedItems[0] as Title;
+            if (title == null)
+                return;
+
+            nameToolStripTextBox1.Text = title.TitleID;
+
+            //installDLCToolStripMenuItem.Enabled = title.DLC.Count > 0;
+            //installUpdateToolStripMenuItem.Enabled = title.Versions.Count > 0;
+
+            var path = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
+            //uninstallDLCToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path, "aoc"));
+            uninstallUpdateToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path));
+
+            titeListMenuStrip1.Show(MousePosition);
+        }
+
+        private void uninstallToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (titleList.SelectedItems.Count <= 0) return;
+
+            foreach (var titleListSelectedItem in titleList.SelectedItems) {
+                var title = titleListSelectedItem as Title;
+                if (title == null) continue;
+
+                var updatePath = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
+
+                var result = MessageBox.Show($@"The action will delete Patch Content under '{updatePath}'",
+                    Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
+
+                if (result != DialogResult.OK)
+                    return;
+
+                if (Directory.Exists(Path.Combine(updatePath, "code")))
+                    Directory.Delete(Path.Combine(updatePath, "code"), true);
+
+                if (Directory.Exists(Path.Combine(updatePath, "meta")))
+                    Directory.Delete(Path.Combine(updatePath, "meta"), true);
+
+                if (Directory.Exists(Path.Combine(updatePath, "content")))
+                    Directory.Delete(Path.Combine(updatePath, "content"), true);
+
+                if (File.Exists(Path.Combine(updatePath, "result.log")))
+                    File.Delete(Path.Combine(updatePath, "result.log"));
+                break;
+            }
+        }
+
+        private void deleteTitleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (titleList.SelectedItems.Count <= 0) return;
+            var titleListSelectedItem = titleList.SelectedItems[0];
+            var title = titleListSelectedItem as Title;
+            if (title == null) return;
+
+            var updatePath = Path.GetFullPath(title.FolderLocation);
+
+            var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
+                Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
+
+            if (result != DialogResult.OK) return;
+
+            if (Directory.Exists(updatePath))
+                Directory.Delete(updatePath, true);
+
+            titleList.Items.Remove(title);
         }
     }
 }

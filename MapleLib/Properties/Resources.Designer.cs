@@ -61,6 +61,16 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The action will delete all content under
+        ///&apos;{0}&apos;.
+        /// </summary>
+        public static string ActionWillDeleteAllContent {
+            get {
+                return ResourceManager.GetString("ActionWillDeleteAllContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         public static byte[] CDecrypt {

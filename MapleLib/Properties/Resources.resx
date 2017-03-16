@@ -160,4 +160,8 @@ See the log window for sample outputs.</value>
   <data name="WillDeleteContents" xml:space="preserve">
     <value>This action will delete all contents under the directory {0}</value>
   </data>
+  <data name="ActionWillDeleteAllContent" xml:space="preserve">
+    <value>The action will delete all content under
+'{0}'</value>
+  </data>
 </root>
