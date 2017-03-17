@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MapleLib.Common;
@@ -23,8 +24,8 @@ namespace MapleLib.Structs
         public bool CDN { get; set; }
         public string FolderLocation { get; set; }
         public string MetaLocation { get; set; }
-        public string Upper8Digits => TitleID.Length >= 8 ? TitleID.Substring(0, 8).ToUpper() : string.Empty;
-        public string Lower8Digits => TitleID.Length >= 8 ? TitleID.Substring(8).ToUpper() : string.Empty;
+        public string Upper8Digits => TitleID.Length >= 8 ? TitleID.Substring(0, 8).ToUpper() : String.Empty;
+        public string Lower8Digits => TitleID.Length >= 8 ? TitleID.Substring(8).ToUpper() : String.Empty;
         public List<string> Versions { get; set; } = new List<string>();
         public List<Title> DLC { get; } = new List<Title>();
 
@@ -61,14 +62,26 @@ namespace MapleLib.Structs
             var cType = ContentType.Contains("App") ? "App" : ContentType;
             return Toolbelt.RIC($"[{cType}][{Region}] {Name}");
         }
+        
+        public int GetTitleVersion()
+        {
+            var metaLocation = Path.Combine(Settings.BasePatchDir, Lower8Digits, "meta", "meta.xml");
+            if (!File.Exists(metaLocation))
+                return 0;
+
+            var versionStr = Helper.XmlGetStringByTag(metaLocation, "title_version");
+
+            int version;
+            return int.TryParse(versionStr, out version) ? version : 0;
+        }
 
         public async Task DownloadContent(string version = "0")
         {
             try {
-                if (string.IsNullOrEmpty(TitleID))
+                if (String.IsNullOrEmpty(TitleID))
                     throw new Exception("Can't download content without a valid TItle ID.");
 
-                if (string.IsNullOrEmpty(FolderLocation))
+                if (String.IsNullOrEmpty(FolderLocation))
                     throw new Exception("Can't download content without a valid output Location.");
 
                 await Database.DownloadTitle(this, FolderLocation, ContentType, version);
@@ -81,10 +94,10 @@ namespace MapleLib.Structs
         public async Task DownloadUpdate(string version = "0")
         {
             try {
-                if (string.IsNullOrEmpty(TitleID))
+                if (String.IsNullOrEmpty(TitleID))
                     throw new Exception("Can't download content without a valid TItle ID.");
 
-                if (string.IsNullOrEmpty(FolderLocation))
+                if (String.IsNullOrEmpty(FolderLocation))
                     throw new Exception("Can't download content without a valid output Location.");
 
                 await Database.DownloadTitle(this, FolderLocation, "Patch", version);

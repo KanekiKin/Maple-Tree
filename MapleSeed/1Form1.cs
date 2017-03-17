@@ -177,6 +177,9 @@ namespace MapleSeed
 
         private void UpdateProgressBar(int percent, long _toReceive, long _received)
         {
+            if (percent <= 0 || _toReceive <= 0 || _received <= 0)
+                return;
+
             try {
                 Invoke(new Action(() => progressBar.Value = percent));
 
@@ -192,11 +195,13 @@ namespace MapleSeed
 
         private void Instance_ProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e)
         {
+            if (e == null) return;
             UpdateProgressBar(e.ProgressPercentage, e.TotalBytesReceived, e.BytesReceived);
         }
 
         private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
+            if (e == null) return;
             UpdateProgressBar(e.ProgressPercentage,e.TotalBytesToReceive, e.BytesReceived);
         }
 
@@ -253,6 +258,28 @@ namespace MapleSeed
 
             try {
                 if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK)
+
+                    if (titleList.CheckedItems.Count == 0 && titleList.SelectedItem != null) {
+                        var title = titleList.SelectedItem as Title;
+                        if (title == null) return;
+
+                        switch (contentType)
+                        {
+                            case "DLC":
+                                foreach (var _dlc in title.DLC)
+                                    await _dlc.DownloadContent();
+                                break;
+
+                            case "Patch":
+                                await title.DownloadUpdate(version);
+                                break;
+
+                            case "eShop/Application":
+                                await title.DownloadContent(version);
+                                break;
+                        }
+                    }
+
                     foreach (var item in titleList.CheckedItems) {
                         var title = item as Title;
                         if (title == null) continue;
@@ -491,7 +518,7 @@ namespace MapleSeed
 
             SetCurrentImage(title);
 
-            TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Available Updates: {updatesStr}", Color.Green);
+            TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Current Update: v{title.GetTitleVersion()} | Available Updates: {updatesStr}", Color.Green);
         }
 
         private void SetCurrentImage(Title title)
@@ -579,11 +606,15 @@ namespace MapleSeed
             nameToolStripTextBox1.Text = title.TitleID;
 
             //installDLCToolStripMenuItem.Enabled = title.DLC.Count > 0;
-            //installUpdateToolStripMenuItem.Enabled = title.Versions.Count > 0;
+            installUpdateToolStripMenuItem.Enabled = title.Versions.Count > 0;
 
             var path = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
             //uninstallDLCToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path, "aoc"));
             uninstallUpdateToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path));
+
+
+            installUpdateToolStripMenuItem.Text = $@"Install Update v{titleVersion.Text.Trim()}";
+            uninstallUpdateToolStripMenuItem.Text = $@"Uninstall Update v{title.GetTitleVersion()}";
 
             titeListMenuStrip1.Show(MousePosition);
         }
@@ -637,6 +668,13 @@ namespace MapleSeed
                 Directory.Delete(updatePath, true);
 
             titleList.Items.Remove(title);
+        }
+
+        private async void installUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int ver;
+            var version = int.TryParse(titleVersion.Text, out ver) ? ver.ToString() : "0";
+            await DownloadContentClick(updateBtn, @"This action will update content files!", "Patch", version);
         }
     }
 }

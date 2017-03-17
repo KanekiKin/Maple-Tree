@@ -552,6 +552,7 @@
             this.installUpdateToolStripMenuItem.Name = "installUpdateToolStripMenuItem";
             this.installUpdateToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.installUpdateToolStripMenuItem.Text = "Install Update";
+            this.installUpdateToolStripMenuItem.Click += new System.EventHandler(this.installUpdateToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 

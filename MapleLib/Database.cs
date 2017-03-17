@@ -26,6 +26,23 @@ namespace MapleLib
     {
         public static MapleDictionary TitleDb { get; } = new MapleDictionary();
 
+        public static IEnumerable<Title> FindTitles(string game_name)
+        {
+            if (game_name == null) return new List<Title>();
+
+            var titles =
+                TitleDb.Values.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
+
+            return new List<Title>(titles);
+        }
+
+        public static Title FindByTitleId(string titleId)
+        {
+            var title = TitleDb[titleId];
+
+            return titleId.IsNullOrEmpty() || title == null ? null : title;
+        }
+
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
@@ -45,23 +62,6 @@ namespace MapleLib
             catch {
                 // ignored
             }
-        }
-
-        public static IEnumerable<Title> FindTitles(string game_name)
-        {
-            if (game_name == null) return new List<Title>();
-
-            var titles =
-                TitleDb.Values.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
-
-            return new List<Title>(titles);
-        }
-
-        public static Title FindByTitleId(string titleId)
-        {
-            var title = TitleDb[titleId];
-
-            return titleId.IsNullOrEmpty() || title == null ? null : title;
         }
 
         private static async Task<byte[]> DownloadData(string url)
