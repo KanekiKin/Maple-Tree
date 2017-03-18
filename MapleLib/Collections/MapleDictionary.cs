@@ -21,7 +21,7 @@ namespace MapleLib.Collections
 {
     public class MapleDictionary : Dictionary<string, Title>
     {
-        public static List<Title> JsonObj { get; set; }
+        public static List<Title> JsonObj { get; private set; }
         private static List<string> Updates => new List<string>(Resources.updates.Split('\n'));
         private static List<string> Titles => new List<string>(Resources.titles.Split('\n'));
 
@@ -220,22 +220,6 @@ namespace MapleLib.Collections
             return null;
         }
 
-        private static async Task<List<Title>> LoadJsonTitles()
-        {
-            var jsonFile = Path.Combine(Settings.ConfigFolder, "titlekeys.json");
-
-            if (!File.Exists(jsonFile)) {
-                var data = await WebClient.DownloadDataAsync("https://wiiu.titlekeys.com" + "/json");
-                if (data.Length <= 0)
-                    throw new WebException("[Database] Unable to download Wii U title database.");
-
-                File.WriteAllBytes(jsonFile, data);
-            }
-
-            var json = Encoding.UTF8.GetString(File.ReadAllBytes(jsonFile));
-            return JsonConvert.DeserializeObject<List<Title>>(json);
-        }
-
         private static void SetCodes(Title _title)
         {
             if (_title == null) throw new ArgumentNullException(nameof(_title));
@@ -251,6 +235,22 @@ namespace MapleLib.Collections
             _title.ImageCode = pcode.Substring(pcode.Length - 4) + ccode.Substring(ccode.Length - 2);
             _title.ProductCode = Helper.XmlGetStringByTag(_title.MetaLocation, "product_code");
             _title.CDN = title.Contains("|Yes");
+        }
+
+        private static async Task<List<Title>> LoadJsonTitles()
+        {
+            var jsonFile = Path.Combine(Settings.ConfigFolder, "titlekeys.json");
+
+            if (!File.Exists(jsonFile)) {
+                var data = await WebClient.DownloadDataAsync("https://wiiu.titlekeys.com" + "/json");
+                if (data.Length <= 0)
+                    throw new WebException("[Database] Unable to download Wii U title database.");
+
+                File.WriteAllBytes(jsonFile, data);
+            }
+
+            var json = Encoding.UTF8.GetString(File.ReadAllBytes(jsonFile));
+            return JsonConvert.DeserializeObject<List<Title>>(json);
         }
 
         public Task OrganizeTitles()

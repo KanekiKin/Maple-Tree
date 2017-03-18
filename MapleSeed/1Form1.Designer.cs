@@ -83,7 +83,7 @@
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 638);
+            this.progressBar.Location = new System.Drawing.Point(12, 658);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(1125, 23);
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
@@ -94,7 +94,7 @@
             this.status.AutoSize = true;
             this.status.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.status.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.status.Location = new System.Drawing.Point(9, 664);
+            this.status.Location = new System.Drawing.Point(9, 684);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(112, 13);
             this.status.TabIndex = 2;
@@ -103,7 +103,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Location = new System.Drawing.Point(12, 622);
+            this.groupBox2.Location = new System.Drawing.Point(12, 642);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(1125, 10);
             this.groupBox2.TabIndex = 4;
@@ -126,7 +126,7 @@
             // storeEncCont
             // 
             this.storeEncCont.AutoSize = true;
-            this.storeEncCont.Location = new System.Drawing.Point(133, 592);
+            this.storeEncCont.Location = new System.Drawing.Point(133, 612);
             this.storeEncCont.Name = "storeEncCont";
             this.storeEncCont.Size = new System.Drawing.Size(152, 17);
             this.storeEncCont.TabIndex = 11;
@@ -147,7 +147,7 @@
             // fullScreen
             // 
             this.fullScreen.AutoSize = true;
-            this.fullScreen.Location = new System.Drawing.Point(12, 592);
+            this.fullScreen.Location = new System.Drawing.Point(12, 612);
             this.fullScreen.Name = "fullScreen";
             this.fullScreen.Size = new System.Drawing.Size(115, 17);
             this.fullScreen.TabIndex = 13;
@@ -157,7 +157,7 @@
             // 
             // chatInput
             // 
-            this.chatInput.Location = new System.Drawing.Point(12, 564);
+            this.chatInput.Location = new System.Drawing.Point(12, 584);
             this.chatInput.Name = "chatInput";
             this.chatInput.Size = new System.Drawing.Size(1121, 22);
             this.chatInput.TabIndex = 0;
@@ -176,7 +176,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(12, 36);
+            this.tabControl1.Location = new System.Drawing.Point(12, 56);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1240, 522);
@@ -383,7 +383,7 @@
             this.cemu173Patch.AutoSize = true;
             this.cemu173Patch.Checked = true;
             this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cemu173Patch.Location = new System.Drawing.Point(291, 592);
+            this.cemu173Patch.Location = new System.Drawing.Point(291, 612);
             this.cemu173Patch.Name = "cemu173Patch";
             this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
             this.cemu173Patch.TabIndex = 7;
@@ -393,7 +393,7 @@
             // 
             // sendChat
             // 
-            this.sendChat.Location = new System.Drawing.Point(1143, 564);
+            this.sendChat.Location = new System.Drawing.Point(1143, 584);
             this.sendChat.Name = "sendChat";
             this.sendChat.Size = new System.Drawing.Size(109, 23);
             this.sendChat.TabIndex = 21;
@@ -406,7 +406,7 @@
             this.progressOverlay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.progressOverlay.AutoSize = true;
             this.progressOverlay.BackColor = System.Drawing.Color.Transparent;
-            this.progressOverlay.Location = new System.Drawing.Point(12, 621);
+            this.progressOverlay.Location = new System.Drawing.Point(12, 651);
             this.progressOverlay.Name = "progressOverlay";
             this.progressOverlay.Size = new System.Drawing.Size(89, 13);
             this.progressOverlay.TabIndex = 23;
@@ -486,7 +486,7 @@
             // titleName
             // 
             this.titleName.AutoSize = true;
-            this.titleName.Location = new System.Drawing.Point(716, 11);
+            this.titleName.Location = new System.Drawing.Point(497, 33);
             this.titleName.Name = "titleName";
             this.titleName.Size = new System.Drawing.Size(60, 13);
             this.titleName.TabIndex = 34;
@@ -497,7 +497,7 @@
             this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.ClientSize = new System.Drawing.Size(1264, 701);
             this.Controls.Add(this.titleName);
             this.Controls.Add(this.organizeBtn);
             this.Controls.Add(this.newdlbtn);
