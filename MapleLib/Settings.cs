@@ -29,36 +29,7 @@ namespace MapleLib
 
             set { WriteKeyValue("CemuDirectory", Path.GetFullPath(value)); }
         }
-
-        public static string Username {
-            get { return GetKeyValue("Username"); }
-
-            set { WriteKeyValue("Username", value); }
-        }
-
-        public static string DiscordEmail {
-            get {
-                var value = GetKeyValue("DiscordEmail");
-                if (string.IsNullOrEmpty(value))
-                    WriteKeyValue("DiscordEmail", value = "");
-                return value;
-            }
-
-            set { WriteKeyValue("DiscordEmail", value); }
-        }
-
-        public static string DiscordPass {
-            get {
-                var value = GetKeyValue("DiscordPass");
-                if (string.IsNullOrEmpty(value))
-                    WriteKeyValue("DiscordPass", value = "");
-
-                return Helper.DecryptStr(value);
-            }
-
-            set { WriteKeyValue("DiscordPass", Helper.EncryptStr(value)); }
-        }
-
+        
         public static string Hub {
             get {
                 var value = GetKeyValue("Hub");

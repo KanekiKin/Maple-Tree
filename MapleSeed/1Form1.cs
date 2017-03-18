@@ -40,13 +40,9 @@ namespace MapleSeed
             MapleDictionary.OnAddTitle += MapleLoadiine_OnAddTitle;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
-            TextLog.ChatLog.NewLogEntryEventHandler += ChatLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
             WebClient.DownloadProgressChangedEvent += Network_DownloadProgressChangedEvent;
             AppUpdate.Instance.ProgressChangedEventHandler += Instance_ProgressChangedEventHandler;
-
-            Toolkit.GlobalTimer.Elapsed += GlobalTimer_Elapsed;
-            GlobalTimer_Elapsed(null, null);
         }
 
         private void RegisterDefaults()
@@ -55,12 +51,10 @@ namespace MapleSeed
             cemu173Patch.Checked = Settings.Cemu173Patch;
             storeEncCont.Checked = Settings.StoreEncryptedContent;
 
+            titleName.Text = string.Empty;
             titleDir.Text = Settings.TitleDirectory;
             cemuDir.Text = Settings.CemuDirectory;
             serverHub.Text = Settings.Hub;
-
-            discordEmail.Text = Settings.DiscordEmail;
-            discordPass.Text = Settings.DiscordPass;
 
             if (!ApplicationDeployment.IsNetworkDeployed) return;
             var ver = ApplicationDeployment.CurrentDeployment?.CurrentVersion;
@@ -145,9 +139,6 @@ namespace MapleSeed
             AppendLog(@"Enter /help for a list of possible commands.");
 
             Enabled = true;
-            Discord.UpdateUserlist(userList);
-
-            await Discord.Connect();
         }
 
         private void MapleLoadiine_OnAddTitle(object sender, Title e)
@@ -164,17 +155,7 @@ namespace MapleSeed
                 titleList.Invoke(new Action(() => { titleList.Items.Add(title); }));
             else titleList.Items.Add(title);
         }
-
-        private void GlobalTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            try {
-                username.Invoke(new Action(() => username.Text = Discord.Nickname));
-            }
-            catch (Exception ex) {
-                AppendLog(ex.StackTrace);
-            }
-        }
-
+        
         private void UpdateProgressBar(int percent, long _toReceive, long _received)
         {
             if (percent <= 0 || _toReceive <= 0 || _received <= 0)
@@ -204,15 +185,10 @@ namespace MapleSeed
             if (e == null) return;
             UpdateProgressBar(e.ProgressPercentage,e.TotalBytesToReceive, e.BytesReceived);
         }
-
-        private void ChatLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
-        {
-            chatbox.AppendText(e.Entry, e.Color);
-        }
-
+        
         private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
-            richTextBox1.AppendText(e.Entry, e.Color);
+            outputTextbox.AppendText(e.Entry, e.Color);
         }
 
         private void StatusLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
@@ -241,12 +217,7 @@ namespace MapleSeed
 
             Application.Exit();
         }
-
-        private void AppendChat(string msg, Color color = default(Color))
-        {
-            TextLog.ChatLog.WriteLog(msg, color);
-        }
-
+        
         private void AppendLog(string msg, Color color = default(Color))
         {
             TextLog.MesgLog.WriteLog(msg, color);
@@ -324,19 +295,14 @@ namespace MapleSeed
         {
             Settings.FullScreenMode = fullScreen.Checked;
         }
-
-        private void username_TextChanged(object sender, EventArgs e)
-        {
-            Settings.Username = username.Text;
-        }
-
+        
         private void playBtn_Click(object sender, EventArgs e)
         {
             var title = titleList.SelectedItem as Title;
             if (title == null) return;
 
             if (!Toolbelt.LaunchCemu(title.MetaLocation)) return;
-            TextLog.MesgLog.WriteLog($"[{Settings.Username}] Has started playing {title.Name}!");
+            TextLog.MesgLog.WriteLog($"Started playing {title.Name}");
         }
 
         private async void sendChat_Click(object sender, EventArgs e)
@@ -345,9 +311,7 @@ namespace MapleSeed
             var text = chatInput.Text;
             chatInput.Text = string.Empty;
 
-            if (await CheckForCommandInput(text)) return;
-
-            if (Discord.Connected) Discord.SendMessage(text);
+            await CheckForCommandInput(text);
         }
 
         private async Task<bool> CheckForCommandInput(string s)
@@ -369,33 +333,16 @@ namespace MapleSeed
                     return true;
                 }
 
-                if (s.StartsWith("/channel")) {
-                    var channel = s.Substring(8).Trim();
-                    Discord.SetChannel(channel);
-                    return true;
-                }
-
-                if (s.StartsWith("/chlist")) {
-                    var str = Discord.GetChannelList()
-                        .Aggregate(string.Empty, (current, channel) => current + $" | {channel}");
-                    TextLog.ChatLog.WriteLog(str);
-                    return true;
-                }
-
                 if (s.StartsWith("/clear")) {
-                    chatbox.Text = string.Empty;
+                    outputTextbox.Text = string.Empty;
                     return true;
                 }
 
                 if (s.StartsWith("/help")) {
                     TextLog.MesgLog.WriteLog("------------------------------------------");
                     TextLog.MesgLog.WriteLog("/dl <title id> - Download the specified title ID from NUS.");
-                    TextLog.MesgLog.WriteLog(
-                        "/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
+                    TextLog.MesgLog.WriteLog("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
                     TextLog.MesgLog.WriteLog("/clear - Clears the current chat log.");
-                    TextLog.MesgLog.WriteLog("------------------Discord-----------------");
-                    TextLog.MesgLog.WriteLog("/channel <channel name> - Switch your currently active Discord channel.");
-                    TextLog.MesgLog.WriteLog("/chlist - Returns a list of available channels.");
                     TextLog.MesgLog.WriteLog("------------------------------------------");
                     return true;
                 }
@@ -440,26 +387,25 @@ namespace MapleSeed
         {
             Settings.Cemu173Patch = cemu173Patch.Checked;
         }
-
-        private void discordEmail_TextChanged(object sender, EventArgs e)
-        {
-            Settings.DiscordEmail = discordEmail.Text;
-        }
-
-        private void discordPass_TextChanged(object sender, EventArgs e)
-        {
-            Settings.DiscordPass = discordPass.Text;
-        }
-
-        private async void discordConnect_Click(object sender, EventArgs e)
-        {
-            if (!Discord.Connected)
-                await Discord.Connect();
-        }
-
+        
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
         {
             Settings.StoreEncryptedContent = storeEncCont.Checked;
+        }
+
+        private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (titleIdTextBox.Text.Length != 16)
+                return;
+            
+            var title = MapleDictionary.JsonObj.Find(x => x.TitleID.ToUpper() == titleIdTextBox.Text);
+            await Task.Run(() => MapleDictionary.FindImage(title));
+
+            if (title == null) return;
+            titleName.Text = Toolbelt.RIC(title.Name);
+
+            if (title.Image == null) return;
+            pictureBox1.ImageLocation = title.Image;
         }
 
         private async void cleanTitleBtn_Click(object sender, EventArgs e)
@@ -506,12 +452,12 @@ namespace MapleSeed
         {
             var title = titleList.SelectedItem as Title;
             if (string.IsNullOrEmpty(title?.Lower8Digits)) {
-                dlcBtn.Enabled = updateBtn.Enabled = false;
+                //dlcBtn.Enabled = updateBtn.Enabled = false;
                 return;
             }
 
-            dlcBtn.Enabled = title.DLC.Count > 0;
-            updateBtn.Enabled = title.Versions.Count > 0;
+            //dlcBtn.Enabled = title.DLC.Count > 0;
+            //updateBtn.Enabled = title.Versions.Count > 0;
 
             var updatesStr = title.Versions.Aggregate(string.Empty,
                 (current, update) => current + $"| v{update.Trim()} ");
@@ -547,20 +493,6 @@ namespace MapleSeed
             await Database.TitleDb.BuildDatabase();
 
             newdlbtn.Enabled = true;
-        }
-
-        private async void titleIdTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (titleIdTextBox.Text.Length != 16)
-                return;
-
-            var title = new Title {TitleID = titleIdTextBox.Text, FolderLocation = null};
-            await Task.Run(() => MapleDictionary.FindImage(title));
-
-            if (title.Image == null)
-                return;
-
-            pictureBox1.ImageLocation = title.Image;
         }
 
         private async void organizeBtn_Click(object sender, EventArgs e)

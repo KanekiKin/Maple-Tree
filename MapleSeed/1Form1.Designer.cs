@@ -34,29 +34,20 @@
             this.status = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.outputTextbox = new System.Windows.Forms.RichTextBox();
             this.storeEncCont = new System.Windows.Forms.CheckBox();
             this.updateBtn = new System.Windows.Forms.Button();
             this.fullScreen = new System.Windows.Forms.CheckBox();
-            this.userList = new System.Windows.Forms.ListBox();
             this.chatInput = new System.Windows.Forms.TextBox();
-            this.username = new System.Windows.Forms.TextBox();
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.titleList = new System.Windows.Forms.CheckedListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.chatbox = new System.Windows.Forms.RichTextBox();
-            this.discordConnect = new System.Windows.Forms.Button();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.clearCache = new System.Windows.Forms.Button();
             this.checkUpdateBtn = new System.Windows.Forms.Button();
-            this.discordPass = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.discordEmail = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.serverHub = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cemuDir = new System.Windows.Forms.TextBox();
@@ -64,7 +55,13 @@
             this.titleDir = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.titeListMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.nameToolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
+            this.installDLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uninstallDLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.installUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uninstallUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.deleteTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cemu173Patch = new System.Windows.Forms.CheckBox();
             this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
@@ -75,17 +72,11 @@
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
             this.organizeBtn = new System.Windows.Forms.Button();
-            this.installUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.installDLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uninstallDLCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nameToolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
-            this.deleteTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.titleName = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.titeListMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -118,19 +109,19 @@
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             // 
-            // richTextBox1
+            // outputTextbox
             // 
-            this.richTextBox1.BackColor = System.Drawing.SystemColors.HighlightText;
-            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.richTextBox1.DetectUrls = false;
-            this.richTextBox1.ForeColor = System.Drawing.SystemColors.WindowFrame;
-            this.richTextBox1.Location = new System.Drawing.Point(370, 6);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
-            this.richTextBox1.Size = new System.Drawing.Size(504, 480);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.outputTextbox.BackColor = System.Drawing.SystemColors.HighlightText;
+            this.outputTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.outputTextbox.DetectUrls = false;
+            this.outputTextbox.ForeColor = System.Drawing.SystemColors.WindowFrame;
+            this.outputTextbox.Location = new System.Drawing.Point(370, 6);
+            this.outputTextbox.Name = "outputTextbox";
+            this.outputTextbox.ReadOnly = true;
+            this.outputTextbox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
+            this.outputTextbox.Size = new System.Drawing.Size(504, 480);
+            this.outputTextbox.TabIndex = 0;
+            this.outputTextbox.Text = "";
             // 
             // storeEncCont
             // 
@@ -164,33 +155,12 @@
             this.fullScreen.UseVisualStyleBackColor = true;
             this.fullScreen.CheckedChanged += new System.EventHandler(this.fullScreen_CheckedChanged);
             // 
-            // userList
-            // 
-            this.userList.FormattingEnabled = true;
-            this.userList.Location = new System.Drawing.Point(1120, 34);
-            this.userList.Name = "userList";
-            this.userList.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.userList.Size = new System.Drawing.Size(109, 433);
-            this.userList.Sorted = true;
-            this.userList.TabIndex = 14;
-            // 
             // chatInput
             // 
             this.chatInput.Location = new System.Drawing.Point(12, 564);
             this.chatInput.Name = "chatInput";
             this.chatInput.Size = new System.Drawing.Size(1121, 22);
             this.chatInput.TabIndex = 0;
-            // 
-            // username
-            // 
-            this.username.Location = new System.Drawing.Point(1120, 6);
-            this.username.MaxLength = 12;
-            this.username.Name = "username";
-            this.username.ReadOnly = true;
-            this.username.Size = new System.Drawing.Size(109, 22);
-            this.username.TabIndex = 15;
-            this.username.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.username.TextChanged += new System.EventHandler(this.username_TextChanged);
             // 
             // playBtn
             // 
@@ -206,7 +176,6 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 36);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -217,7 +186,7 @@
             // 
             this.tabPage1.Controls.Add(this.pictureBox1);
             this.tabPage1.Controls.Add(this.titleList);
-            this.tabPage1.Controls.Add(this.richTextBox1);
+            this.tabPage1.Controls.Add(this.outputTextbox);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -248,59 +217,20 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.chatbox);
-            this.tabPage2.Controls.Add(this.username);
-            this.tabPage2.Controls.Add(this.userList);
-            this.tabPage2.Controls.Add(this.discordConnect);
+            this.tabPage2.Controls.Add(this.groupBox1);
+            this.tabPage2.Controls.Add(this.serverHub);
+            this.tabPage2.Controls.Add(this.label4);
+            this.tabPage2.Controls.Add(this.cemuDir);
+            this.tabPage2.Controls.Add(this.label3);
+            this.tabPage2.Controls.Add(this.titleDir);
+            this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(1232, 496);
-            this.tabPage2.TabIndex = 2;
-            this.tabPage2.Text = "Community";
+            this.tabPage2.TabIndex = 3;
+            this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // chatbox
-            // 
-            this.chatbox.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.chatbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.chatbox.ForeColor = System.Drawing.SystemColors.WindowFrame;
-            this.chatbox.Location = new System.Drawing.Point(3, 3);
-            this.chatbox.Name = "chatbox";
-            this.chatbox.ReadOnly = true;
-            this.chatbox.Size = new System.Drawing.Size(1111, 490);
-            this.chatbox.TabIndex = 0;
-            this.chatbox.Text = "";
-            // 
-            // discordConnect
-            // 
-            this.discordConnect.Location = new System.Drawing.Point(1120, 470);
-            this.discordConnect.Name = "discordConnect";
-            this.discordConnect.Size = new System.Drawing.Size(109, 23);
-            this.discordConnect.TabIndex = 24;
-            this.discordConnect.Text = "Connect To Chat";
-            this.discordConnect.UseVisualStyleBackColor = true;
-            this.discordConnect.Click += new System.EventHandler(this.discordConnect_Click);
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.groupBox1);
-            this.tabPage3.Controls.Add(this.discordPass);
-            this.tabPage3.Controls.Add(this.label6);
-            this.tabPage3.Controls.Add(this.discordEmail);
-            this.tabPage3.Controls.Add(this.label5);
-            this.tabPage3.Controls.Add(this.serverHub);
-            this.tabPage3.Controls.Add(this.label4);
-            this.tabPage3.Controls.Add(this.cemuDir);
-            this.tabPage3.Controls.Add(this.label3);
-            this.tabPage3.Controls.Add(this.titleDir);
-            this.tabPage3.Controls.Add(this.label2);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1232, 496);
-            this.tabPage3.TabIndex = 3;
-            this.tabPage3.Text = "Settings";
-            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -332,42 +262,6 @@
             this.checkUpdateBtn.Text = "Update";
             this.checkUpdateBtn.UseVisualStyleBackColor = true;
             this.checkUpdateBtn.Click += new System.EventHandler(this.checkUpdateBtn_Click);
-            // 
-            // discordPass
-            // 
-            this.discordPass.Location = new System.Drawing.Point(495, 90);
-            this.discordPass.Name = "discordPass";
-            this.discordPass.PasswordChar = '*';
-            this.discordPass.Size = new System.Drawing.Size(174, 22);
-            this.discordPass.TabIndex = 11;
-            this.discordPass.UseSystemPasswordChar = true;
-            this.discordPass.TextChanged += new System.EventHandler(this.discordPass_TextChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(492, 73);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(98, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Discord Password";
-            // 
-            // discordEmail
-            // 
-            this.discordEmail.Location = new System.Drawing.Point(495, 31);
-            this.discordEmail.Name = "discordEmail";
-            this.discordEmail.Size = new System.Drawing.Size(174, 22);
-            this.discordEmail.TabIndex = 9;
-            this.discordEmail.TextChanged += new System.EventHandler(this.discordEmail_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(492, 14);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(81, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Discord E-Mail";
             // 
             // serverHub
             // 
@@ -432,7 +326,38 @@
             this.deleteTitleToolStripMenuItem});
             this.titeListMenuStrip1.Name = "titeListMenuStrip1";
             this.titeListMenuStrip1.ShowImageMargin = false;
-            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 164);
+            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 142);
+            // 
+            // nameToolStripTextBox1
+            // 
+            this.nameToolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold);
+            this.nameToolStripTextBox1.MaxLength = 16;
+            this.nameToolStripTextBox1.Name = "nameToolStripTextBox1";
+            this.nameToolStripTextBox1.ReadOnly = true;
+            this.nameToolStripTextBox1.Size = new System.Drawing.Size(100, 20);
+            this.nameToolStripTextBox1.Text = "Title ID";
+            // 
+            // installDLCToolStripMenuItem
+            // 
+            this.installDLCToolStripMenuItem.Enabled = false;
+            this.installDLCToolStripMenuItem.Name = "installDLCToolStripMenuItem";
+            this.installDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.installDLCToolStripMenuItem.Text = "Add DLC";
+            // 
+            // uninstallDLCToolStripMenuItem
+            // 
+            this.uninstallDLCToolStripMenuItem.Enabled = false;
+            this.uninstallDLCToolStripMenuItem.Name = "uninstallDLCToolStripMenuItem";
+            this.uninstallDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.uninstallDLCToolStripMenuItem.Text = "Remove DLC";
+            // 
+            // installUpdateToolStripMenuItem
+            // 
+            this.installUpdateToolStripMenuItem.Enabled = false;
+            this.installUpdateToolStripMenuItem.Name = "installUpdateToolStripMenuItem";
+            this.installUpdateToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.installUpdateToolStripMenuItem.Text = "Install Update";
+            this.installUpdateToolStripMenuItem.Click += new System.EventHandler(this.installUpdateToolStripMenuItem_Click);
             // 
             // uninstallUpdateToolStripMenuItem
             // 
@@ -440,6 +365,18 @@
             this.uninstallUpdateToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.uninstallUpdateToolStripMenuItem.Text = "Uninstall Update";
             this.uninstallUpdateToolStripMenuItem.Click += new System.EventHandler(this.uninstallToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
+            // 
+            // deleteTitleToolStripMenuItem
+            // 
+            this.deleteTitleToolStripMenuItem.Name = "deleteTitleToolStripMenuItem";
+            this.deleteTitleToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.deleteTitleToolStripMenuItem.Text = "Delete Title";
+            this.deleteTitleToolStripMenuItem.Click += new System.EventHandler(this.deleteTitleToolStripMenuItem_Click);
             // 
             // cemu173Patch
             // 
@@ -518,7 +455,7 @@
             // titleIdTextBox
             // 
             this.titleIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.titleIdTextBox.Location = new System.Drawing.Point(1112, 7);
+            this.titleIdTextBox.Location = new System.Drawing.Point(580, 7);
             this.titleIdTextBox.MaxLength = 16;
             this.titleIdTextBox.Name = "titleIdTextBox";
             this.titleIdTextBox.Size = new System.Drawing.Size(130, 22);
@@ -528,7 +465,7 @@
             // 
             // newdlbtn
             // 
-            this.newdlbtn.Location = new System.Drawing.Point(1032, 7);
+            this.newdlbtn.Location = new System.Drawing.Point(500, 7);
             this.newdlbtn.Name = "newdlbtn";
             this.newdlbtn.Size = new System.Drawing.Size(74, 23);
             this.newdlbtn.TabIndex = 31;
@@ -546,48 +483,14 @@
             this.organizeBtn.UseVisualStyleBackColor = true;
             this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
             // 
-            // installUpdateToolStripMenuItem
+            // titleName
             // 
-            this.installUpdateToolStripMenuItem.Enabled = false;
-            this.installUpdateToolStripMenuItem.Name = "installUpdateToolStripMenuItem";
-            this.installUpdateToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.installUpdateToolStripMenuItem.Text = "Install Update";
-            this.installUpdateToolStripMenuItem.Click += new System.EventHandler(this.installUpdateToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
-            // 
-            // installDLCToolStripMenuItem
-            // 
-            this.installDLCToolStripMenuItem.Enabled = false;
-            this.installDLCToolStripMenuItem.Name = "installDLCToolStripMenuItem";
-            this.installDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.installDLCToolStripMenuItem.Text = "Add DLC";
-            // 
-            // uninstallDLCToolStripMenuItem
-            // 
-            this.uninstallDLCToolStripMenuItem.Enabled = false;
-            this.uninstallDLCToolStripMenuItem.Name = "uninstallDLCToolStripMenuItem";
-            this.uninstallDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.uninstallDLCToolStripMenuItem.Text = "Remove DLC";
-            // 
-            // nameToolStripTextBox1
-            // 
-            this.nameToolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold);
-            this.nameToolStripTextBox1.MaxLength = 16;
-            this.nameToolStripTextBox1.Name = "nameToolStripTextBox1";
-            this.nameToolStripTextBox1.ReadOnly = true;
-            this.nameToolStripTextBox1.Size = new System.Drawing.Size(100, 20);
-            this.nameToolStripTextBox1.Text = "Title ID";
-            // 
-            // deleteTitleToolStripMenuItem
-            // 
-            this.deleteTitleToolStripMenuItem.Name = "deleteTitleToolStripMenuItem";
-            this.deleteTitleToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
-            this.deleteTitleToolStripMenuItem.Text = "Delete Title";
-            this.deleteTitleToolStripMenuItem.Click += new System.EventHandler(this.deleteTitleToolStripMenuItem_Click);
+            this.titleName.AutoSize = true;
+            this.titleName.Location = new System.Drawing.Point(716, 11);
+            this.titleName.Name = "titleName";
+            this.titleName.Size = new System.Drawing.Size(60, 13);
+            this.titleName.TabIndex = 34;
+            this.titleName.Text = "Title Name";
             // 
             // Form1
             // 
@@ -595,6 +498,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.titleName);
             this.Controls.Add(this.organizeBtn);
             this.Controls.Add(this.newdlbtn);
             this.Controls.Add(this.titleIdTextBox);
@@ -626,8 +530,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.titeListMenuStrip1.ResumeLayout(false);
             this.titeListMenuStrip1.PerformLayout();
@@ -641,21 +543,17 @@
         private System.Windows.Forms.Label status;
         private System.Windows.Forms.GroupBox groupBox2;
         internal System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox outputTextbox;
         internal System.Windows.Forms.CheckBox storeEncCont;
         private System.Windows.Forms.Button updateBtn;
         private System.Windows.Forms.CheckBox fullScreen;
-        private System.Windows.Forms.ListBox userList;
         private System.Windows.Forms.TextBox chatInput;
-        private System.Windows.Forms.TextBox username;
         private System.Windows.Forms.Button playBtn;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.Button sendChat;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.RichTextBox chatbox;
         private System.Windows.Forms.Label progressOverlay;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox cemuDir;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox titleDir;
@@ -664,11 +562,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button checkUpdateBtn;
         private System.Windows.Forms.CheckBox cemu173Patch;
-        private System.Windows.Forms.TextBox discordPass;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox discordEmail;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button discordConnect;
         private System.Windows.Forms.Button dlcBtn;
         private System.Windows.Forms.Button cleanTitleBtn;
         private System.Windows.Forms.TextBox titleVersion;
@@ -688,6 +581,7 @@
         private System.Windows.Forms.ToolStripMenuItem uninstallDLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox nameToolStripTextBox1;
         private System.Windows.Forms.ToolStripMenuItem deleteTitleToolStripMenuItem;
+        private System.Windows.Forms.Label titleName;
     }
 }
 

@@ -21,9 +21,9 @@ namespace MapleLib.Collections
 {
     public class MapleDictionary : Dictionary<string, Title>
     {
-        private static List<Title> _jsonObj;
-        private static readonly List<string> Updates = new List<string>(Resources.updates.Split('\n'));
-        private static readonly List<string> Titles = new List<string>(Resources.titles.Split('\n'));
+        public static List<Title> JsonObj { get; set; }
+        private static List<string> Updates => new List<string>(Resources.updates.Split('\n'));
+        private static List<string> Titles => new List<string>(Resources.titles.Split('\n'));
 
         private string BaseDir { get; set; }
 
@@ -85,7 +85,6 @@ namespace MapleLib.Collections
 
             if (notice)
                 Toolbelt.AppendLog($"[Database] [+] Loaded Images: {count}", Color.DarkViolet);
-
         }
 
         private async void LoadTitle(string path)
@@ -119,9 +118,9 @@ namespace MapleLib.Collections
         private static void LoadAddOn(Title value)
         {
             var id = value.Lower8Digits;
-            var titles = _jsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
+            var titles = JsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
 
-            foreach (var title in titles) {
+            foreach (var title in titles)
                 value.DLC.Add(new Title
                 {
                     TitleID = title.TitleID.ToUpper(),
@@ -131,7 +130,6 @@ namespace MapleLib.Collections
                     Ticket = title.Ticket,
                     FolderLocation = Path.Combine(Settings.BasePatchDir, id, "aoc")
                 });
-            }
         }
 
         public static void FindImage(Title title)
@@ -183,11 +181,11 @@ namespace MapleLib.Collections
         public static async Task<Title> BuildTitle(string titleId, string location, bool newTitle = false)
         {
             try {
-                if (_jsonObj == null)
-                    _jsonObj = await LoadJsonTitles();
+                if (JsonObj == null)
+                    JsonObj = await LoadJsonTitles();
 
                 Title title;
-                if ((title = _jsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
+                if ((title = JsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
                 title.Name = Toolbelt.RIC(title.Name);
