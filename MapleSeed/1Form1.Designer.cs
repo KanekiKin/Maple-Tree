@@ -113,12 +113,10 @@
             // 
             this.outputTextbox.BackColor = System.Drawing.SystemColors.HighlightText;
             this.outputTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.outputTextbox.DetectUrls = false;
             this.outputTextbox.ForeColor = System.Drawing.SystemColors.WindowFrame;
             this.outputTextbox.Location = new System.Drawing.Point(370, 6);
             this.outputTextbox.Name = "outputTextbox";
             this.outputTextbox.ReadOnly = true;
-            this.outputTextbox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Horizontal;
             this.outputTextbox.Size = new System.Drawing.Size(504, 480);
             this.outputTextbox.TabIndex = 0;
             this.outputTextbox.Text = "";

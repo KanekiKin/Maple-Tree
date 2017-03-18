@@ -55,7 +55,7 @@ namespace MapleLib.Collections
             if (notice)
                 Toolbelt.AppendLog("[Database] [+] Loading Titles...", Color.DarkViolet);
 
-            Directories = Directory.GetDirectories(BaseDir).ToList();
+            Directories = Directory.GetDirectories(BaseDir, "*", SearchOption.AllDirectories).ToList();
             await Task.Run(() => Directories.ForEach(LoadTitle));
 
             if (notice)
