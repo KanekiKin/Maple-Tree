@@ -12,12 +12,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
-using MapleLib.Network;
 using MapleLib.Network.Web;
 using MapleLib.Properties;
 using MapleLib.Structs;
@@ -50,8 +48,7 @@ namespace MapleSeed
             fullScreen.Checked = Settings.FullScreenMode;
             cemu173Patch.Checked = Settings.Cemu173Patch;
             storeEncCont.Checked = Settings.StoreEncryptedContent;
-
-            titleName.Text = string.Empty;
+            
             titleDir.Text = Settings.TitleDirectory;
             cemuDir.Text = Settings.CemuDirectory;
             serverHub.Text = Settings.Hub;
@@ -398,13 +395,14 @@ namespace MapleSeed
             if (titleIdTextBox.Text.Length != 16)
                 return;
             
-            var title = MapleDictionary.JsonObj.Find(x => x.TitleID.ToUpper() == titleIdTextBox.Text);
-            await Task.Run(() => MapleDictionary.FindImage(title));
-
+            var title = MapleDictionary.JsonObj.Find(x => x.TitleID.ToUpper() == titleIdTextBox.Text.ToUpper());
             if (title == null) return;
+
             titleName.Text = Toolbelt.RIC(title.Name);
 
+            await Task.Run(() => MapleDictionary.FindImage(title));
             if (title.Image == null) return;
+
             pictureBox1.ImageLocation = title.Image;
         }
 

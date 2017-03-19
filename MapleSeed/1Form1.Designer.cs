@@ -124,7 +124,7 @@
             // storeEncCont
             // 
             this.storeEncCont.AutoSize = true;
-            this.storeEncCont.Location = new System.Drawing.Point(133, 612);
+            this.storeEncCont.Location = new System.Drawing.Point(133, 619);
             this.storeEncCont.Name = "storeEncCont";
             this.storeEncCont.Size = new System.Drawing.Size(152, 17);
             this.storeEncCont.TabIndex = 11;
@@ -134,7 +134,7 @@
             // 
             // updateBtn
             // 
-            this.updateBtn.Location = new System.Drawing.Point(331, 7);
+            this.updateBtn.Location = new System.Drawing.Point(91, 32);
             this.updateBtn.Name = "updateBtn";
             this.updateBtn.Size = new System.Drawing.Size(74, 23);
             this.updateBtn.TabIndex = 12;
@@ -145,7 +145,7 @@
             // fullScreen
             // 
             this.fullScreen.AutoSize = true;
-            this.fullScreen.Location = new System.Drawing.Point(12, 612);
+            this.fullScreen.Location = new System.Drawing.Point(12, 619);
             this.fullScreen.Name = "fullScreen";
             this.fullScreen.Size = new System.Drawing.Size(115, 17);
             this.fullScreen.TabIndex = 13;
@@ -155,7 +155,7 @@
             // 
             // chatInput
             // 
-            this.chatInput.Location = new System.Drawing.Point(12, 584);
+            this.chatInput.Location = new System.Drawing.Point(12, 591);
             this.chatInput.Name = "chatInput";
             this.chatInput.Size = new System.Drawing.Size(1121, 22);
             this.chatInput.TabIndex = 0;
@@ -174,7 +174,7 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(12, 56);
+            this.tabControl1.Location = new System.Drawing.Point(12, 63);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1240, 522);
@@ -381,7 +381,7 @@
             this.cemu173Patch.AutoSize = true;
             this.cemu173Patch.Checked = true;
             this.cemu173Patch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cemu173Patch.Location = new System.Drawing.Point(291, 612);
+            this.cemu173Patch.Location = new System.Drawing.Point(291, 619);
             this.cemu173Patch.Name = "cemu173Patch";
             this.cemu173Patch.Size = new System.Drawing.Size(158, 17);
             this.cemu173Patch.TabIndex = 7;
@@ -391,7 +391,7 @@
             // 
             // sendChat
             // 
-            this.sendChat.Location = new System.Drawing.Point(1143, 584);
+            this.sendChat.Location = new System.Drawing.Point(1143, 591);
             this.sendChat.Name = "sendChat";
             this.sendChat.Size = new System.Drawing.Size(109, 23);
             this.sendChat.TabIndex = 21;
@@ -412,9 +412,9 @@
             // 
             // dlcBtn
             // 
-            this.dlcBtn.Location = new System.Drawing.Point(251, 7);
+            this.dlcBtn.Location = new System.Drawing.Point(12, 32);
             this.dlcBtn.Name = "dlcBtn";
-            this.dlcBtn.Size = new System.Drawing.Size(74, 23);
+            this.dlcBtn.Size = new System.Drawing.Size(75, 23);
             this.dlcBtn.TabIndex = 25;
             this.dlcBtn.Text = "[+] DLC";
             this.dlcBtn.UseVisualStyleBackColor = true;
@@ -432,7 +432,7 @@
             // 
             // titleVersion
             // 
-            this.titleVersion.Location = new System.Drawing.Point(429, 8);
+            this.titleVersion.Location = new System.Drawing.Point(189, 32);
             this.titleVersion.MaxLength = 3;
             this.titleVersion.Name = "titleVersion";
             this.titleVersion.Size = new System.Drawing.Size(39, 22);
@@ -444,7 +444,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(411, 11);
+            this.label1.Location = new System.Drawing.Point(171, 35);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(16, 19);
             this.label1.TabIndex = 28;
@@ -453,7 +453,7 @@
             // titleIdTextBox
             // 
             this.titleIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.titleIdTextBox.Location = new System.Drawing.Point(580, 7);
+            this.titleIdTextBox.Location = new System.Drawing.Point(331, 8);
             this.titleIdTextBox.MaxLength = 16;
             this.titleIdTextBox.Name = "titleIdTextBox";
             this.titleIdTextBox.Size = new System.Drawing.Size(130, 22);
@@ -463,7 +463,7 @@
             // 
             // newdlbtn
             // 
-            this.newdlbtn.Location = new System.Drawing.Point(500, 7);
+            this.newdlbtn.Location = new System.Drawing.Point(251, 7);
             this.newdlbtn.Name = "newdlbtn";
             this.newdlbtn.Size = new System.Drawing.Size(74, 23);
             this.newdlbtn.TabIndex = 31;
@@ -484,11 +484,11 @@
             // titleName
             // 
             this.titleName.AutoSize = true;
-            this.titleName.Location = new System.Drawing.Point(497, 33);
+            this.titleName.Location = new System.Drawing.Point(328, 32);
             this.titleName.Name = "titleName";
-            this.titleName.Size = new System.Drawing.Size(60, 13);
+            this.titleName.Size = new System.Drawing.Size(42, 13);
             this.titleName.TabIndex = 34;
-            this.titleName.Text = "Title Name";
+            this.titleName.Text = "Title ID";
             // 
             // Form1
             // 
