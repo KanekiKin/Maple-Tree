@@ -81,9 +81,9 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edge is a very unstable build, that receives updates often and should be used with caution. Expect errors to shown, bugs to be present, and program crashes.
+        ///   Looks up a localized string similar to Edge is a very unstable build, that receives updates often and should be used with caution. Expect errors to be shown, bugs to be present, and program crashes.
         ///
-        ///Report any errors you come across at http://github.com/Tsume/Maple-Tree..
+        ///Report errors at http://github.com/Tsume/Maple-Tree..
         /// </summary>
         public static string EdgeBuildNotice {
             get {

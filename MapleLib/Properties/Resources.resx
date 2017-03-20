@@ -145,9 +145,9 @@
     <value>..\resources\titles.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
   </data>
   <data name="EdgeBuildNotice" xml:space="preserve">
-    <value>Edge is a very unstable build, that receives updates often and should be used with caution. Expect errors to shown, bugs to be present, and program crashes.
+    <value>Edge is a very unstable build, that receives updates often and should be used with caution. Expect errors to be shown, bugs to be present, and program crashes.
 
-Report any errors you come across at http://github.com/Tsume/Maple-Tree.</value>
+Report errors at http://github.com/Tsume/Maple-Tree.</value>
   </data>
   <data name="OrganizeBtn_Click_" xml:space="preserve">
     <value>This action will rename all game folders to an organized format.

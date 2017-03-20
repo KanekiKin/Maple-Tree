@@ -77,7 +77,7 @@ namespace MapleSeed
 
         private static void InitSettings()
         {
-            if (string.IsNullOrEmpty(Settings.CemuDirectory) &&
+            if (string.IsNullOrEmpty(Settings.CemuDirectory) ||
                 !File.Exists(Path.Combine(Settings.CemuDirectory, "cemu.exe"))) {
                 var ofd = new OpenFileDialog
                 {
@@ -94,7 +94,7 @@ namespace MapleSeed
                 Settings.CemuDirectory = Path.GetDirectoryName(ofd.FileName);
             }
 
-            if (string.IsNullOrEmpty(Settings.TitleDirectory) && !Directory.Exists(Settings.TitleDirectory)) {
+            if (string.IsNullOrEmpty(Settings.TitleDirectory) || !Directory.Exists(Settings.TitleDirectory)) {
                 var fbd = new FolderBrowserDialog
                 {
                     Description = @"Cemu Title Directory" + Environment.NewLine + @"(Where you store games)"
@@ -118,8 +118,6 @@ namespace MapleSeed
 
             MinimumSize = MaximumSize = Size;
 
-            MessageBox.Show(Resources.EdgeBuildNotice, @"MapleSeed - Edge Build");
-
             RegisterEvents();
 
             await Database.TitleDb.Init(Settings.TitleDirectory);
@@ -136,6 +134,8 @@ namespace MapleSeed
             AppendLog(@"Enter /help for a list of possible commands.");
 
             Enabled = true;
+
+            MessageBox.Show(Resources.EdgeBuildNotice, @"MapleSeed - Edge Build");
         }
 
         private void MapleLoadiine_OnAddTitle(object sender, Title e)
