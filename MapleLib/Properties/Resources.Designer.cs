@@ -61,7 +61,7 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The action will delete all content under
+        ///   Looks up a localized string similar to This action will delete all content currently under
         ///&apos;{0}&apos;.
         /// </summary>
         public static string ActionWillDeleteAllContent {

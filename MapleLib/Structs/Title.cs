@@ -24,8 +24,8 @@ namespace MapleLib.Structs
         public bool CDN { get; set; }
         public string FolderLocation { get; set; }
         public string MetaLocation { get; set; }
-        public string Upper8Digits => TitleID.Length >= 8 ? TitleID.Substring(0, 8).ToUpper() : String.Empty;
-        public string Lower8Digits => TitleID.Length >= 8 ? TitleID.Substring(8).ToUpper() : String.Empty;
+        public string Upper8Digits => TitleID.Length >= 8 ? TitleID.Substring(0, 8).ToUpper() : string.Empty;
+        public string Lower8Digits => TitleID.Length >= 8 ? TitleID.Substring(8).ToUpper() : string.Empty;
         public List<string> Versions { get; set; } = new List<string>();
         public List<Title> DLC { get; } = new List<Title>();
 
@@ -62,7 +62,7 @@ namespace MapleLib.Structs
             var cType = ContentType.Contains("App") ? "App" : ContentType;
             return Toolbelt.RIC($"[{cType}][{Region}] {Name}");
         }
-        
+
         public int GetTitleVersion()
         {
             var metaLocation = Path.Combine(Settings.BasePatchDir, Lower8Digits, "meta", "meta.xml");
@@ -78,10 +78,10 @@ namespace MapleLib.Structs
         public async Task DownloadContent(string version = "0")
         {
             try {
-                if (String.IsNullOrEmpty(TitleID))
+                if (string.IsNullOrEmpty(TitleID))
                     throw new Exception("Can't download content without a valid TItle ID.");
 
-                if (String.IsNullOrEmpty(FolderLocation))
+                if (string.IsNullOrEmpty(FolderLocation))
                     throw new Exception("Can't download content without a valid output Location.");
 
                 await Database.DownloadTitle(this, FolderLocation, ContentType, version);
@@ -94,10 +94,10 @@ namespace MapleLib.Structs
         public async Task DownloadUpdate(string version = "0")
         {
             try {
-                if (String.IsNullOrEmpty(TitleID))
+                if (string.IsNullOrEmpty(TitleID))
                     throw new Exception("Can't download content without a valid TItle ID.");
 
-                if (String.IsNullOrEmpty(FolderLocation))
+                if (string.IsNullOrEmpty(FolderLocation))
                     throw new Exception("Can't download content without a valid output Location.");
 
                 await Database.DownloadTitle(this, FolderLocation, "Patch", version);
@@ -105,6 +105,41 @@ namespace MapleLib.Structs
             catch (Exception ex) {
                 MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
             }
+        }
+
+        public void DeleteContent()
+        {
+            var updatePath = Path.GetFullPath(FolderLocation);
+            
+            if (Directory.Exists(updatePath))
+                Directory.Delete(updatePath, true);
+
+            DeleteUpdateContent();
+        }
+
+        public void DeleteUpdateContent()
+        {
+            var updatePath = Path.Combine(Settings.BasePatchDir, Lower8Digits);
+            
+            if (Directory.Exists(Path.Combine(updatePath, "code")))
+                Directory.Delete(Path.Combine(updatePath, "code"), true);
+
+            if (Directory.Exists(Path.Combine(updatePath, "meta")))
+                Directory.Delete(Path.Combine(updatePath, "meta"), true);
+
+            if (Directory.Exists(Path.Combine(updatePath, "content")))
+                Directory.Delete(Path.Combine(updatePath, "content"), true);
+
+            if (File.Exists(Path.Combine(updatePath, "result.log")))
+                File.Delete(Path.Combine(updatePath, "result.log"));
+        }
+
+        public void DeleteAddOnContent()
+        {
+            var updatePath = Path.Combine(Settings.BasePatchDir, Lower8Digits, "aoc");
+
+            if (Directory.Exists(updatePath))
+                Directory.Delete(updatePath, true);
         }
     }
 }

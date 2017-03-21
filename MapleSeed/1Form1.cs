@@ -48,7 +48,7 @@ namespace MapleSeed
             fullScreen.Checked = Settings.FullScreenMode;
             cemu173Patch.Checked = Settings.Cemu173Patch;
             storeEncCont.Checked = Settings.StoreEncryptedContent;
-            
+
             titleDir.Text = Settings.TitleDirectory;
             cemuDir.Text = Settings.CemuDirectory;
             serverHub.Text = Settings.Hub;
@@ -152,7 +152,7 @@ namespace MapleSeed
                 titleList.Invoke(new Action(() => { titleList.Items.Add(title); }));
             else titleList.Items.Add(title);
         }
-        
+
         private void UpdateProgressBar(int percent, long _toReceive, long _received)
         {
             if (percent <= 0 || _toReceive <= 0 || _received <= 0)
@@ -163,7 +163,7 @@ namespace MapleSeed
 
                 var toReceive = Toolbelt.SizeSuffix(_toReceive);
                 var received = Toolbelt.SizeSuffix(_received);
-                
+
                 progressOverlay.Invoke(new Action(() => { progressOverlay.Text = $@"{received} / {toReceive}"; }));
             }
             catch (Exception ex) {
@@ -180,9 +180,9 @@ namespace MapleSeed
         private void Network_DownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
             if (e == null) return;
-            UpdateProgressBar(e.ProgressPercentage,e.TotalBytesToReceive, e.BytesReceived);
+            UpdateProgressBar(e.ProgressPercentage, e.TotalBytesToReceive, e.BytesReceived);
         }
-        
+
         private void MesgLog_NewLogEntryEventHandler(object sender, NewLogEntryEvent e)
         {
             outputTextbox.AppendText(e.Entry, e.Color);
@@ -214,7 +214,7 @@ namespace MapleSeed
 
             Application.Exit();
         }
-        
+
         private void AppendLog(string msg, Color color = default(Color))
         {
             TextLog.MesgLog.WriteLog(msg, color);
@@ -225,30 +225,8 @@ namespace MapleSeed
             btn.Enabled = false;
 
             try {
-                if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK)
-
-                    if (titleList.CheckedItems.Count == 0 && titleList.SelectedItem != null) {
-                        var title = titleList.SelectedItem as Title;
-                        if (title == null) return;
-
-                        switch (contentType)
-                        {
-                            case "DLC":
-                                foreach (var _dlc in title.DLC)
-                                    await _dlc.DownloadContent();
-                                break;
-
-                            case "Patch":
-                                await title.DownloadUpdate(version);
-                                break;
-
-                            case "eShop/Application":
-                                await title.DownloadContent(version);
-                                break;
-                        }
-                    }
-
-                    foreach (var item in titleList.CheckedItems) {
+                if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
+                    foreach (var item in titleList.SelectedItems) {
                         var title = item as Title;
                         if (title == null) continue;
 
@@ -267,6 +245,7 @@ namespace MapleSeed
                                 break;
                         }
                     }
+                }
             }
             catch (Exception ex) {
                 MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
@@ -292,7 +271,7 @@ namespace MapleSeed
         {
             Settings.FullScreenMode = fullScreen.Checked;
         }
-        
+
         private void playBtn_Click(object sender, EventArgs e)
         {
             var title = titleList.SelectedItem as Title;
@@ -301,53 +280,7 @@ namespace MapleSeed
             if (!Toolbelt.LaunchCemu(title.MetaLocation)) return;
             TextLog.MesgLog.WriteLog($"Started playing {title.Name}");
         }
-
-        private async void sendChat_Click(object sender, EventArgs e)
-        {
-            if (chatInput.Text.IsNullOrEmpty()) return;
-            var text = chatInput.Text;
-            chatInput.Text = string.Empty;
-
-            await CheckForCommandInput(text);
-        }
-
-        private async Task<bool> CheckForCommandInput(string s)
-        {
-            return await Task.Run(() => {
-                if (s.StartsWith("/dl")) {
-                    var titleId = s.Substring(3).Trim();
-                    var title = Database.FindByTitleId(titleId);
-                    if (title.TitleID.IsNullOrEmpty()) return false;
-                    Invoke(new Action(async () => await title.DownloadContent()));
-                    return true;
-                }
-
-                if (s.StartsWith("/find")) {
-                    var titleStr = s.Substring(5).Trim();
-                    var titles = Database.FindTitles(titleStr);
-                    foreach (var title in titles)
-                        TextLog.MesgLog.WriteLog($"{title}, TitleID: {title.TitleID}, [{title.ContentType}]", Color.Green);
-                    return true;
-                }
-
-                if (s.StartsWith("/clear")) {
-                    outputTextbox.Text = string.Empty;
-                    return true;
-                }
-
-                if (s.StartsWith("/help")) {
-                    TextLog.MesgLog.WriteLog("------------------------------------------");
-                    TextLog.MesgLog.WriteLog("/dl <title id> - Download the specified title ID from NUS.");
-                    TextLog.MesgLog.WriteLog("/find <title name> <region(optional)> - Searches for Title ID based on Title Name.");
-                    TextLog.MesgLog.WriteLog("/clear - Clears the current chat log.");
-                    TextLog.MesgLog.WriteLog("------------------------------------------");
-                    return true;
-                }
-
-                return false;
-            });
-        }
-
+        
         private void titleDir_TextChanged(object sender, EventArgs e)
         {
             Settings.TitleDirectory = titleDir.Text;
@@ -384,7 +317,7 @@ namespace MapleSeed
         {
             Settings.Cemu173Patch = cemu173Patch.Checked;
         }
-        
+
         private void storeEncCont_CheckedChanged(object sender, EventArgs e)
         {
             Settings.StoreEncryptedContent = storeEncCont.Checked;
@@ -394,7 +327,7 @@ namespace MapleSeed
         {
             if (titleIdTextBox.Text.Length != 16)
                 return;
-            
+
             var title = MapleDictionary.JsonObj.Find(x => x.TitleID.ToUpper() == titleIdTextBox.Text.ToUpper());
             if (title == null) return;
 
@@ -446,25 +379,6 @@ namespace MapleSeed
             cleanTitleBtn.Enabled = true;
         }
 
-        private void titleList_SelectedValueChanged(object sender, EventArgs e)
-        {
-            var title = titleList.SelectedItem as Title;
-            if (string.IsNullOrEmpty(title?.Lower8Digits)) {
-                //dlcBtn.Enabled = updateBtn.Enabled = false;
-                return;
-            }
-
-            //dlcBtn.Enabled = title.DLC.Count > 0;
-            //updateBtn.Enabled = title.Versions.Count > 0;
-
-            var updatesStr = title.Versions.Aggregate(string.Empty,
-                (current, update) => current + $"| v{update.Trim()} ");
-
-            SetCurrentImage(title);
-
-            TextLog.StatusLog.WriteLog($"{title.Lower8Digits} | Current Update: v{title.GetTitleVersion()} | Available Updates: {updatesStr}", Color.Green);
-        }
-
         private void SetCurrentImage(Title title)
         {
             Task.Run(() => {
@@ -485,7 +399,7 @@ namespace MapleSeed
             var title = await MapleDictionary.BuildTitle(titleIdTextBox.Text, string.Empty, true);
             if (title == null)
                 return;
-            
+
             await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
 
             await Database.TitleDb.BuildDatabase();
@@ -519,6 +433,26 @@ namespace MapleSeed
                 Directory.Delete(deleteDir, true);
         }
 
+        private void titleList_SelectedValueChanged(object sender, EventArgs e)
+        {
+            var title = titleList.SelectedItem as Title;
+            if (string.IsNullOrEmpty(title?.Lower8Digits)) return;
+
+            titleName.Text = title.Name;
+
+            //dlcBtn.Enabled = title.DLC.Count > 0;
+            //updateBtn.Enabled = title.Versions.Count > 0;
+
+            var updatesStr = title.Versions.Aggregate(string.Empty,
+                (current, update) => current + $"| v{update.Trim()} ");
+
+            SetCurrentImage(title);
+
+            TextLog.StatusLog.WriteLog(
+                $"{title.Lower8Digits} | Current Update: v{title.GetTitleVersion()} | Available Updates: {updatesStr}",
+                Color.Green);
+        }
+
         private void titleList_MouseUp(object sender, MouseEventArgs e)
         {
             var location = titleList.IndexFromPoint(e.Location);
@@ -539,14 +473,34 @@ namespace MapleSeed
             installUpdateToolStripMenuItem.Enabled = title.Versions.Count > 0;
 
             var path = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
-            //uninstallDLCToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path, "aoc"));
-            uninstallUpdateToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path));
-
-
+            uninstallDLCToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path, "aoc"));
+            uninstallUpdateToolStripMenuItem.Enabled = Directory.Exists(path);
+            
             installUpdateToolStripMenuItem.Text = $@"Install Update v{titleVersion.Text.Trim()}";
             uninstallUpdateToolStripMenuItem.Text = $@"Uninstall Update v{title.GetTitleVersion()}";
 
             titeListMenuStrip1.Show(MousePosition);
+        }
+
+        private void uninstallDLCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (titleList.SelectedItems.Count <= 0) return;
+
+            foreach (var titleListSelectedItem in titleList.SelectedItems)
+            {
+                var title = titleListSelectedItem as Title;
+                if (title == null) continue;
+
+                var updatePath = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
+
+                var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
+                    Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
+
+                if (result != DialogResult.OK)
+                    return;
+
+                title.DeleteAddOnContent();
+            }
         }
 
         private void uninstallToolStripMenuItem_Click(object sender, EventArgs e)
@@ -559,24 +513,13 @@ namespace MapleSeed
 
                 var updatePath = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
 
-                var result = MessageBox.Show($@"The action will delete Patch Content under '{updatePath}'",
+                var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
                     Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
 
                 if (result != DialogResult.OK)
                     return;
 
-                if (Directory.Exists(Path.Combine(updatePath, "code")))
-                    Directory.Delete(Path.Combine(updatePath, "code"), true);
-
-                if (Directory.Exists(Path.Combine(updatePath, "meta")))
-                    Directory.Delete(Path.Combine(updatePath, "meta"), true);
-
-                if (Directory.Exists(Path.Combine(updatePath, "content")))
-                    Directory.Delete(Path.Combine(updatePath, "content"), true);
-
-                if (File.Exists(Path.Combine(updatePath, "result.log")))
-                    File.Delete(Path.Combine(updatePath, "result.log"));
-                break;
+                title.DeleteUpdateContent();
             }
         }
 
@@ -594,8 +537,7 @@ namespace MapleSeed
 
             if (result != DialogResult.OK) return;
 
-            if (Directory.Exists(updatePath))
-                Directory.Delete(updatePath, true);
+            title.DeleteContent();
 
             titleList.Items.Remove(title);
         }

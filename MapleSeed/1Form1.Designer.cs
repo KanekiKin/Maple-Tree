@@ -38,12 +38,10 @@
             this.storeEncCont = new System.Windows.Forms.CheckBox();
             this.updateBtn = new System.Windows.Forms.Button();
             this.fullScreen = new System.Windows.Forms.CheckBox();
-            this.chatInput = new System.Windows.Forms.TextBox();
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.titleList = new System.Windows.Forms.CheckedListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.clearCache = new System.Windows.Forms.Button();
@@ -63,7 +61,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cemu173Patch = new System.Windows.Forms.CheckBox();
-            this.sendChat = new System.Windows.Forms.Button();
             this.progressOverlay = new System.Windows.Forms.Label();
             this.dlcBtn = new System.Windows.Forms.Button();
             this.cleanTitleBtn = new System.Windows.Forms.Button();
@@ -72,7 +69,8 @@
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
             this.organizeBtn = new System.Windows.Forms.Button();
-            this.titleName = new System.Windows.Forms.Label();
+            this.titleList = new System.Windows.Forms.ListBox();
+            this.titleName = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -153,13 +151,6 @@
             this.fullScreen.UseVisualStyleBackColor = true;
             this.fullScreen.CheckedChanged += new System.EventHandler(this.fullScreen_CheckedChanged);
             // 
-            // chatInput
-            // 
-            this.chatInput.Location = new System.Drawing.Point(12, 591);
-            this.chatInput.Name = "chatInput";
-            this.chatInput.Size = new System.Drawing.Size(1121, 22);
-            this.chatInput.TabIndex = 0;
-            // 
             // playBtn
             // 
             this.playBtn.Location = new System.Drawing.Point(12, 7);
@@ -182,8 +173,8 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.pictureBox1);
             this.tabPage1.Controls.Add(this.titleList);
+            this.tabPage1.Controls.Add(this.pictureBox1);
             this.tabPage1.Controls.Add(this.outputTextbox);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -202,16 +193,6 @@
             this.pictureBox1.TabIndex = 30;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // titleList
-            // 
-            this.titleList.FormattingEnabled = true;
-            this.titleList.Location = new System.Drawing.Point(3, 6);
-            this.titleList.Name = "titleList";
-            this.titleList.Size = new System.Drawing.Size(361, 480);
-            this.titleList.TabIndex = 29;
-            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
-            this.titleList.MouseUp += new System.Windows.Forms.MouseEventHandler(this.titleList_MouseUp);
             // 
             // tabPage2
             // 
@@ -348,6 +329,7 @@
             this.uninstallDLCToolStripMenuItem.Name = "uninstallDLCToolStripMenuItem";
             this.uninstallDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.uninstallDLCToolStripMenuItem.Text = "Remove DLC";
+            this.uninstallDLCToolStripMenuItem.Click += new System.EventHandler(this.uninstallDLCToolStripMenuItem_Click);
             // 
             // installUpdateToolStripMenuItem
             // 
@@ -388,16 +370,6 @@
             this.cemu173Patch.Text = "Cemu 1.7.3 Patch Support";
             this.cemu173Patch.UseVisualStyleBackColor = true;
             this.cemu173Patch.CheckedChanged += new System.EventHandler(this.cemu173Patch_CheckedChanged);
-            // 
-            // sendChat
-            // 
-            this.sendChat.Location = new System.Drawing.Point(1143, 591);
-            this.sendChat.Name = "sendChat";
-            this.sendChat.Size = new System.Drawing.Size(109, 23);
-            this.sendChat.TabIndex = 21;
-            this.sendChat.Text = "Send";
-            this.sendChat.UseVisualStyleBackColor = true;
-            this.sendChat.Click += new System.EventHandler(this.sendChat_Click);
             // 
             // progressOverlay
             // 
@@ -452,12 +424,14 @@
             // 
             // titleIdTextBox
             // 
-            this.titleIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.titleIdTextBox.Location = new System.Drawing.Point(331, 8);
+            this.titleIdTextBox.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.titleIdTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.titleIdTextBox.Location = new System.Drawing.Point(531, 24);
             this.titleIdTextBox.MaxLength = 16;
             this.titleIdTextBox.Name = "titleIdTextBox";
-            this.titleIdTextBox.Size = new System.Drawing.Size(130, 22);
+            this.titleIdTextBox.Size = new System.Drawing.Size(214, 15);
             this.titleIdTextBox.TabIndex = 30;
+            this.titleIdTextBox.Text = "0005000000000000";
             this.titleIdTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.titleIdTextBox.TextChanged += new System.EventHandler(this.titleIdTextBox_TextChanged);
             // 
@@ -481,18 +455,34 @@
             this.organizeBtn.UseVisualStyleBackColor = true;
             this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
             // 
+            // titleList
+            // 
+            this.titleList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.titleList.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleList.FormattingEnabled = true;
+            this.titleList.ItemHeight = 15;
+            this.titleList.Location = new System.Drawing.Point(6, 6);
+            this.titleList.Name = "titleList";
+            this.titleList.Size = new System.Drawing.Size(358, 482);
+            this.titleList.TabIndex = 31;
+            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
+            this.titleList.MouseUp += new System.Windows.Forms.MouseEventHandler(this.titleList_MouseUp);
+            // 
             // titleName
             // 
-            this.titleName.AutoSize = true;
-            this.titleName.Location = new System.Drawing.Point(328, 32);
+            this.titleName.BackColor = System.Drawing.SystemColors.Menu;
+            this.titleName.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.titleName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleName.Location = new System.Drawing.Point(386, 47);
+            this.titleName.MaxLength = 16;
             this.titleName.Name = "titleName";
-            this.titleName.Size = new System.Drawing.Size(42, 13);
-            this.titleName.TabIndex = 34;
+            this.titleName.Size = new System.Drawing.Size(504, 16);
+            this.titleName.TabIndex = 35;
             this.titleName.Text = "Title ID";
+            this.titleName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Form1
             // 
-            this.AcceptButton = this.sendChat;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 701);
@@ -505,11 +495,9 @@
             this.Controls.Add(this.cleanTitleBtn);
             this.Controls.Add(this.dlcBtn);
             this.Controls.Add(this.progressOverlay);
-            this.Controls.Add(this.sendChat);
             this.Controls.Add(this.cemu173Patch);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.playBtn);
-            this.Controls.Add(this.chatInput);
             this.Controls.Add(this.fullScreen);
             this.Controls.Add(this.updateBtn);
             this.Controls.Add(this.storeEncCont);
@@ -545,11 +533,9 @@
         internal System.Windows.Forms.CheckBox storeEncCont;
         private System.Windows.Forms.Button updateBtn;
         private System.Windows.Forms.CheckBox fullScreen;
-        private System.Windows.Forms.TextBox chatInput;
         private System.Windows.Forms.Button playBtn;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.Button sendChat;
         private System.Windows.Forms.Label progressOverlay;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox cemuDir;
@@ -564,7 +550,6 @@
         private System.Windows.Forms.Button cleanTitleBtn;
         private System.Windows.Forms.TextBox titleVersion;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckedListBox titleList;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TextBox titleIdTextBox;
         private System.Windows.Forms.Button newdlbtn;
@@ -579,7 +564,8 @@
         private System.Windows.Forms.ToolStripMenuItem uninstallDLCToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox nameToolStripTextBox1;
         private System.Windows.Forms.ToolStripMenuItem deleteTitleToolStripMenuItem;
-        private System.Windows.Forms.Label titleName;
+        private System.Windows.Forms.ListBox titleList;
+        private System.Windows.Forms.TextBox titleName;
     }
 }
 
