@@ -52,6 +52,7 @@ namespace MapleLib.Common
         public NewLogEntryEvent(string entry, Color color = default(Color))
         {
             Entry = $"[{DateTime.Now.TimeStamp()}] {entry}";
+            Entry = $"{entry}";
             Color = color;
         }
 

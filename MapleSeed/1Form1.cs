@@ -35,7 +35,7 @@ namespace MapleSeed
 
         private void RegisterEvents()
         {
-            MapleDictionary.OnAddTitle += MapleLoadiine_OnAddTitle;
+            Database.TitleDb.OnAddTitle += MapleLoadiine_OnAddTitle;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
@@ -122,8 +122,8 @@ namespace MapleSeed
 
             await Database.TitleDb.Init(Settings.TitleDirectory);
 
-            if (Database.TitleDb.Any() && Database.TitleDb.Values.Any())
-                SetCurrentImage(Database.TitleDb.Values.First());
+            if (Database.TitleDb.Any() && Database.TitleDb.Any())
+                SetCurrentImage(Database.TitleDb.First());
 
             RegisterDefaults();
 
@@ -409,7 +409,7 @@ namespace MapleSeed
 
         private async void organizeBtn_Click(object sender, EventArgs e)
         {
-            foreach (var value in Database.TitleDb.Values)
+            foreach (var value in Database.TitleDb)
                 AppendLog(Path.Combine(Settings.TitleDirectory, value.ToString()));
 
             var result = MessageBox.Show(Resources.OrganizeBtn_Click_, @"Confirm", MessageBoxButtons.OKCancel);

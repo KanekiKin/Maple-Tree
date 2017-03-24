@@ -34,7 +34,7 @@ namespace MapleLib.Network.Web
             using (var wc = new System.Net.WebClient()) {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
-                return wc.DownloadData(url);
+                return wc.DownloadDataTaskAsync(new Uri(url)).Result;
             }
         }
 

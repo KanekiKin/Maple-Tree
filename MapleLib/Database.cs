@@ -30,15 +30,14 @@ namespace MapleLib
         {
             if (game_name == null) return new List<Title>();
 
-            var titles =
-                TitleDb.Values.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
+            var titles = TitleDb.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
 
             return new List<Title>(titles);
         }
 
         public static Title FindByTitleId(string titleId)
         {
-            var title = TitleDb[titleId];
+            var title = TitleDb.ToList().Find(t=>t.TitleID == titleId.ToUpper());
 
             return titleId.IsNullOrEmpty() || title == null ? null : title;
         }
@@ -110,6 +109,9 @@ namespace MapleLib
         private static async Task<TMD> LoadTmd(Title title, string outputDir, string titleUrl, string version)
         {
             var tmdFile = Path.Combine(outputDir, "tmd");
+
+            if (string.IsNullOrEmpty(title.TitleID) || string.IsNullOrEmpty(title.TitleKey))
+                return null;
 
             version = int.Parse(version) == 0 ? "" : $".{version}";
             if (await DownloadTmd(titleUrl + $"tmd{version}", tmdFile) == null) {
@@ -229,7 +231,6 @@ namespace MapleLib
                 Toolbelt.AppendLog("  - Decrypting Content");
                 Toolbelt.AppendLog("  + This may take a minute. Please wait...");
                 Toolbelt.SetStatus("Decrypting Content. This may take a minute. Please wait...", Color.OrangeRed);
-                Toolbelt.AppendLog(string.Empty);
                 await Toolbelt.CDecrypt(outputDir);
                 CleanUpdate(outputDir, tmd);
                 break;

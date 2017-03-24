@@ -59,8 +59,8 @@ namespace MapleLib.Structs
 
         public override string ToString()
         {
-            var cType = ContentType.Contains("App") ? "App" : ContentType;
-            return Toolbelt.RIC($"[{cType}][{Region}] {Name}");
+            var cType = ContentType.Contains("App") ? "" : $"[{ContentType}]";
+            return Toolbelt.RIC($"{cType}[{Region}] {Name}");
         }
 
         public int GetTitleVersion()

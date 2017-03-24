@@ -5,12 +5,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using MapleLib.Common;
 using MapleLib.Properties;
 using MapleLib.Structs;
@@ -19,7 +21,7 @@ using WebClient = MapleLib.Network.Web.WebClient;
 
 namespace MapleLib.Collections
 {
-    public class MapleDictionary : Dictionary<string, Title>
+    public class MapleDictionary : BindingList<Title>
     {
         public static List<Title> JsonObj { get; private set; }
         private static List<string> Updates => new List<string>(Resources.updates.Split('\n'));
@@ -29,16 +31,25 @@ namespace MapleLib.Collections
 
         private List<string> Directories { get; set; }
 
-        public static event EventHandler<Title> OnAddTitle;
+        public event EventHandler<Title> OnAddTitle;
+        public event EventHandler<EventArgs> CompletedInit;
+
+        private void EventAdd(Title value)
+        {
+            OnAddTitle?.Invoke(this, value);
+        }
 
         public async Task<MapleDictionary> Init(string baseDir)
         {
-            if (string.IsNullOrEmpty(BaseDir = baseDir))
-                throw new Exception("MapleDictionary.Init(baseDir) cannot be null");
+            return await Task.Run(async () => {
+                if (string.IsNullOrEmpty(BaseDir = baseDir))
+                    throw new Exception("MapleDictionary.Init(baseDir) cannot be null");
 
-            await BuildDatabase();
+                await BuildDatabase();
 
-            return this;
+                CompletedInit?.Invoke(this, EventArgs.Empty);
+                return this;
+            });
         }
 
         public async Task BuildDatabase(bool notice = true)
@@ -46,50 +57,34 @@ namespace MapleLib.Collections
             await LoadTitles(notice);
 
             await LoadAddOns(notice);
-
-            await LoadImages(notice);
         }
 
         private async Task LoadTitles(bool notice = true)
         {
             if (notice)
-                Toolbelt.AppendLog("[Database] [+] Loading Titles...", Color.DarkViolet);
+                Toolbelt.AppendLog("Loading Titles...", Color.DarkViolet);
 
             Directories = Directory.GetDirectories(BaseDir, "*", SearchOption.AllDirectories).ToList();
             await Task.Run(() => Directories.ForEach(LoadTitle));
 
             if (notice)
-                Toolbelt.AppendLog($"[Database] [+] Loaded Titles: {Count}", Color.DarkViolet);
+                Toolbelt.AppendLog($"Loaded Titles: {Count}", Color.DarkViolet);
         }
 
         private async Task LoadAddOns(bool notice = true)
         {
             if (notice)
-                Toolbelt.AppendLog("[Database] [+] Loading DLC...", Color.DarkViolet);
+                Toolbelt.AppendLog("Loading DLC...", Color.DarkViolet);
 
-            await Task.Run(() => Values.ToList().ForEach(LoadAddOn));
-
-            if (notice)
-                Toolbelt.AppendLog($"[Database] [+] Loaded DLC: {Values.Sum(title => title.DLC.Count)}",
-                    Color.DarkViolet);
-        }
-
-        private async Task LoadImages(bool notice = true)
-        {
-            if (notice)
-                Toolbelt.AppendLog("[Database] [+] Loading Images...", Color.DarkViolet);
-
-            await Task.Run(() => Values.ToList().ForEach(FindImage));
-
-            var count = Values.Count(value => !string.IsNullOrEmpty(value.Image));
+            await Task.Run(() => this.ToList().ForEach(LoadAddOn));
 
             if (notice)
-                Toolbelt.AppendLog($"[Database] [+] Loaded Images: {count}", Color.DarkViolet);
+                Toolbelt.AppendLog($"Loaded DLC: {this.Sum(title => title.DLC.Count)}", Color.DarkViolet);
         }
 
         private async void LoadTitle(string path)
         {
-            var fileSystemEntries = Directory.GetFiles(path, "meta.xml", SearchOption.AllDirectories).ToList();
+            var fileSystemEntries = Directory.GetFiles(path, "meta.xml").ToList();
 
             if (!fileSystemEntries.Any())
                 return;
@@ -107,11 +102,11 @@ namespace MapleLib.Collections
                     return;
                 }
 
-                Add(titleId, title);
-                OnAddTitle?.Invoke(this, title);
+                FindImage(title);
+                EventAdd(title);
             }
             catch (Exception e) {
-                TextLog.MesgLog.AddHistory(e.Message);
+                MessageBox.Show($"{e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -185,7 +180,7 @@ namespace MapleLib.Collections
                     JsonObj = await LoadJsonTitles();
 
                 Title title;
-                if ((title = JsonObj?.Find(x => x.TitleID.ToUpper() == titleId.ToUpper())) == null)
+                if ((title = JsonObj?.Find(x => string.Equals(x.TitleID, titleId, StringComparison.CurrentCultureIgnoreCase))) == null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
                 title.Name = Toolbelt.RIC(title.Name);
@@ -256,7 +251,7 @@ namespace MapleLib.Collections
         public Task OrganizeTitles()
         {
             return Task.Run(() => {
-                foreach (var value in Values) {
+                foreach (var value in this) {
                     var fromLocation = value.FolderLocation;
                     var toLocation = Path.Combine(Settings.TitleDirectory, value.ToString());
 
