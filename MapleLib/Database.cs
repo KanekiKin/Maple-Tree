@@ -25,23 +25,7 @@ namespace MapleLib
     public static class Database
     {
         public static MapleDictionary TitleDb { get; } = new MapleDictionary();
-
-        public static IEnumerable<Title> FindTitles(string game_name)
-        {
-            if (game_name == null) return new List<Title>();
-
-            var titles = TitleDb.ToList().FindAll(t => Toolbelt.RIC(t.ToString()).ToLower().Contains(game_name.ToLower()));
-
-            return new List<Title>(titles);
-        }
-
-        public static Title FindByTitleId(string titleId)
-        {
-            var title = TitleDb.ToList().Find(t=>t.TitleID == titleId.ToUpper());
-
-            return titleId.IsNullOrEmpty() || title == null ? null : title;
-        }
-
+        
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {

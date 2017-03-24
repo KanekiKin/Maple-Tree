@@ -180,7 +180,7 @@ namespace MapleCake.ViewModels
             if (title == null)
                 return;
 
-            var str = string.Format(Resources.ConfirmDownload, title.Name);
+            var str = string.Format(Resources.ConfirmDownload, title.Name, title.FolderLocation);
             var result = MessageBox.Show(str, Resources.Confirmation, MessageBoxButtons.YesNo);
 
             if (result != DialogResult.Yes)

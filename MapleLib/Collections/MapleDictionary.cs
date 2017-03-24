@@ -164,8 +164,13 @@ namespace MapleLib.Collections
                 }
 
                 try {
-                    var url = @"http://" + $@"art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
-                    File.WriteAllBytes(title.Image = cachedFile, WebClient.DownloadData(url));
+                    var url = $"http://art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
+
+                    if (WebClient.UrlExists(url)) {
+                        title.Image = cachedFile;
+                        var data = WebClient.DownloadData(url);
+                        File.WriteAllBytes(title.Image, data);
+                    }
                 }
                 catch {
                     // ignored

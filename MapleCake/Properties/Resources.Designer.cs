@@ -70,7 +70,8 @@ namespace MapleCake.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Would you like to download {0}?.
+        ///   Looks up a localized string similar to Would you like to download &quot;{0}&quot; to the following location?
+        ///&quot;{1}&quot;.
         /// </summary>
         internal static string ConfirmDownload {
             get {

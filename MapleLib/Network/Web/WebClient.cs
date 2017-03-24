@@ -6,6 +6,7 @@
 #region usings
 
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -34,7 +35,8 @@ namespace MapleLib.Network.Web
             using (var wc = new System.Net.WebClient()) {
                 wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
                 wc.DownloadProgressChanged += DownloadProgressChanged;
-                return wc.DownloadDataTaskAsync(new Uri(url)).Result;
+                var task = wc.DownloadDataTaskAsync(new Uri(url));
+                return task.Result;
             }
         }
 
@@ -56,6 +58,30 @@ namespace MapleLib.Network.Web
         private static void DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             DownloadProgressChangedEvent?.Invoke(sender, e);
+        }
+
+        public static bool UrlExists(string url)
+        {
+            var webRequest = WebRequest.Create(url);
+            webRequest.Timeout = 1200;
+            webRequest.Method = "HEAD";
+
+            HttpWebResponse response = null;
+
+            try {
+                using (response = (HttpWebResponse) webRequest.GetResponse()) {
+                    if (response.StatusCode == HttpStatusCode.OK)
+                        return true;
+                }
+            }
+            catch {
+                // ignored
+            }
+            finally {
+                response?.Close();
+            }
+
+            return false;
         }
     }
 }
