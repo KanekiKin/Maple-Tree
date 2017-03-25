@@ -65,15 +65,17 @@ namespace MapleCake.ViewModels
 
         public ICommand DownloadCommand => new CommandHandler(DownloadButton);
 
+        public ICommand LaunchCemuCommand => new CommandHandler(LaunchCemuButton);
+
         private void Init()
         {
             SetTitle($"Maple Seed 2.1.0.{Build}");
 
+            SetDefaults();
+
             CheckUpdate();
 
             InitSettings();
-
-            SetDefaults();
 
             RegisterEvents();
 
@@ -88,7 +90,10 @@ namespace MapleCake.ViewModels
             await TitleList.Init();
         }
 
-        private void SetDefaults() {}
+        private void SetDefaults()
+        {
+            
+        }
 
         private void SetTitle(string title)
         {
@@ -192,6 +197,14 @@ namespace MapleCake.ViewModels
 
             DownloadCommandEnabled = true;
             RaisePropertyChangedEvent("DownloadCommandEnabled");
+        }
+
+        private void LaunchCemuButton()
+        {
+            if (SelectedItem == null) return;
+
+            if (!Toolbelt.LaunchCemu(SelectedItem.MetaLocation)) return;
+            TextLog.MesgLog.WriteLog($"Now Playing: {SelectedItem.Name}");
         }
 
         private void titleIdTextChanged(string tid)
