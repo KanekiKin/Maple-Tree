@@ -120,7 +120,7 @@ namespace MapleSeed
 
             RegisterEvents();
 
-            await Database.TitleDb.Init(Settings.TitleDirectory);
+            await Database.TitleDb.Init();
 
             if (Database.TitleDb.Any() && Database.TitleDb.Any())
                 SetCurrentImage(Database.TitleDb.First());

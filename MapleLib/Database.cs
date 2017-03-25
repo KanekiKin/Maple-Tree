@@ -24,7 +24,7 @@ namespace MapleLib
 {
     public static class Database
     {
-        public static MapleDictionary TitleDb { get; } = new MapleDictionary();
+        public static MapleDictionary TitleDb { get; } = new MapleDictionary(Settings.TitleDirectory);
         
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
@@ -235,18 +235,19 @@ namespace MapleLib
                 result = await Task.Run(async () => {
                     var numc = tmd.NumOfContents;
                     var size = Toolbelt.SizeSuffix((long) tmd.Contents[i1].Size);
-                    Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc}... ({size})");
+                    Toolbelt.AppendLog($"Downloading Content #{i1 + 1} of {numc}... ({size})");
                     var contentPath = Path.Combine(outputDir, tmd.Contents[i1].ContentID.ToString("x8"));
 
-                    if (Toolbelt.IsValid(tmd.Contents[i1], contentPath))
-                        Toolbelt.AppendLog("   + Using Local File, Skipping...");
+                    if (Toolbelt.IsValid(tmd.Contents[i1], contentPath)) {
+                        //Toolbelt.AppendLog("   + Using Local File, Skipping...");
+                    }
                     else
                         try {
                             var downloadUrl = $"{titleUrl}/{tmd.Contents[i1].ContentID:x8}";
                             await WebClient.DownloadFileAsync(downloadUrl, contentPath);
                         }
                         catch (Exception ex) {
-                            Toolbelt.AppendLog($"  - Downloading Content #{i1 + 1} of {numc} failed...\n{ex.Message}");
+                            Toolbelt.AppendLog($"Downloading Content #{i1 + 1} of {numc} failed...\n{ex.Message}");
                             return 0;
                         }
                     return 1;

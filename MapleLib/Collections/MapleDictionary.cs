@@ -23,6 +23,11 @@ namespace MapleLib.Collections
 {
     public class MapleDictionary : BindingList<Title>
     {
+        public MapleDictionary(string baseDir)
+        {
+            BaseDir = baseDir;
+        }
+
         public static List<Title> JsonObj { get; private set; }
         private static List<string> Updates => new List<string>(Resources.updates.Split('\n'));
         private static List<string> Titles => new List<string>(Resources.titles.Split('\n'));
@@ -39,10 +44,10 @@ namespace MapleLib.Collections
             OnAddTitle?.Invoke(this, value);
         }
 
-        public async Task<MapleDictionary> Init(string baseDir)
+        public async Task<MapleDictionary> Init()
         {
             return await Task.Run(async () => {
-                if (string.IsNullOrEmpty(BaseDir = baseDir))
+                if (string.IsNullOrEmpty(BaseDir))
                     throw new Exception("MapleDictionary.Init(baseDir) cannot be null");
 
                 await BuildDatabase();
@@ -127,7 +132,7 @@ namespace MapleLib.Collections
                 });
         }
 
-        public static void FindImage(Title title)
+        public static async void FindImage(Title title)
         {
             var titleId = "00050000" + title.TitleID.Substring(8);
             var str = Titles.Find(x => x.Contains(titleId.ToUpper()));
@@ -157,25 +162,27 @@ namespace MapleLib.Collections
 
             var langCodes = "US,EN,FR,DE,ES,IT,RU,JA,NL,SE,DK,NO,FI".Split(',').ToList();
 
-            foreach (var langCode in langCodes) {
-                if (File.Exists(cachedFile)) {
-                    title.Image = cachedFile;
-                    break;
-                }
-
-                try {
-                    var url = $"http://art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
-
-                    if (WebClient.UrlExists(url)) {
+            await Task.Run(() => {
+                foreach (var langCode in langCodes) {
+                    if (File.Exists(cachedFile)) {
                         title.Image = cachedFile;
-                        var data = WebClient.DownloadData(url);
-                        File.WriteAllBytes(title.Image, data);
+                        break;
+                    }
+
+                    try {
+                        var url = $"http://art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
+
+                        if (WebClient.UrlExists(url)) {
+                            title.Image = cachedFile;
+                            var data = WebClient.DownloadData(url);
+                            File.WriteAllBytes(title.Image, data);
+                        }
+                    }
+                    catch {
+                        // ignored
                     }
                 }
-                catch {
-                    // ignored
-                }
-            }
+            });
         }
 
         public static async Task<Title> BuildTitle(string titleId, string location, bool newTitle = false)

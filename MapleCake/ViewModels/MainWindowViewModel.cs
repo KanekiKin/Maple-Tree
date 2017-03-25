@@ -52,7 +52,7 @@ namespace MapleCake.ViewModels
 
         public bool DownloadCommandEnabled { get; set; } = true;
 
-        public MapleDictionary TitleList { get; set; }
+        public MapleDictionary TitleList => Database.TitleDb;
 
         public Title SelectedItem {
             get { return _selectedItem; }
@@ -85,13 +85,10 @@ namespace MapleCake.ViewModels
         {
             (sender as DispatcherTimer)?.Stop();
 
-            await TitleList.Init(Settings.TitleDirectory);
+            await TitleList.Init();
         }
 
-        private void SetDefaults()
-        {
-            TitleList = new MapleDictionary();
-        }
+        private void SetDefaults() {}
 
         private void SetTitle(string title)
         {
@@ -213,7 +210,7 @@ namespace MapleCake.ViewModels
 
         private void WebClientOnDownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
-            ProgressValue = e.ProgressPercentage;
+            ProgressValue = e?.ProgressPercentage ?? 0;
             RaisePropertyChangedEvent("ProgressValue");
         }
 
