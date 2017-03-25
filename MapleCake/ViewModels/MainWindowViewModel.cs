@@ -29,6 +29,7 @@ namespace MapleCake.ViewModels
     {
         private Title _selectedItem;
         private string _titleId = "0005000010144F00";
+        private string _contextVisibility = "Visible";
 
         public MainWindowViewModel()
         {
@@ -42,6 +43,15 @@ namespace MapleCake.ViewModels
         public string Status { get; set; }
 
         public string BackgroundImage { get; set; }
+
+        public string ContextVisibility
+        {
+            get { return _contextVisibility; }
+            set {
+                _contextVisibility = value;
+                RaisePropertyChangedEvent("ContextVisibility");
+            }
+        }
 
         public string TitleID {
             get { return _titleId; }

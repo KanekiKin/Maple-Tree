@@ -18,10 +18,14 @@
 
         <ListBox ItemsSource="{Binding TitleList}" SelectedItem="{Binding SelectedItem}" Margin="7,69,8,84" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White">
             <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Cut"/>
-                    <MenuItem Header="Copy"/>
-                    <MenuItem Header="Paste"/>
+                <ContextMenu Visibility="{Binding ContextVisibility}">
+                    <MenuItem Header="[+] Update"/>
+                    <MenuItem Header="[-] Update"/>
+                    <Separator />
+                    <MenuItem Header="[+] AddOn"/>
+                    <MenuItem Header="[-] AddOn"/>
+                    <Separator />
+                    <MenuItem Header="Options"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>
