@@ -63,8 +63,8 @@ namespace MapleLib.Common
                 var workingDir = Path.GetDirectoryName(cemuPath);
                 if (workingDir == null) return;
 
-                using (TextWriter writer = File.CreateText(Path.GetFullPath("cemu.log"))) {
-                    var o1 = Settings.FullScreenMode ? "-f" : "";
+                var o1 = Settings.FullScreenMode ? "-f" : "";
+                using (TextWriter writer = File.CreateText(Path.Combine(Settings.ConfigDirectory, "cemu.log"))) {
                     await StartProcess(cemuPath, $"{o1} -g \"{rpx}\"", workingDir, null, true, false, writer);
                 }
             }
@@ -137,7 +137,7 @@ namespace MapleLib.Common
                 var processes = Process.GetProcessesByName("CDecrypt");
                 foreach (var proc in processes) proc.Kill();
 
-                using (TextWriter writer = File.CreateText(Path.Combine(workingDir, "result.log"))) {
+                using (TextWriter writer = File.CreateText(Path.Combine(Settings.ConfigDirectory, "CDecrypt.log"))) {
                     await StartProcess(cdecrypt, "tmd cetk", workingDir, null, true, false, writer);
                 }
             }
@@ -149,7 +149,7 @@ namespace MapleLib.Common
             }
         }
 
-        private static async Task<int> StartProcess(string filename, string arguments, string workingDirectory,
+        public static async Task<int> StartProcess(string filename, string arguments, string workingDirectory,
             int? timeout = null, bool createNoWindow = true, bool shellEx = false, TextWriter outputTextWriter = null,
             TextWriter errorTextWriter = null)
         {

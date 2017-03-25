@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using libWiiSharp;
 using MapleLib.Collections;
 using MapleLib.Common;
@@ -156,6 +157,12 @@ namespace MapleLib
                 "http://nus.cdn.shop.wii.com/ccs/download/",
                 "http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/"
             };
+
+            var str = $"Download '{title.Name}' {contentType} Content to the following location?\n\"{outputDir}\"";
+            var result = MessageBox.Show(str, @"Confirmation", MessageBoxButtons.YesNo);
+
+            if (result != DialogResult.Yes)
+                return;
 
             Toolbelt.AppendLog($"Output Directory '{outputDir}'");
 

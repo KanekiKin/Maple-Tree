@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 #endregion
@@ -28,6 +29,16 @@ namespace MapleLib.Network.Web
             await wc.DownloadFileTaskAsync(new Uri(url), saveTo);
             while (wc.IsBusy) await Task.Delay(100);
             wc.Dispose();
+        }
+
+        public static string DownloadString(string url)
+        {
+            using (var wc = new System.Net.WebClient())
+            {
+                wc.Headers[HttpRequestHeader.UserAgent] = WII_USER_AGENT;
+                wc.DownloadProgressChanged += DownloadProgressChanged;
+                return wc.DownloadString(url);
+            }
         }
 
         public static byte[] DownloadData(string url)

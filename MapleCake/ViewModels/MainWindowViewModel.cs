@@ -4,9 +4,11 @@
 // 
 
 using System;
+using System.ComponentModel;
 using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -15,11 +17,11 @@ using MapleCake.Properties;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
+using MapleLib.Network;
 using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
-using MessageBox = System.Windows.Forms.MessageBox;
 using Settings = MapleLib.Settings;
 using WebClient = MapleLib.Network.Web.WebClient;
 
@@ -27,16 +29,17 @@ namespace MapleCake.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private string _contextVisibility = "Visible";
         private Title _selectedItem;
         private string _titleId = "0005000010144F00";
-        private string _contextVisibility = "Visible";
 
         public MainWindowViewModel()
         {
+            if (Update.IsAvailable())
+                Update.StartProcedure();
+
             Init();
         }
-
-        private short Build => 1;
 
         public string Name { get; set; }
 
@@ -44,8 +47,7 @@ namespace MapleCake.ViewModels
 
         public string BackgroundImage { get; set; }
 
-        public string ContextVisibility
-        {
+        public string ContextVisibility {
             get { return _contextVisibility; }
             set {
                 _contextVisibility = value;
@@ -59,9 +61,11 @@ namespace MapleCake.ViewModels
         }
 
         public int ProgressValue { get; set; }
-
+        
         public bool DownloadCommandEnabled { get; set; } = true;
 
+        public string LogBox { get; set; }
+        
         public MapleDictionary TitleList => Database.TitleDb;
 
         public Title SelectedItem {
@@ -77,9 +81,46 @@ namespace MapleCake.ViewModels
 
         public ICommand LaunchCemuCommand => new CommandHandler(LaunchCemuButton);
 
+        public ICommand AddUpdateCommand => new CommandHandler(AddUpdateButton);
+
+        private void LaunchCemuButton()
+        {
+            if (SelectedItem == null) return;
+
+            if (!Toolbelt.LaunchCemu(SelectedItem.MetaLocation)) return;
+            TextLog.MesgLog.WriteLog($"Now Playing: {SelectedItem.Name}");
+        }
+
+        private async void DownloadButton()
+        {
+            if (string.IsNullOrEmpty(TitleID))
+                return;
+
+            var title = await MapleDictionary.BuildTitle(TitleID, string.Empty, true);
+            if (title == null)
+                return;
+
+            DownloadCommandEnabled = false;
+            RaisePropertyChangedEvent("DownloadCommandEnabled");
+
+            await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
+
+            await Database.TitleDb.BuildDatabase(false);
+
+            DownloadCommandEnabled = true;
+            RaisePropertyChangedEvent("DownloadCommandEnabled");
+        }
+
+        private async void AddUpdateButton()
+        {
+            int ver;
+            var version = int.TryParse("0", out ver) ? ver.ToString() : "0";
+            await DownloadContentClick("Patch", version);
+        }
+
         private void Init()
         {
-            SetTitle($"Maple Seed 2.1.0.{Build}");
+            SetTitle($"Maple Seed {Update.CurrentVersion}");
 
             SetDefaults();
 
@@ -89,7 +130,7 @@ namespace MapleCake.ViewModels
 
             RegisterEvents();
 
-            var timer = new DispatcherTimer(TimeSpan.Zero, DispatcherPriority.ApplicationIdle, OnLoadComplete,
+            new DispatcherTimer(TimeSpan.Zero, DispatcherPriority.ApplicationIdle, OnLoadComplete,
                 Application.Current.Dispatcher);
         }
 
@@ -102,7 +143,7 @@ namespace MapleCake.ViewModels
 
         private void SetDefaults()
         {
-            
+            LogBox = string.Empty;
         }
 
         private void SetTitle(string title)
@@ -183,50 +224,49 @@ namespace MapleCake.ViewModels
             RaisePropertyChangedEvent("BackgroundImage");
         }
 
-        private async void DownloadButton()
-        {
-            if (string.IsNullOrEmpty(TitleID))
-                return;
-
-            var title = await MapleDictionary.BuildTitle(TitleID, string.Empty, true);
-            if (title == null)
-                return;
-
-            var str = string.Format(Resources.ConfirmDownload, title.Name, title.FolderLocation);
-            var result = MessageBox.Show(str, Resources.Confirmation, MessageBoxButtons.YesNo);
-
-            if (result != DialogResult.Yes)
-                return;
-
-            DownloadCommandEnabled = false;
-            RaisePropertyChangedEvent("DownloadCommandEnabled");
-
-            await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
-
-            await Database.TitleDb.BuildDatabase();
-
-            DownloadCommandEnabled = true;
-            RaisePropertyChangedEvent("DownloadCommandEnabled");
-        }
-
-        private void LaunchCemuButton()
-        {
-            if (SelectedItem == null) return;
-
-            if (!Toolbelt.LaunchCemu(SelectedItem.MetaLocation)) return;
-            TextLog.MesgLog.WriteLog($"Now Playing: {SelectedItem.Name}");
-        }
-
         private void titleIdTextChanged(string tid)
         {
             if (tid.Length != 16)
                 return;
 
-            var title = MapleDictionary.JsonObj.Find(x => string.Equals(x.TitleID, tid, StringComparison.CurrentCultureIgnoreCase));
+            var title =
+                MapleDictionary.JsonObj.Find(
+                    x => string.Equals(x.TitleID, tid, StringComparison.CurrentCultureIgnoreCase));
             if (title == null) return;
 
             SelectedItem = title;
             RaisePropertyChangedEvent("TitleID");
+        }
+
+        private async Task DownloadContentClick(string contentType, string version = "0")
+        {
+            try {
+                if (SelectedItem == null)
+                    return;
+
+                switch (contentType) {
+                    case "DLC":
+                        foreach (var _dlc in SelectedItem.DLC)
+                            await _dlc.DownloadContent();
+                        break;
+
+                    case "Patch":
+                        if (!SelectedItem.Versions.Any()) {
+                            MessageBox.Show($@"Update for {SelectedItem.Name} is not available");
+                            break;
+                        }
+
+                        await SelectedItem.DownloadUpdate(version);
+                        break;
+
+                    case "eShop/Application":
+                        await SelectedItem.DownloadContent(version);
+                        break;
+                }
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
+            }
         }
 
         private void InstanceOnProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e) {}
@@ -245,7 +285,8 @@ namespace MapleCake.ViewModels
 
         private void MesgLogOnNewLogEntryEventHandler(object sender, NewLogEntryEvent newLogEntryEvent)
         {
-            Status = newLogEntryEvent.Entry;
+            LogBox += Status = newLogEntryEvent.Entry;
+            RaisePropertyChangedEvent("LogBox");
             RaisePropertyChangedEvent("Status");
         }
 

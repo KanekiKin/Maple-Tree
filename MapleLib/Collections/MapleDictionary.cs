@@ -32,7 +32,7 @@ namespace MapleLib.Collections
         private static List<string> Updates => new List<string>(Resources.updates.Split('\n'));
         private static List<string> Titles => new List<string>(Resources.titles.Split('\n'));
 
-        private string BaseDir { get; set; }
+        private string BaseDir { get; }
 
         private List<string> Directories { get; set; }
 
@@ -120,6 +120,7 @@ namespace MapleLib.Collections
             var id = value.Lower8Digits;
             var titles = JsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
 
+            value.DLC.Clear();
             foreach (var title in titles)
                 value.DLC.Add(new Title
                 {
@@ -154,7 +155,7 @@ namespace MapleLib.Collections
                 imageCode = pCode.Substring(pCode.Length - 4) + "01";
             }
 
-            var cacheDir = Path.Combine(Settings.ConfigFolder, "cache");
+            var cacheDir = Path.Combine(Settings.ConfigDirectory, "cache");
             var cachedFile = Path.Combine(cacheDir, $"{imageCode}.jpg");
 
             if (!Directory.Exists(cacheDir))
@@ -192,7 +193,10 @@ namespace MapleLib.Collections
                     JsonObj = await LoadJsonTitles();
 
                 Title title;
-                if ((title = JsonObj?.Find(x => string.Equals(x.TitleID, titleId, StringComparison.CurrentCultureIgnoreCase))) == null)
+                if (
+                    (title =
+                        JsonObj?.Find(x => string.Equals(x.TitleID, titleId, StringComparison.CurrentCultureIgnoreCase))) ==
+                    null)
                     throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
 
                 title.Name = Toolbelt.RIC(title.Name);
@@ -246,7 +250,7 @@ namespace MapleLib.Collections
 
         private static async Task<List<Title>> LoadJsonTitles()
         {
-            var jsonFile = Path.Combine(Settings.ConfigFolder, "titlekeys.json");
+            var jsonFile = Path.Combine(Settings.ConfigDirectory, "titlekeys.json");
 
             if (!File.Exists(jsonFile)) {
                 var data = await WebClient.DownloadDataAsync("https://wiiu.titlekeys.com" + "/json");

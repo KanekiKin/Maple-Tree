@@ -79,10 +79,10 @@ namespace MapleLib
 
         private static string ConfigFile {
             get {
-                var configFile = Path.Combine(ConfigFolder, "MapleSeed.ini");
+                var configFile = Path.Combine(ConfigDirectory, "MapleSeed.ini");
 
-                if (!Directory.Exists(ConfigFolder))
-                    Directory.CreateDirectory(ConfigFolder);
+                if (!Directory.Exists(ConfigDirectory))
+                    Directory.CreateDirectory(ConfigDirectory);
 
                 if (!File.Exists(configFile) || new FileInfo(configFile).Length <= 0)
                     File.WriteAllText(configFile, Resources.Settings_DefaultSettings);
@@ -93,7 +93,7 @@ namespace MapleLib
         
         private static string ConfigName => "MapleTree";
         private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        public static string ConfigFolder => Path.Combine(AppFolder, ConfigName);
+        public static string ConfigDirectory => Path.Combine(AppFolder, ConfigName);
 
         private static string CemuPatchPath => Path.Combine("mlc01", "usr", "title", "00050000");
         public static string BasePatchDir => Path.Combine(CemuDirectory, CemuPatchPath);

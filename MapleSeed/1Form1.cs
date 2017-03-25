@@ -425,7 +425,7 @@ namespace MapleSeed
 
         private void clearCache_Click(object sender, EventArgs e)
         {
-            var deleteDir = Path.Combine(Settings.ConfigFolder, "cache");
+            var deleteDir = Path.Combine(Settings.ConfigDirectory, "cache");
             var result = MessageBox.Show(string.Format(Resources.WillDeleteContents, deleteDir),
                 Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
 
