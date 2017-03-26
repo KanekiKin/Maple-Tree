@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:ViewModels="clr-namespace:MapleCake.ViewModels"
-        xmlns:interfaces="clr-namespace:MapleCake.Models.Interfaces"
-        xmlns:contextMenu="clr-namespace:MapleCake.Models.ContextMenu"
         x:Class="MapleCake.Views.MainWindow"
         mc:Ignorable="d"
         Title="{Binding Name}" Height="643" Width="395" MinWidth="395" MaxWidth="395" WindowStartupLocation="CenterScreen" Background="#FF212121" Icon="/MapleSeedU2;component/Resources/Seed-icon.png" Foreground="#FFDADADA" ResizeMode="NoResize">
@@ -14,14 +12,14 @@
         <ViewModels:MainWindowViewModel/>
     </controls:MetroWindow.DataContext>
     <Grid>
-        <Image x:Name="image" HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Stretch="Fill" Source="{Binding BackgroundImage}"/>
+        <Image HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Stretch="Fill" Source="{Binding BackgroundImage}"/>
         <Rectangle HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Fill="#CC000000"/>
 
-        <TabControl x:Name="tabControl" Height="614" Width="389">
+        <TabControl Height="614" Width="389">
             <TabItem Header="Library">
                 <Grid>
-                    <TextBox x:Name="textBox" Text="{Binding TitleID, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="23" Margin="10,3,10,0" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="363" Background="{x:Null}"/>
-                    <Button x:Name="button1" Content="{Binding SelectedItem}" Command="{Binding Click.Download}" IsEnabled="{Binding DownloadCommandEnabled}" HorizontalAlignment="Center" Margin="10,32,10,0" VerticalAlignment="Top" FontWeight="Bold" Width="363" Background="{x:Null}" Foreground="White"/>
+                    <TextBox Text="{Binding TitleID, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="23" Margin="10,3,10,0" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="363" Background="{x:Null}"/>
+                    <Button Content="{Binding SelectedItem}" Command="{Binding Click.Download}" IsEnabled="{Binding DownloadCommandEnabled}" HorizontalAlignment="Center" Margin="10,32,10,0" VerticalAlignment="Top" FontWeight="Bold" Width="363" Background="{x:Null}" Foreground="White"/>
 
                     <ListBox ItemsSource="{Binding TitleList}" SelectedItem="{Binding SelectedItem}" Margin="0,69,0,88" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White">
                         <ListBox.ContextMenu>
@@ -29,23 +27,23 @@
                         </ListBox.ContextMenu>
                     </ListBox>
 
-                    <Button x:Name="button" Content="Launch Cemu" Command="{Binding Click.LaunchCemu}" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Width="373" Background="{x:Null}" BorderBrush="#FFCCCCCC"/>
+                    <Button Content="Launch Cemu" Command="{Binding Click.LaunchCemu}" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Width="373" Background="{x:Null}" BorderBrush="#FFCCCCCC"/>
                     <ProgressBar Value="{Binding ProgressValue}" HorizontalAlignment="Center" Margin="10,0,10,45" VerticalAlignment="Bottom" Height="15" Width="363" Background="#A5343434"/>
-                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="11,0,0,60" TextWrapping="Wrap" Text="{Binding Status}" VerticalAlignment="Bottom" Width="369" TextAlignment="Center" FontWeight="Bold"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="11,0,0,60" TextWrapping="Wrap" Text="{Binding Status}" VerticalAlignment="Bottom" Width="369" TextAlignment="Center" FontWeight="Bold"/>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Log" Background="{x:Null}">
                 <Grid Background="{x:Null}">
                     <ScrollViewer>
-                        <TextBlock x:Name="textBlock1" Text="{Binding LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
+                        <TextBlock Text="{Binding LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Options" Background="{x:Null}">
+            <TabItem Header="Options" Background="{x:Null}" Visibility="Hidden">
                 <Grid Background="#FFE5E5E5">
-                    <Button x:Name="button2" Content="Toggle Theme" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90"/>
+                    <Button Content="Toggle Theme" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90"/>
                 </Grid>
             </TabItem>
         </TabControl>
