@@ -24,7 +24,7 @@
                         <ListBox.ContextMenu>
                             <ContextMenu Visibility="{Binding ContextVisibility}">
                                 <MenuItem Header="[+] Update" Command="{Binding Click.AddUpdate}"/>
-                                <MenuItem Header="[-] Update"/>
+                                <MenuItem Header="[-] Update" Command="{Binding Click.RemoveUpdate}"/>
                                 <Separator />
                             </ContextMenu>
                         </ListBox.ContextMenu>

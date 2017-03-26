@@ -22,9 +22,10 @@ namespace MapleCake.Models
 
         private static string TitleID => MainWindowViewModel.Instance.TitleID;
 
-        public ICommand Download => new CommandHandler(DownloadButton);
         public ICommand LaunchCemu => new CommandHandler(LaunchCemuButton);
+        public ICommand Download => new CommandHandler(DownloadButton);
         public ICommand AddUpdate => new CommandHandler(AddUpdateButton);
+        public ICommand RemoveUpdate => new CommandHandler(RemoveUpdateButton);
 
         private void LaunchCemuButton()
         {
@@ -59,6 +60,11 @@ namespace MapleCake.Models
             int ver;
             var version = int.TryParse("0", out ver) ? ver.ToString() : "0";
             await DownloadContentClick("Patch", version);
+        }
+
+        private async void RemoveUpdateButton()
+        {
+            
         }
 
         private static async Task DownloadContentClick(string contentType, string version = "0")
