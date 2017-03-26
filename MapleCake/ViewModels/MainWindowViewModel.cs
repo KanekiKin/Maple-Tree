@@ -7,9 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using MapleCake.Models;
@@ -20,6 +21,7 @@ using MapleLib.Common;
 using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.Forms.MessageBox;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 namespace MapleCake.ViewModels
@@ -39,7 +41,7 @@ namespace MapleCake.ViewModels
         }
 
         public static MainWindowViewModel Instance { get; private set; }
-        
+
         public string Name { get; set; }
 
         public string Status { get; set; }
@@ -67,8 +69,7 @@ namespace MapleCake.ViewModels
 
         public Title SelectedItem {
             get { return _selectedItem; }
-            set
-            {
+            set {
                 WriteVersions(value);
                 SetBackgroundImg(_selectedItem = value);
                 RaisePropertyChangedEvent("SelectedItem");
@@ -76,12 +77,12 @@ namespace MapleCake.ViewModels
             }
         }
 
-        public List<ICommandItem> ContextItems => MapleContext.CreateMenu();
-
         public MapleDictionary TitleList => Database.TitleDb;
 
-        public MapleButtons Click { get; set; } = new MapleButtons();
+        public List<ICommandItem> ContextItems => MapleContext.CreateMenu();
 
+        public MapleButtons Click { get; set; } = new MapleButtons();
+        
         private void Init()
         {
             SetTitle($"Maple Seed {Settings.Version}");
@@ -107,7 +108,7 @@ namespace MapleCake.ViewModels
             LogBox = string.Empty;
         }
 
-        private static void InitSettings()
+        private void InitSettings()
         {
             if (string.IsNullOrEmpty(Settings.CemuDirectory) ||
                 !File.Exists(Path.Combine(Settings.CemuDirectory, "cemu.exe"))) {
@@ -153,15 +154,6 @@ namespace MapleCake.ViewModels
             AppUpdate.Instance.ProgressChangedEventHandler += InstanceOnProgressChangedEventHandler;
         }
 
-        private async void OnLoadComplete(object sender, EventArgs e)
-        {
-            (sender as DispatcherTimer)?.Stop();
-
-            CheckUpdate();
-
-            await TitleList.Init();
-        }
-
         private static void CheckUpdate()
         {
             AutoUpdaterDotNET.AutoUpdater.Start("https://s3.amazonaws.com/mapletree/mapleseed.xml", "MapleSeed");
@@ -195,6 +187,15 @@ namespace MapleCake.ViewModels
         {
             var result = string.Join(", ", title.Versions.ToArray());
             TextLog.StatusLog.WriteLog($"Versions: {result}");
+        }
+
+        private async void OnLoadComplete(object sender, EventArgs e)
+        {
+            (sender as DispatcherTimer)?.Stop();
+
+            CheckUpdate();
+
+            await TitleList.Init();
         }
 
         private void InstanceOnProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e) {}

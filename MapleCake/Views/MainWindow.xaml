@@ -13,7 +13,7 @@
     </controls:MetroWindow.DataContext>
     <Grid>
         <Image HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Stretch="Fill" Source="{Binding BackgroundImage}"/>
-        <Rectangle HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Fill="#CC000000"/>
+        <Rectangle HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Fill="#A5000000"/>
 
         <TabControl Height="614" Width="389">
             <TabItem Header="Library">
@@ -23,7 +23,7 @@
 
                     <ListBox ItemsSource="{Binding TitleList}" SelectedItem="{Binding SelectedItem}" Margin="0,69,0,88" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White">
                         <ListBox.ContextMenu>
-                            <ContextMenu ItemsSource="{Binding ContextItems, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding ContextVisibility}" UsesItemContainerTemplate="True"/>
+                            <ContextMenu Closed="OnContextMenuClosing" ItemsSource="{Binding ContextItems}" Visibility="{Binding ContextVisibility}" UsesItemContainerTemplate="True"/>
                         </ListBox.ContextMenu>
                     </ListBox>
 

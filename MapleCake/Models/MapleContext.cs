@@ -25,7 +25,7 @@ namespace MapleCake.Models
             if (SelectedItem == null)
                 return null;
 
-            var vers = SelectedItem.Versions.Aggregate(string.Empty, (current, update) => current + $"| v{update.Trim()} ");
+            var vers = string.Join(", ", SelectedItem.Versions.ToArray());
 
             var items = new List<ICommandItem>
             {
