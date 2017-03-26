@@ -8,7 +8,7 @@ namespace Updater
 {
     internal class Program
     {
-        private static async void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.Title = @"MapleSeed Updater";
 
@@ -22,7 +22,7 @@ namespace Updater
             KillMapleSeed(msPath);
             Replace(msPath, Backup(msPath));
 
-            await Toolbelt.StartProcess(msPath, "", Path.GetDirectoryName(msPath));
+            Toolbelt.StartProcess(msPath, "", Path.GetDirectoryName(msPath)).Wait();
         }
 
         private static void Replace(string msPath, string newLoc)

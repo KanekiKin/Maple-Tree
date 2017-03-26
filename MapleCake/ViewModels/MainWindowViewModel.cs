@@ -4,7 +4,6 @@
 // 
 
 using System;
-using System.ComponentModel;
 using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
@@ -13,7 +12,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
-using MapleCake.Properties;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
@@ -22,7 +20,6 @@ using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
-using Settings = MapleLib.Settings;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 namespace MapleCake.ViewModels
@@ -61,11 +58,11 @@ namespace MapleCake.ViewModels
         }
 
         public int ProgressValue { get; set; }
-        
+
         public bool DownloadCommandEnabled { get; set; } = true;
 
         public string LogBox { get; set; }
-        
+
         public MapleDictionary TitleList => Database.TitleDb;
 
         public Title SelectedItem {
