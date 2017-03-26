@@ -4,6 +4,7 @@
 // 
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +13,7 @@ using MapleCake.ViewModels;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
+using MapleLib.Properties;
 using MapleLib.Structs;
 
 namespace MapleCake.Models
@@ -64,7 +66,18 @@ namespace MapleCake.Models
 
         private async void RemoveUpdateButton()
         {
-            
+            if (SelectedItem == null) return;
+
+            await Task.Run(() => {
+                var updatePath = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits);
+                var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
+                    Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
+
+                if (result != DialogResult.OK)
+                    return;
+
+                SelectedItem.DeleteUpdateContent();
+            });
         }
 
         private static async Task DownloadContentClick(string contentType, string version = "0")
