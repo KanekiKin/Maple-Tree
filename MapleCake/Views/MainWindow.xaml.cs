@@ -1,8 +1,4 @@
-﻿using System;
-using MapleCake.ViewModels;
-using MapleLib;
-
-namespace MapleCake.Views
+﻿namespace MapleCake.Views
 {
     /// <summary>
     ///     Interaction logic for MainWindow.xaml

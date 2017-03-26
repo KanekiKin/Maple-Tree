@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Maple Seed U2")]
+[assembly: AssemblyTitle("MapleSeed")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Maple Seed")]
+[assembly: AssemblyProduct("MapleSeed")]
 [assembly: AssemblyCopyright("Tsumes@Github ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -51,7 +51,7 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.0.206")]
-[assembly: AssemblyFileVersion("2.1.0.206")]
+[assembly: AssemblyVersion("2.1.0.177")]
+[assembly: AssemblyFileVersion("2.1.0.177")]
 [assembly: NeutralResourcesLanguage("en")]
 

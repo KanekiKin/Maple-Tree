@@ -7,9 +7,8 @@
 
 using System;
 using System.IO;
-using System.Windows.Forms;
+using System.Reflection;
 using IniParser;
-using MapleLib.Common;
 using MapleLib.Properties;
 
 #endregion
@@ -18,6 +17,9 @@ namespace MapleLib
 {
     public static class Settings
     {
+        public static readonly string Version =
+            Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
         public static string TitleDirectory {
             get { return GetKeyValue("TitleDirectory"); }
 
@@ -29,7 +31,7 @@ namespace MapleLib
 
             set { WriteKeyValue("CemuDirectory", Path.GetFullPath(value)); }
         }
-        
+
         public static string Hub {
             get {
                 var value = GetKeyValue("Hub");
@@ -40,7 +42,7 @@ namespace MapleLib
 
             set { WriteKeyValue("Hub", value); }
         }
-        
+
         public static bool FullScreenMode {
             get {
                 var value = GetKeyValue("FullScreenMode");
@@ -90,7 +92,7 @@ namespace MapleLib
                 return configFile;
             }
         }
-        
+
         private static string ConfigName => "MapleTree";
         private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         public static string ConfigDirectory => Path.Combine(AppFolder, ConfigName);

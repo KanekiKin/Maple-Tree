@@ -4,22 +4,19 @@
 // 
 
 using System;
-using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Threading;
+using MapleCake.Models;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
-using MapleLib.Network;
 using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Application = System.Windows.Application;
-using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 namespace MapleCake.ViewModels
@@ -32,11 +29,13 @@ namespace MapleCake.ViewModels
 
         public MainWindowViewModel()
         {
-            if (Update.IsAvailable())
-                Update.StartProcedure();
+            if (Instance == null)
+                Instance = this;
 
             Init();
         }
+
+        public static MainWindowViewModel Instance { get; private set; }
 
         public string Name { get; set; }
 
@@ -63,8 +62,6 @@ namespace MapleCake.ViewModels
 
         public string LogBox { get; set; }
 
-        public MapleDictionary TitleList => Database.TitleDb;
-
         public Title SelectedItem {
             get { return _selectedItem; }
             set {
@@ -74,54 +71,15 @@ namespace MapleCake.ViewModels
             }
         }
 
-        public ICommand DownloadCommand => new CommandHandler(DownloadButton);
+        public MapleDictionary TitleList => Database.TitleDb;
 
-        public ICommand LaunchCemuCommand => new CommandHandler(LaunchCemuButton);
-
-        public ICommand AddUpdateCommand => new CommandHandler(AddUpdateButton);
-
-        private void LaunchCemuButton()
-        {
-            if (SelectedItem == null) return;
-
-            if (!Toolbelt.LaunchCemu(SelectedItem.MetaLocation)) return;
-            TextLog.MesgLog.WriteLog($"Now Playing: {SelectedItem.Name}");
-        }
-
-        private async void DownloadButton()
-        {
-            if (string.IsNullOrEmpty(TitleID))
-                return;
-
-            var title = await MapleDictionary.BuildTitle(TitleID, string.Empty, true);
-            if (title == null)
-                return;
-
-            DownloadCommandEnabled = false;
-            RaisePropertyChangedEvent("DownloadCommandEnabled");
-
-            await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
-
-            await Database.TitleDb.BuildDatabase(false);
-
-            DownloadCommandEnabled = true;
-            RaisePropertyChangedEvent("DownloadCommandEnabled");
-        }
-
-        private async void AddUpdateButton()
-        {
-            int ver;
-            var version = int.TryParse("0", out ver) ? ver.ToString() : "0";
-            await DownloadContentClick("Patch", version);
-        }
+        public MapleButtons Click { get; set; } = new MapleButtons();
 
         private void Init()
         {
-            SetTitle($"Maple Seed {Update.CurrentVersion}");
+            SetTitle($"Maple Seed {Settings.Version}");
 
             SetDefaults();
-
-            CheckUpdate();
 
             InitSettings();
 
@@ -131,11 +89,10 @@ namespace MapleCake.ViewModels
                 Application.Current.Dispatcher);
         }
 
-        private async void OnLoadComplete(object sender, EventArgs e)
+        private void SetTitle(string title)
         {
-            (sender as DispatcherTimer)?.Stop();
-
-            await TitleList.Init();
+            Name = title;
+            RaisePropertyChangedEvent("Name");
         }
 
         private void SetDefaults()
@@ -143,10 +100,10 @@ namespace MapleCake.ViewModels
             LogBox = string.Empty;
         }
 
-        private void SetTitle(string title)
+        private static void CheckUpdate()
         {
-            Name = title;
-            RaisePropertyChangedEvent("Name");
+            AutoUpdaterDotNET.AutoUpdater.Start("https://s3.amazonaws.com/mapletree/mapleseed.xml");
+            TextLog.MesgLog.WriteLog($"Current Version: {Settings.Version}", Color.Green);
         }
 
         private static void InitSettings()
@@ -195,21 +152,13 @@ namespace MapleCake.ViewModels
             AppUpdate.Instance.ProgressChangedEventHandler += InstanceOnProgressChangedEventHandler;
         }
 
-        private static void CheckUpdate()
+        private async void OnLoadComplete(object sender, EventArgs e)
         {
-            if (!ApplicationDeployment.IsNetworkDeployed) return;
-            var curVersion = AppUpdate.Instance.Ad.CurrentVersion.ToString();
+            (sender as DispatcherTimer)?.Stop();
 
-            if (AppUpdate.Instance.UpdateAvailable) {
-                TextLog.MesgLog.WriteLog($"Current Version: {curVersion}", Color.Chocolate);
+            CheckUpdate();
 
-                var version = AppUpdate.Instance.Ad.CheckForDetailedUpdate().AvailableVersion.ToString();
-                TextLog.MesgLog.WriteLog($"Latest Version: {version}", Color.Chocolate);
-                TextLog.MesgLog.WriteLog("Update via the Settings tab.", Color.Chocolate);
-            }
-
-            if (!AppUpdate.Instance.UpdateAvailable)
-                TextLog.ChatLog.WriteLog($"Current Version: {curVersion}", Color.Green);
+            await TitleList.Init();
         }
 
         private async void SetBackgroundImg(Title title)
@@ -233,37 +182,6 @@ namespace MapleCake.ViewModels
 
             SelectedItem = title;
             RaisePropertyChangedEvent("TitleID");
-        }
-
-        private async Task DownloadContentClick(string contentType, string version = "0")
-        {
-            try {
-                if (SelectedItem == null)
-                    return;
-
-                switch (contentType) {
-                    case "DLC":
-                        foreach (var _dlc in SelectedItem.DLC)
-                            await _dlc.DownloadContent();
-                        break;
-
-                    case "Patch":
-                        if (!SelectedItem.Versions.Any()) {
-                            MessageBox.Show($@"Update for {SelectedItem.Name} is not available");
-                            break;
-                        }
-
-                        await SelectedItem.DownloadUpdate(version);
-                        break;
-
-                    case "eShop/Application":
-                        await SelectedItem.DownloadContent(version);
-                        break;
-                }
-            }
-            catch (Exception ex) {
-                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
-            }
         }
 
         private void InstanceOnProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e) {}
