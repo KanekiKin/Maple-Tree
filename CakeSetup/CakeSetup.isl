@@ -4392,7 +4392,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]MapleCake.Primary output</td><td/></row>
 		<row><td>ProductCode</td><td>{E577F2D7-FCDA-40A9-98CB-893D6EBC022D}</td><td/></row>
 		<row><td>ProductName</td><td>MapleSeed</td><td/></row>
-		<row><td>ProductVersion</td><td>2.1.0.167</td><td/></row>
+		<row><td>ProductVersion</td><td>2.1.0.170</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>

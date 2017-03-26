@@ -100,12 +100,6 @@ namespace MapleCake.ViewModels
             LogBox = string.Empty;
         }
 
-        private static void CheckUpdate()
-        {
-            AutoUpdaterDotNET.AutoUpdater.Start("https://s3.amazonaws.com/mapletree/mapleseed.xml");
-            TextLog.MesgLog.WriteLog($"Current Version: {Settings.Version}", Color.Green);
-        }
-
         private static void InitSettings()
         {
             if (string.IsNullOrEmpty(Settings.CemuDirectory) ||
@@ -159,6 +153,12 @@ namespace MapleCake.ViewModels
             CheckUpdate();
 
             await TitleList.Init();
+        }
+
+        private static void CheckUpdate()
+        {
+            AutoUpdaterDotNET.AutoUpdater.Start("https://s3.amazonaws.com/mapletree/mapleseed.xml", "MapleSeed");
+            TextLog.MesgLog.WriteLog($"Current Version: {Settings.Version}", Color.Green);
         }
 
         private async void SetBackgroundImg(Title title)

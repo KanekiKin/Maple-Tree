@@ -1,0 +1,5 @@
+﻿
+Change Log - 2.1.0.200 (03/26/2017)
+	- Implemented LaunchCemuButton()
+	- Implemented AddUpdateButton()
+	- Implemented RemoveUpdateButton()

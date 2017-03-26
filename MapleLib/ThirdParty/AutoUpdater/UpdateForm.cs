@@ -40,7 +40,7 @@ namespace AutoUpdaterDotNET
             }
         }
 
-        public override sealed string Text
+        public sealed override string Text
         {
             get { return base.Text; }
             set { base.Text = value; }
@@ -143,7 +143,7 @@ namespace AutoUpdaterDotNET
         private void TimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _timer.Stop();
-            AutoUpdater.Start();
+            AutoUpdater.Start(AutoUpdater.AppTitle);
         }
     }
 }

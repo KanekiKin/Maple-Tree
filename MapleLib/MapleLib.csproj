@@ -397,6 +397,7 @@
     <None Include="Resources\database.txt" />
     <None Include="Resources\titles.txt" />
     <None Include="Resources\CDecrypt.exe" />
+    <Content Include="Changelog.txt" />
     <Content Include="Resources\images\Green_Light.ico" />
     <Content Include="Resources\images\Red_Light.ico" />
     <None Include="Resources\libeay32.dll" />

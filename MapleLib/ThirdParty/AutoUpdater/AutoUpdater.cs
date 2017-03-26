@@ -104,18 +104,20 @@ namespace AutoUpdaterDotNET
         /// <summary>
         ///     Start checking for new version of application and display dialog to the user if update is available.
         /// </summary>
-        public static void Start()
+        public static void Start(string appTitle)
         {
-            Start(AppCastURL);
+            Start(AppCastURL, appTitle);
         }
 
         /// <summary>
         ///     Start checking for new version of application and display dialog to the user if update is available.
         /// </summary>
         /// <param name="appCast">URL of the xml file that contains information about latest version of the application.</param>
-        public static void Start(string appCast)
+        /// <param name="appTitle">The title is the application you're updating.</param>
+        public static void Start(string appCast, string appTitle)
         {
             AppCastURL = appCast;
+            AppTitle = appTitle;
 
             IsWinFormsApplication = Application.MessageLoop;
 
@@ -131,7 +133,7 @@ namespace AutoUpdaterDotNET
             var mainAssembly = Assembly.GetExecutingAssembly();
             var companyAttribute = GetAttribute(mainAssembly, typeof(AssemblyCompanyAttribute)) as AssemblyCompanyAttribute;
             var titleAttribute = GetAttribute(mainAssembly, typeof(AssemblyTitleAttribute)) as AssemblyTitleAttribute;
-            AppTitle = titleAttribute != null ? titleAttribute.Title : mainAssembly.GetName().Name;
+            //AppTitle = titleAttribute != null ? titleAttribute.Title : mainAssembly.GetName().Name;
             var appCompany = companyAttribute != null ? companyAttribute.Company : "";
 
             RegistryLocation = !string.IsNullOrEmpty(appCompany)
