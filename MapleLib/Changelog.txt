@@ -1,5 +1,6 @@
 ﻿
 Change Log - 2.1.0.200 (03/26/2017)
+	- Added dynamic context menu items 
 	- Implemented LaunchCemuButton()
 	- Implemented AddUpdateButton()
 	- Implemented RemoveUpdateButton()

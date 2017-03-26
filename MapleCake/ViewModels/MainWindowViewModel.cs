@@ -4,13 +4,16 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using MapleCake.Models;
+using MapleCake.Models.Interfaces;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
@@ -36,7 +39,7 @@ namespace MapleCake.ViewModels
         }
 
         public static MainWindowViewModel Instance { get; private set; }
-
+        
         public string Name { get; set; }
 
         public string Status { get; set; }
@@ -64,12 +67,16 @@ namespace MapleCake.ViewModels
 
         public Title SelectedItem {
             get { return _selectedItem; }
-            set {
-                _selectedItem = value;
-                SetBackgroundImg(_selectedItem);
+            set
+            {
+                WriteVersions(value);
+                SetBackgroundImg(_selectedItem = value);
                 RaisePropertyChangedEvent("SelectedItem");
+                RaisePropertyChangedEvent("ContextItems");
             }
         }
+
+        public List<ICommandItem> ContextItems => MapleContext.CreateMenu();
 
         public MapleDictionary TitleList => Database.TitleDb;
 
@@ -182,6 +189,12 @@ namespace MapleCake.ViewModels
 
             SelectedItem = title;
             RaisePropertyChangedEvent("TitleID");
+        }
+
+        private void WriteVersions(Title title)
+        {
+            var result = string.Join(", ", title.Versions.ToArray());
+            TextLog.StatusLog.WriteLog($"Versions: {result}");
         }
 
         private void InstanceOnProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e) {}

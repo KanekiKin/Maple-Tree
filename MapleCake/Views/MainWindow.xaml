@@ -4,7 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:ViewModels="clr-namespace:MapleCake.ViewModels" x:Class="MapleCake.Views.MainWindow"
+        xmlns:ViewModels="clr-namespace:MapleCake.ViewModels"
+        xmlns:interfaces="clr-namespace:MapleCake.Models.Interfaces"
+        xmlns:contextMenu="clr-namespace:MapleCake.Models.ContextMenu"
+        x:Class="MapleCake.Views.MainWindow"
         mc:Ignorable="d"
         Title="{Binding Name}" Height="643" Width="395" MinWidth="395" MaxWidth="395" WindowStartupLocation="CenterScreen" Background="#FF212121" Icon="/MapleSeedU2;component/Resources/Seed-icon.png" Foreground="#FFDADADA" ResizeMode="NoResize">
     <controls:MetroWindow.DataContext>
@@ -22,11 +25,7 @@
 
                     <ListBox ItemsSource="{Binding TitleList}" SelectedItem="{Binding SelectedItem}" Margin="0,69,0,88" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White">
                         <ListBox.ContextMenu>
-                            <ContextMenu Visibility="{Binding ContextVisibility}">
-                                <MenuItem Header="[+] Update" Command="{Binding Click.AddUpdate}"/>
-                                <MenuItem Header="[-] Update" Command="{Binding Click.RemoveUpdate}"/>
-                                <Separator />
-                            </ContextMenu>
+                            <ContextMenu ItemsSource="{Binding ContextItems, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding ContextVisibility}" UsesItemContainerTemplate="True"/>
                         </ListBox.ContextMenu>
                     </ListBox>
 
@@ -50,7 +49,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        
+
     </Grid>
 </controls:MetroWindow>
 

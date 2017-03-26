@@ -28,6 +28,7 @@ namespace MapleCake.Models
         public ICommand Download => new CommandHandler(DownloadButton);
         public ICommand AddUpdate => new CommandHandler(AddUpdateButton);
         public ICommand RemoveUpdate => new CommandHandler(RemoveUpdateButton);
+        public ICommand TitleIdToClipboard => new CommandHandler(TitleIdToClipboardButton);
 
         private void LaunchCemuButton()
         {
@@ -78,6 +79,11 @@ namespace MapleCake.Models
 
                 SelectedItem.DeleteUpdateContent();
             });
+        }
+
+        private static void TitleIdToClipboardButton()
+        {
+            Clipboard.SetText(SelectedItem.TitleID);
         }
 
         private static async Task DownloadContentClick(string contentType, string version = "0")
