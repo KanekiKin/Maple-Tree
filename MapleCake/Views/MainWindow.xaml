@@ -1,0 +1,54 @@
+﻿<controls:MetroWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:ViewModels="clr-namespace:MapleCake.ViewModels"
+        x:Class="MapleCake.Views.MainWindow"
+        mc:Ignorable="d"
+        Title="{Binding Config.Name}" Height="643" Width="395" MinWidth="395" MaxWidth="395" WindowStartupLocation="CenterScreen" Background="#FF212121" Icon="/MapleSeedU2;component/Resources/Seed-icon.png" Foreground="#FFDADADA" ResizeMode="NoResize">
+    <controls:MetroWindow.DataContext>
+        <ViewModels:MainWindowViewModel/>
+    </controls:MetroWindow.DataContext>
+    <Grid>
+        <Image HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Stretch="UniformToFill" Source="{Binding Config.BackgroundImage}"/>
+        <Rectangle HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Fill="#D8000000"/>
+
+        <TabControl Height="614" Width="389">
+            <TabItem Header="Library">
+                <Grid>
+                    <TextBox Text="{Binding Config.TitleID, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="23" Margin="10,3,10,0" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="363" Background="{x:Null}"/>
+                    <Button Content="{Binding Config.SelectedItemText}" Command="{Binding Click.Download}" IsEnabled="{Binding Config.DownloadCommandEnabled}" HorizontalAlignment="Center" Margin="10,32,10,0" VerticalAlignment="Top" FontWeight="Bold" Width="363" Background="{x:Null}" Foreground="White"/>
+
+                    <ListBox ItemsSource="{Binding Config.TitleList}" SelectedItem="{Binding Config.SelectedItem}" Margin="0,69,0,88" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="LightGray">
+                        <ListBox.ContextMenu>
+                            <ContextMenu Closed="OnContextMenuClosing" ItemsSource="{Binding Config.ContextItems}" UsesItemContainerTemplate="True"/>
+                        </ListBox.ContextMenu>
+                    </ListBox>
+
+                    <Button Content="Launch Cemu" Command="{Binding Click.LaunchCemu}" HorizontalAlignment="Center" Margin="0,0,0,5" VerticalAlignment="Bottom" Width="373" Background="{x:Null}" BorderBrush="#FFCCCCCC"/>
+                    <ProgressBar Value="{Binding Config.ProgressValue}" HorizontalAlignment="Center" Margin="10,0,10,40" VerticalAlignment="Bottom" Height="15" Width="363" Background="#A5343434"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="11,0,0,50" TextWrapping="Wrap" Text="{Binding Config.Status}" VerticalAlignment="Bottom" Width="369" TextAlignment="Center" FontWeight="Bold"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Log" Background="{x:Null}">
+                <Grid Background="{x:Null}">
+                    <ScrollViewer>
+                        <TextBlock Text="{Binding Config.LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
+                    </ScrollViewer>
+                    <ComboBox Visibility="Hidden" ItemsSource="{Binding Config.TitleCache}" DisplayMemberPath="Name" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" Margin="0,50,0,0" Width="329" VerticalAlignment="Top" IsEditable="True"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Options" Background="{x:Null}" Visibility="Hidden">
+                <Grid Background="#FFE5E5E5">
+                    <Button Content="Toggle Theme" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</controls:MetroWindow>
+
