@@ -134,8 +134,6 @@ namespace MapleSeed
             AppendLog(@"Enter /help for a list of possible commands.");
 
             Enabled = true;
-
-            MessageBox.Show(Resources.EdgeBuildNotice, @"MapleSeed - Edge Build");
         }
 
         private void MapleLoadiine_OnAddTitle(object sender, Title e)
