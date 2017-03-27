@@ -7,37 +7,38 @@
         xmlns:ViewModels="clr-namespace:MapleCake.ViewModels"
         x:Class="MapleCake.Views.MainWindow"
         mc:Ignorable="d"
-        Title="{Binding Name}" Height="643" Width="395" MinWidth="395" MaxWidth="395" WindowStartupLocation="CenterScreen" Background="#FF212121" Icon="/MapleSeedU2;component/Resources/Seed-icon.png" Foreground="#FFDADADA" ResizeMode="NoResize">
+        Title="{Binding Config.Name}" Height="643" Width="395" MinWidth="395" MaxWidth="395" WindowStartupLocation="CenterScreen" Background="#FF212121" Icon="/MapleSeedU2;component/Resources/Seed-icon.png" Foreground="#FFDADADA" ResizeMode="NoResize">
     <controls:MetroWindow.DataContext>
         <ViewModels:MainWindowViewModel/>
     </controls:MetroWindow.DataContext>
     <Grid>
-        <Image HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Stretch="Fill" Source="{Binding BackgroundImage}"/>
-        <Rectangle HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Fill="#A5000000"/>
+        <Image HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Stretch="UniformToFill" Source="{Binding Config.BackgroundImage}"/>
+        <Rectangle HorizontalAlignment="Center" Height="550" Width="395" VerticalAlignment="Top" Fill="#D8000000"/>
 
         <TabControl Height="614" Width="389">
             <TabItem Header="Library">
                 <Grid>
-                    <TextBox Text="{Binding TitleID, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="23" Margin="10,3,10,0" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="363" Background="{x:Null}"/>
-                    <Button Content="{Binding SelectedItem}" Command="{Binding Click.Download}" IsEnabled="{Binding DownloadCommandEnabled}" HorizontalAlignment="Center" Margin="10,32,10,0" VerticalAlignment="Top" FontWeight="Bold" Width="363" Background="{x:Null}" Foreground="White"/>
+                    <TextBox Text="{Binding Config.TitleID, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="23" Margin="10,3,10,0" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="363" Background="{x:Null}"/>
+                    <Button Content="{Binding Config.SelectedItemText}" Command="{Binding Click.Download}" IsEnabled="{Binding Config.DownloadCommandEnabled}" HorizontalAlignment="Center" Margin="10,32,10,0" VerticalAlignment="Top" FontWeight="Bold" Width="363" Background="{x:Null}" Foreground="White"/>
 
-                    <ListBox ItemsSource="{Binding TitleList}" SelectedItem="{Binding SelectedItem}" Margin="0,69,0,88" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White">
+                    <ListBox ItemsSource="{Binding Config.TitleList}" SelectedItem="{Binding Config.SelectedItem}" Margin="0,69,0,88" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="LightGray">
                         <ListBox.ContextMenu>
-                            <ContextMenu Closed="OnContextMenuClosing" ItemsSource="{Binding ContextItems}" Visibility="{Binding ContextVisibility}" UsesItemContainerTemplate="True"/>
+                            <ContextMenu Closed="OnContextMenuClosing" ItemsSource="{Binding Config.ContextItems}" UsesItemContainerTemplate="True"/>
                         </ListBox.ContextMenu>
                     </ListBox>
 
-                    <Button Content="Launch Cemu" Command="{Binding Click.LaunchCemu}" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Width="373" Background="{x:Null}" BorderBrush="#FFCCCCCC"/>
-                    <ProgressBar Value="{Binding ProgressValue}" HorizontalAlignment="Center" Margin="10,0,10,45" VerticalAlignment="Bottom" Height="15" Width="363" Background="#A5343434"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="11,0,0,60" TextWrapping="Wrap" Text="{Binding Status}" VerticalAlignment="Bottom" Width="369" TextAlignment="Center" FontWeight="Bold"/>
+                    <Button Content="Launch Cemu" Command="{Binding Click.LaunchCemu}" HorizontalAlignment="Center" Margin="0,0,0,5" VerticalAlignment="Bottom" Width="373" Background="{x:Null}" BorderBrush="#FFCCCCCC"/>
+                    <ProgressBar Value="{Binding Config.ProgressValue}" HorizontalAlignment="Center" Margin="10,0,10,40" VerticalAlignment="Bottom" Height="15" Width="363" Background="#A5343434"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="11,0,0,50" TextWrapping="Wrap" Text="{Binding Config.Status}" VerticalAlignment="Bottom" Width="369" TextAlignment="Center" FontWeight="Bold"/>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Log" Background="{x:Null}">
                 <Grid Background="{x:Null}">
                     <ScrollViewer>
-                        <TextBlock Text="{Binding LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
+                        <TextBlock Text="{Binding Config.LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
                     </ScrollViewer>
+                    <ComboBox Visibility="Hidden" ItemsSource="{Binding Config.TitleCache}" DisplayMemberPath="Name" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" Margin="0,50,0,0" Width="329" VerticalAlignment="Top" IsEditable="True"/>
                 </Grid>
             </TabItem>
 

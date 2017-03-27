@@ -4,36 +4,30 @@
 // 
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using MapleCake.Models;
-using MapleCake.Models.Interfaces;
 using MapleLib;
 using MapleLib.Collections;
 using MapleLib.Common;
 using MapleLib.Network.Web;
 using MapleLib.Structs;
 using Application = System.Windows.Application;
-using MessageBox = System.Windows.Forms.MessageBox;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 namespace MapleCake.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private string _contextVisibility = "Visible";
-        private Title _selectedItem;
-        private string _titleId = "0005000010144F00";
-
         public MainWindowViewModel()
         {
+            if (Config == null)
+                Config = new ViewModelConfig(this);
+
             if (Instance == null)
                 Instance = this;
 
@@ -42,47 +36,10 @@ namespace MapleCake.ViewModels
 
         public static MainWindowViewModel Instance { get; private set; }
 
-        public string Name { get; set; }
-
-        public string Status { get; set; }
-
-        public string BackgroundImage { get; set; }
-
-        public string ContextVisibility {
-            get { return _contextVisibility; }
-            set {
-                _contextVisibility = value;
-                RaisePropertyChangedEvent("ContextVisibility");
-            }
-        }
-
-        public string TitleID {
-            get { return _titleId; }
-            set { titleIdTextChanged(_titleId = value); }
-        }
-
-        public int ProgressValue { get; set; }
-
-        public bool DownloadCommandEnabled { get; set; } = true;
-
-        public string LogBox { get; set; }
-
-        public Title SelectedItem {
-            get { return _selectedItem; }
-            set {
-                WriteVersions(value);
-                SetBackgroundImg(_selectedItem = value);
-                RaisePropertyChangedEvent("SelectedItem");
-                RaisePropertyChangedEvent("ContextItems");
-            }
-        }
-
-        public MapleDictionary TitleList => Database.TitleDb;
-
-        public List<ICommandItem> ContextItems => MapleContext.CreateMenu();
-
         public MapleButtons Click { get; set; } = new MapleButtons();
-        
+
+        public ViewModelConfig Config { get; }
+
         private void Init()
         {
             SetTitle($"Maple Seed {Settings.Version}");
@@ -99,13 +56,13 @@ namespace MapleCake.ViewModels
 
         private void SetTitle(string title)
         {
-            Name = title;
-            RaisePropertyChangedEvent("Name");
+            Config.Name = title;
+            Config.RaisePropertyChangedEvent("Name");
         }
 
         private void SetDefaults()
         {
-            LogBox = string.Empty;
+            Config.LogBox = string.Empty;
         }
 
         private void InitSettings()
@@ -145,8 +102,8 @@ namespace MapleCake.ViewModels
 
         private void RegisterEvents()
         {
-            TitleList.OnAddTitle += MapleDictionaryOnAddTitle;
-            TitleList.CompletedInit += MapleDictionaryOnCompletedInit;
+            Config.TitleList.OnAddTitle += MapleDictionaryOnAddTitle;
+            Config.TitleList.CompletedInit += MapleDictionaryOnCompletedInit;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLogOnNewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLogOnNewLogEntryEventHandler;
@@ -160,16 +117,16 @@ namespace MapleCake.ViewModels
             TextLog.MesgLog.WriteLog($"Current Version: {Settings.Version}", Color.Green);
         }
 
-        private async void SetBackgroundImg(Title title)
+        public async void SetBackgroundImg(Title title)
         {
             if (string.IsNullOrEmpty(title.Image))
                 await Task.Run(() => MapleDictionary.FindImage(title));
 
-            BackgroundImage = title.Image;
-            RaisePropertyChangedEvent("BackgroundImage");
+            Config.BackgroundImage = title.Image;
+            Config.RaisePropertyChangedEvent("BackgroundImage");
         }
 
-        private void titleIdTextChanged(string tid)
+        public void titleIdTextChanged(string tid)
         {
             if (tid.Length != 16)
                 return;
@@ -179,11 +136,11 @@ namespace MapleCake.ViewModels
                     x => string.Equals(x.TitleID, tid, StringComparison.CurrentCultureIgnoreCase));
             if (title == null) return;
 
-            SelectedItem = title;
+            Config.SelectedItem = title;
             RaisePropertyChangedEvent("TitleID");
         }
 
-        private void WriteVersions(Title title)
+        public void WriteVersions(Title title)
         {
             var result = string.Join(", ", title.Versions.ToArray());
             TextLog.StatusLog.WriteLog($"Versions: {result}");
@@ -195,28 +152,28 @@ namespace MapleCake.ViewModels
 
             CheckUpdate();
 
-            await TitleList.Init();
+            await Config.TitleList.Init();
         }
 
         private void InstanceOnProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e) {}
 
         private void WebClientOnDownloadProgressChangedEvent(object sender, DownloadProgressChangedEventArgs e)
         {
-            ProgressValue = e?.ProgressPercentage ?? 0;
-            RaisePropertyChangedEvent("ProgressValue");
+            Config.ProgressValue = e?.ProgressPercentage ?? 0;
+            Config.RaisePropertyChangedEvent("ProgressValue");
         }
 
         private void StatusLogOnNewLogEntryEventHandler(object sender, NewLogEntryEvent newLogEntryEvent)
         {
-            Status = newLogEntryEvent.Entry;
-            RaisePropertyChangedEvent("Status");
+            Config.Status = newLogEntryEvent.Entry;
+            Config.RaisePropertyChangedEvent("Status");
         }
 
         private void MesgLogOnNewLogEntryEventHandler(object sender, NewLogEntryEvent newLogEntryEvent)
         {
-            LogBox += Status = newLogEntryEvent.Entry;
-            RaisePropertyChangedEvent("LogBox");
-            RaisePropertyChangedEvent("Status");
+            Config.LogBox += Config.Status = newLogEntryEvent.Entry;
+            Config.RaisePropertyChangedEvent("LogBox");
+            Config.RaisePropertyChangedEvent("Status");
         }
 
         private void MapleDictionaryOnCompletedInit(object sender, EventArgs eventArgs)
@@ -226,13 +183,13 @@ namespace MapleCake.ViewModels
 
         private void MapleDictionaryOnAddTitle(object sender, Title title)
         {
-            if (TitleList.Contains(title))
+            if (Config.TitleList.Contains(title))
                 return;
 
-            TitleList.AddOnUI(title);
+            Config.TitleList.AddOnUI(title);
 
-            if (SelectedItem != null) return;
-            SelectedItem = title;
+            if (Config.SelectedItem != null) return;
+            Config.SelectedItem = title;
         }
     }
 }

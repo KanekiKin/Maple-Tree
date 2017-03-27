@@ -20,14 +20,16 @@ namespace MapleCake.Models
 {
     public class MapleButtons
     {
-        private static Title SelectedItem => MainWindowViewModel.Instance.SelectedItem;
+        private static Title SelectedItem => MainWindowViewModel.Instance.Config.SelectedItem;
 
-        private static string TitleID => MainWindowViewModel.Instance.TitleID;
+        private static string TitleID => MainWindowViewModel.Instance.Config.TitleID;
 
         public ICommand LaunchCemu => new CommandHandler(LaunchCemuButton);
         public ICommand Download => new CommandHandler(DownloadButton);
         public ICommand AddUpdate => new CommandHandler(AddUpdateButton);
         public ICommand RemoveUpdate => new CommandHandler(RemoveUpdateButton);
+        public ICommand AddDLC => new CommandHandler(AddDLCButton);
+        public ICommand RemoveDLC => new CommandHandler(RemoveDLCButton);
         public ICommand TitleIdToClipboard => new CommandHandler(TitleIdToClipboardButton);
 
         private void LaunchCemuButton()
@@ -47,14 +49,14 @@ namespace MapleCake.Models
             if (title == null)
                 return;
 
-            MainWindowViewModel.Instance.DownloadCommandEnabled = false;
+            MainWindowViewModel.Instance.Config.DownloadCommandEnabled = false;
             RaisePropertyChangedEvent("DownloadCommandEnabled");
 
             await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
 
             await Database.TitleDb.BuildDatabase(false);
 
-            MainWindowViewModel.Instance.DownloadCommandEnabled = true;
+            MainWindowViewModel.Instance.Config.DownloadCommandEnabled = true;
             RaisePropertyChangedEvent("DownloadCommandEnabled");
         }
 
@@ -79,6 +81,24 @@ namespace MapleCake.Models
 
                 SelectedItem.DeleteUpdateContent();
             });
+        }
+
+        private async void AddDLCButton()
+        {
+            await DownloadContentClick("DLC");
+        }
+
+        private void RemoveDLCButton()
+        {
+            if (SelectedItem == null) return;
+
+            var updatePath = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits);
+
+            var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
+                Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
+
+            if (result == DialogResult.OK)
+                SelectedItem.DeleteAddOnContent();
         }
 
         private static void TitleIdToClipboardButton()

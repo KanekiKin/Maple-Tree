@@ -25,7 +25,13 @@ namespace MapleLib
 {
     public static class Database
     {
-        public static MapleDictionary TitleDb { get; } = new MapleDictionary(Settings.TitleDirectory);
+        static Database()
+        {
+            if (TitleDb == null)
+                TitleDb = new MapleDictionary(Settings.TitleDirectory);
+        }
+
+        public static MapleDictionary TitleDb { get; }
         
         private static void CleanUpdate(string outputDir, TMD tmd)
         {

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using MapleCake.ViewModels;
 
 namespace MapleCake.Views
@@ -16,7 +15,7 @@ namespace MapleCake.Views
 
         private void OnContextMenuClosing(object sender, RoutedEventArgs e)
         {
-            ((MainWindowViewModel) DataContext)?.RaisePropertyChangedEvent("ContextItems");
+            ((MainWindowViewModel) DataContext)?.Config.RaisePropertyChangedEvent("ContextItems");
         }
     }
 }

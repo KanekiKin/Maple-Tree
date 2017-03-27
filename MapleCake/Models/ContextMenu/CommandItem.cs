@@ -1,5 +1,5 @@
 ﻿// Project: MapleCake
-// File: SimpleCommandItem.cs
+// File: CommandItem.cs
 // Updated By: Jared
 // 
 
@@ -8,7 +8,7 @@ using MapleCake.Models.Interfaces;
 
 namespace MapleCake.Models.ContextMenu
 {
-    public class SimpleCommandItem : ICommandItem
+    public class CommandItem : ICommandItem
     {
         public string Text { get; set; }
         public string ToolTip { get; set; }

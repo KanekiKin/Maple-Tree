@@ -113,7 +113,8 @@
     <Compile Include="Models\MapleButtons.cs" />
     <Compile Include="Models\MapleContext.cs" />
     <Compile Include="Models\Media\ThemeManagerHelper.cs" />
-    <Compile Include="Models\ContextMenu\SimpleCommandItem.cs" />
+    <Compile Include="Models\ContextMenu\CommandItem.cs" />
+    <Compile Include="Models\ViewModelConfig.cs" />
     <Compile Include="ViewModels\DelegateCommand.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

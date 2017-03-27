@@ -110,7 +110,7 @@ namespace MapleSeed
             }
         }
 
-        private async void Form1_Load(object sender, EventArgs e) //TODO: Optimize FormLoad()
+        private async void Form1_Load(object sender, EventArgs e)
         {
             Enabled = false;
 
@@ -482,6 +482,11 @@ namespace MapleSeed
             titeListMenuStrip1.Show(MousePosition);
         }
 
+        private async void installDLCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await DownloadContentClick(dlcBtn, @"This action may overwrite current DLC files!", "DLC");
+        }
+
         private void uninstallDLCToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (titleList.SelectedItems.Count <= 0) return;
@@ -501,6 +506,13 @@ namespace MapleSeed
 
                 title.DeleteAddOnContent();
             }
+        }
+
+        private async void installUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int ver;
+            var version = int.TryParse(titleVersion.Text, out ver) ? ver.ToString() : "0";
+            await DownloadContentClick(updateBtn, @"This action will update content files!", "Patch", version);
         }
 
         private void uninstallToolStripMenuItem_Click(object sender, EventArgs e)
@@ -540,13 +552,6 @@ namespace MapleSeed
             title.DeleteContent();
 
             titleList.Items.Remove(title);
-        }
-
-        private async void installUpdateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int ver;
-            var version = int.TryParse(titleVersion.Text, out ver) ? ver.ToString() : "0";
-            await DownloadContentClick(updateBtn, @"This action will update content files!", "Patch", version);
         }
     }
 }

@@ -41,6 +41,7 @@
             this.playBtn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.titleList = new System.Windows.Forms.ListBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -69,7 +70,6 @@
             this.titleIdTextBox = new System.Windows.Forms.TextBox();
             this.newdlbtn = new System.Windows.Forms.Button();
             this.organizeBtn = new System.Windows.Forms.Button();
-            this.titleList = new System.Windows.Forms.ListBox();
             this.titleName = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -183,6 +183,19 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Dashboard";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // titleList
+            // 
+            this.titleList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.titleList.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.titleList.FormattingEnabled = true;
+            this.titleList.ItemHeight = 15;
+            this.titleList.Location = new System.Drawing.Point(6, 6);
+            this.titleList.Name = "titleList";
+            this.titleList.Size = new System.Drawing.Size(358, 482);
+            this.titleList.TabIndex = 31;
+            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
+            this.titleList.MouseUp += new System.Windows.Forms.MouseEventHandler(this.titleList_MouseUp);
             // 
             // pictureBox1
             // 
@@ -305,7 +318,7 @@
             this.deleteTitleToolStripMenuItem});
             this.titeListMenuStrip1.Name = "titeListMenuStrip1";
             this.titeListMenuStrip1.ShowImageMargin = false;
-            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 142);
+            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 164);
             // 
             // nameToolStripTextBox1
             // 
@@ -322,6 +335,7 @@
             this.installDLCToolStripMenuItem.Name = "installDLCToolStripMenuItem";
             this.installDLCToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.installDLCToolStripMenuItem.Text = "Add DLC";
+            this.installDLCToolStripMenuItem.Click += new System.EventHandler(this.installDLCToolStripMenuItem_Click);
             // 
             // uninstallDLCToolStripMenuItem
             // 
@@ -454,19 +468,6 @@
             this.organizeBtn.Text = "Organize";
             this.organizeBtn.UseVisualStyleBackColor = true;
             this.organizeBtn.Click += new System.EventHandler(this.organizeBtn_Click);
-            // 
-            // titleList
-            // 
-            this.titleList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.titleList.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleList.FormattingEnabled = true;
-            this.titleList.ItemHeight = 15;
-            this.titleList.Location = new System.Drawing.Point(6, 6);
-            this.titleList.Name = "titleList";
-            this.titleList.Size = new System.Drawing.Size(358, 482);
-            this.titleList.TabIndex = 31;
-            this.titleList.SelectedValueChanged += new System.EventHandler(this.titleList_SelectedValueChanged);
-            this.titleList.MouseUp += new System.Windows.Forms.MouseEventHandler(this.titleList_MouseUp);
             // 
             // titleName
             // 
