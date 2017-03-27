@@ -122,7 +122,7 @@ namespace MapleSeed
 
             await Database.TitleDb.Init();
 
-            if (Database.TitleDb.Any() && Database.TitleDb.Any())
+            if (Database.TitleDb.Any())
                 SetCurrentImage(Database.TitleDb.First());
 
             RegisterDefaults();
