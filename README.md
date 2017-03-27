@@ -1,4 +1,4 @@
-# Maple-Seed
+# Maple-Seed Version 2
 
 A small application with a feature set aimed to make Wii U title management easier.
 
