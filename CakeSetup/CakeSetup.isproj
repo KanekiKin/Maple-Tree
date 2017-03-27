@@ -37,9 +37,5 @@
 			<Name>MapleLib</Name>
 			<Project>{4375D4C0-FEF9-46F5-942D-36C2EBE15672}</Project>
 		</ProjectReference>
-		<ProjectReference Include="..\Updater\Updater.csproj">
-			<Name>Updater</Name>
-			<Project>{71C2150A-6B4D-4B54-851E-8C9DD48CD47F}</Project>
-		</ProjectReference>
 	</ItemGroup>
 </Project>

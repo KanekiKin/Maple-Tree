@@ -96,9 +96,16 @@ namespace MapleLib
         private static string ConfigName => "MapleTree";
         private static string AppFolder => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         public static string ConfigDirectory => Path.Combine(AppFolder, ConfigName);
+        
+        public static string BasePatchDir => GetBasePatchDir();
 
-        private static string CemuPatchPath => Path.Combine("mlc01", "usr", "title", "00050000");
-        public static string BasePatchDir => Path.Combine(CemuDirectory, CemuPatchPath);
+        private static string GetBasePatchDir()
+        {
+            if (!Directory.Exists(CemuDirectory))
+                throw new DirectoryNotFoundException("Settings.CemuDirectory path could not be found");
+
+            return Path.GetFullPath(Path.Combine(CemuDirectory, "mlc01/usr/title/00050000"));
+        }
 
         private static string GetKeyValue(string key)
         {

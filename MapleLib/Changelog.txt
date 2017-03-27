@@ -1,8 +1,13 @@
-﻿
-Change Log - 2.1.0.200 (03/26/2017)
-	- Added dynamic context menu items 
-	- Implemented LaunchCemuButton()
-	- Implemented AddUpdateButton()
-	- Implemented RemoveUpdateButton()
-	- Implemented AddDLCButton()
-	- Implemented RemoveDLCButton()
+Change Log - 2.1.1.9 (03/28/2017)
+- 
+
+Change Log - 2.1.1.8 (03/27/2017)
+- Fixed an installer error
+
+Change Log - 2.1.1.2 (03/26/2017)
+- Added dynamic context menu items 
+- Implemented LaunchCemuButton()
+- Implemented AddUpdateButton()
+- Implemented RemoveUpdateButton()
+- Implemented AddDLCButton()
+- Implemented RemoveDLCButton()
