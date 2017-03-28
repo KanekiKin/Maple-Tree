@@ -46,6 +46,7 @@ namespace MapleLib.Collections
 
         public async Task<MapleDictionary> Init(bool notice = true)
         {
+            AddTitleEvent += OnAddTitleEvent;
             return await Task.Run(async () =>
             {
                 if (string.IsNullOrEmpty(BaseDir))
@@ -58,11 +59,14 @@ namespace MapleLib.Collections
             });
         }
 
+        private async void OnAddTitleEvent(object sender, Title title)
+        {
+            await LoadAddOn(title);
+        }
+
         public async Task BuildDatabase(bool notice = true)
         {
             await LoadTitles(notice);
-
-            await LoadAddOns(notice);
         }
 
         private async Task LoadTitles(bool notice = true)
@@ -76,18 +80,7 @@ namespace MapleLib.Collections
             if (notice)
                 Toolbelt.AppendLog($"Loaded Titles: {Count}", Color.DarkViolet);
         }
-
-        private async Task LoadAddOns(bool notice = true)
-        {
-            if (notice)
-                Toolbelt.AppendLog("Loading DLC...", Color.DarkViolet);
-
-            await Task.Run(() => this.ToList().ForEach(LoadAddOn));
-
-            if (notice)
-                Toolbelt.AppendLog($"Loaded DLC: {this.Sum(title => title.DLC.Count)}", Color.DarkViolet);
-        }
-
+        
         private async void LoadTitle(string path)
         {
             var fileSystemEntries = Directory.GetFiles(path, "meta.xml").ToList();
@@ -116,22 +109,29 @@ namespace MapleLib.Collections
             }
         }
 
-        private static void LoadAddOn(Title value)
+        private static async Task LoadAddOn(Title value)
         {
-            var id = value.Lower8Digits;
-            var titles = JsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
+            await Task.Run(() =>
+            {
+                var id = value.Lower8Digits;
+                var titles = JsonObj.Where(x => x.Lower8Digits == id && x.ContentType == "DLC");
 
-            value.DLC.Clear();
-            foreach (var title in titles)
-                value.DLC.Add(new Title
+                foreach (var title in titles)
                 {
-                    TitleID = title.TitleID.ToUpper(),
-                    TitleKey = title.TitleKey,
-                    Name = title.Name,
-                    Region = title.Region,
-                    Ticket = title.Ticket,
-                    FolderLocation = Path.Combine(Settings.BasePatchDir, id, "aoc")
-                });
+                    if (value.DLC.Contains(title))
+                        continue;
+
+                    value.DLC.Add(new Title
+                    {
+                        TitleID = title.TitleID.ToUpper(),
+                        TitleKey = title.TitleKey,
+                        Name = title.Name,
+                        Region = title.Region,
+                        Ticket = title.Ticket,
+                        FolderLocation = Path.Combine(Settings.BasePatchDir, id, "aoc")
+                    });
+                }
+            });
         }
 
         public static async void FindImage(Title title)
@@ -187,51 +187,6 @@ namespace MapleLib.Collections
             });
         }
 
-        public static async Task<Title> BuildTitle(string titleId, string location, bool newTitle = false)
-        {
-            try {
-                if (JsonObj == null)
-                    JsonObj = await LoadJsonTitles();
-
-                Title title;
-                if (
-                    (title =
-                        JsonObj?.Find(x => string.Equals(x.TitleID, titleId, StringComparison.CurrentCultureIgnoreCase))) ==
-                    null)
-                    throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
-
-                title.Name = Toolbelt.RIC(title.Name);
-
-                var folder = newTitle
-                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(title.ToString()))
-                    : Path.GetDirectoryName(Path.GetDirectoryName(location));
-
-                if (!Directory.Exists(folder) && !newTitle)
-                    throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
-
-                title.MetaLocation = Path.Combine(title.FolderLocation = folder, "meta", "meta.xml");
-
-                if (newTitle) {
-                    FindImage(title);
-                    return title;
-                }
-
-                SetCodes(title);
-
-                var update = Updates.Find(x => x.Contains(title.Lower8Digits));
-                if (string.IsNullOrEmpty(update)) return title;
-                var parts1 = update.Split('|');
-                if (parts1.Length >= 0) title.Versions = parts1[2].Split(',').Select(s => s.Trim()).ToList();
-
-                return title;
-            }
-            catch (Exception e) {
-                Toolbelt.AppendLog($"{e.Message}\n{e.StackTrace}");
-            }
-
-            return null;
-        }
-
         private static void SetCodes(Title _title)
         {
             if (_title == null) throw new ArgumentNullException(nameof(_title));
@@ -279,6 +234,54 @@ namespace MapleLib.Collections
                     value.MetaLocation = value.MetaLocation.Replace(fromLocation, toLocation);
                 }
             });
+        }
+
+        public static async Task<Title> BuildTitle(string titleId, string location, bool newTitle = false)
+        {
+            try
+            {
+                if (JsonObj == null)
+                    JsonObj = await LoadJsonTitles();
+
+                Title title;
+                if (
+                    (title =
+                        JsonObj?.Find(x => string.Equals(x.TitleID, titleId, StringComparison.CurrentCultureIgnoreCase))) ==
+                    null)
+                    throw new Exception("MapleDictionary.BuildTitleList.jtitle cannot return null");
+
+                title.Name = Toolbelt.RIC(title.Name);
+
+                var folder = newTitle
+                    ? Path.Combine(Settings.TitleDirectory, Toolbelt.RIC(title.ToString()))
+                    : Path.GetDirectoryName(Path.GetDirectoryName(location));
+
+                if (!Directory.Exists(folder) && !newTitle)
+                    throw new Exception("MapleDictionary.BuildTitleList.FolderLocation is not valid");
+
+                title.MetaLocation = Path.Combine(title.FolderLocation = folder, "meta", "meta.xml");
+
+                if (newTitle)
+                {
+                    FindImage(title);
+                    return title;
+                }
+
+                SetCodes(title);
+
+                var update = Updates.Find(x => x.Contains(title.Lower8Digits));
+                if (string.IsNullOrEmpty(update)) return title;
+                var parts1 = update.Split('|');
+                if (parts1.Length >= 0) title.Versions = parts1[2].Split(',').Select(s => s.Trim()).ToList();
+
+                return title;
+            }
+            catch (Exception e)
+            {
+                Toolbelt.AppendLog($"{e.Message}\n{e.StackTrace}");
+            }
+
+            return null;
         }
     }
 }
