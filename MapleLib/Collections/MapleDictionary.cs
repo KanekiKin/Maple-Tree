@@ -3,6 +3,10 @@
 // Updated By: Jared
 // 
 
+using MapleLib.Common;
+using MapleLib.Properties;
+using MapleLib.Structs;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,10 +17,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using MapleLib.Common;
-using MapleLib.Properties;
-using MapleLib.Structs;
-using Newtonsoft.Json;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 namespace MapleLib.Collections
@@ -36,23 +36,24 @@ namespace MapleLib.Collections
 
         private List<string> Directories { get; set; }
 
-        public event EventHandler<Title> OnAddTitle;
-        public event EventHandler<EventArgs> CompletedInit;
+        public event EventHandler<Title> AddTitleEvent;
+        public event EventHandler<EventArgs> CompletedInitEvent;
 
         private void EventAdd(Title value)
         {
-            OnAddTitle?.Invoke(this, value);
+            AddTitleEvent?.Invoke(this, value);
         }
 
-        public async Task<MapleDictionary> Init()
+        public async Task<MapleDictionary> Init(bool notice = true)
         {
-            return await Task.Run(async () => {
+            return await Task.Run(async () =>
+            {
                 if (string.IsNullOrEmpty(BaseDir))
                     throw new Exception("MapleDictionary.Init(baseDir) cannot be null");
 
-                await BuildDatabase();
+                await BuildDatabase(notice);
 
-                CompletedInit?.Invoke(this, EventArgs.Empty);
+                CompletedInitEvent?.Invoke(this, EventArgs.Empty);
                 return this;
             });
         }

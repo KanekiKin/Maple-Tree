@@ -42,7 +42,7 @@ namespace MapleCake.ViewModels
 
         private void Init()
         {
-            SetTitle($"Maple Seed {Settings.Version}");
+            SetTitle($"MapleSeed {Settings.Version}");
 
             SetDefaults();
 
@@ -102,8 +102,8 @@ namespace MapleCake.ViewModels
 
         private void RegisterEvents()
         {
-            Config.TitleList.OnAddTitle += MapleDictionaryOnAddTitle;
-            Config.TitleList.CompletedInit += MapleDictionaryOnCompletedInit;
+            Config.TitleList.AddTitleEvent += MapleDictionaryOnAddTitle;
+            Config.TitleList.CompletedInitEvent += MapleDictionaryOnCompletedInit;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLogOnNewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLogOnNewLogEntryEventHandler;

@@ -21,6 +21,7 @@ using MapleLib.Properties;
 using MapleLib.Structs;
 using DownloadProgressChangedEventArgs = System.Net.DownloadProgressChangedEventArgs;
 using WebClient = MapleLib.Network.Web.WebClient;
+using System.Reflection;
 
 #endregion
 
@@ -35,7 +36,7 @@ namespace MapleSeed
 
         private void RegisterEvents()
         {
-            Database.TitleDb.OnAddTitle += MapleLoadiine_OnAddTitle;
+            Database.TitleDb.AddTitleEvent += OnAddTitleEvent;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLog_NewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLog_NewLogEntryEventHandler;
@@ -112,18 +113,16 @@ namespace MapleSeed
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            Enabled = false;
+            Text = $"MapleSeed {Assembly.GetEntryAssembly().GetName().Version.ToString()}";
+            MinimumSize = MaximumSize = Size;
+
+            Controls.Cast<Control>().ToList().ForEach(x => x.Enabled = false);
 
             InitSettings();
 
-            MinimumSize = MaximumSize = Size;
-
             RegisterEvents();
 
-            await Database.TitleDb.Init();
-
-            if (Database.TitleDb.Any())
-                SetCurrentImage(Database.TitleDb.First());
+            var db = await Database.TitleDb.Init(false);
 
             RegisterDefaults();
 
@@ -132,23 +131,29 @@ namespace MapleSeed
             AppendLog($"Game Directory [{Settings.TitleDirectory}]");
             AppendLog(@"Welcome to Maple Tree.");
             AppendLog(@"Enter /help for a list of possible commands.");
-
-            Enabled = true;
+            
+            Controls.Cast<Control>().ToList().ForEach(x => x.Enabled = true);
         }
 
-        private void MapleLoadiine_OnAddTitle(object sender, Title e)
+        private void OnAddTitleEvent(object sender, Title title)
         {
-            ListBoxAddItem(e);
-        }
-
-        private void ListBoxAddItem(object obj)
-        {
-            var title = obj as Title;
             if (title == null) return;
 
-            if (titleList.InvokeRequired)
-                titleList.Invoke(new Action(() => { titleList.Items.Add(title); }));
-            else titleList.Items.Add(title);
+            if (pictureBox1.ImageLocation.IsNullOrEmpty())
+                SetCurrentImage(title);
+
+            titleList.BeginInvoke(new Action(() => { titleList.Items.Add(title); }));
+        }
+
+        private void SetCurrentImage(Title title)
+        {
+            Task.Run(() =>
+            {
+                if (!File.Exists(title.Image))
+                    MapleDictionary.FindImage(title);
+
+                pictureBox1.ImageLocation = title.Image;
+            });
         }
 
         private void UpdateProgressBar(int percent, long _toReceive, long _received)
@@ -377,16 +382,6 @@ namespace MapleSeed
             cleanTitleBtn.Enabled = true;
         }
 
-        private void SetCurrentImage(Title title)
-        {
-            Task.Run(() => {
-                if (!File.Exists(title.Image))
-                    MapleDictionary.FindImage(title);
-
-                pictureBox1.ImageLocation = title.Image;
-            });
-        }
-
         private async void newdlbtn_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(titleIdTextBox.Text))
@@ -467,14 +462,15 @@ namespace MapleSeed
 
             nameToolStripTextBox1.Text = title.TitleID;
 
-            //installDLCToolStripMenuItem.Enabled = title.DLC.Count > 0;
-            installUpdateToolStripMenuItem.Enabled = title.Versions.Count > 0;
+            installDLCToolStripMenuItem.Enabled = title.DLC.Any();
+
+            installUpdateToolStripMenuItem.Enabled = title.Versions.Any();
+            installUpdateToolStripMenuItem.Text = $@"Install Update v{titleVersion.Text.Trim()}";
 
             var path = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
             uninstallDLCToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path, "aoc"));
+
             uninstallUpdateToolStripMenuItem.Enabled = Directory.Exists(path);
-            
-            installUpdateToolStripMenuItem.Text = $@"Install Update v{titleVersion.Text.Trim()}";
             uninstallUpdateToolStripMenuItem.Text = $@"Uninstall Update v{title.GetTitleVersion()}";
 
             titeListMenuStrip1.Show(MousePosition);

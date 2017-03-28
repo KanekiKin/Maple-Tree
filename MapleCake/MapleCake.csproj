@@ -163,9 +163,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="FodyWeavers.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Seed-icon.png" />
   </ItemGroup>
   <ItemGroup>

@@ -322,12 +322,14 @@
             // 
             // nameToolStripTextBox1
             // 
+            this.nameToolStripTextBox1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.nameToolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold);
             this.nameToolStripTextBox1.MaxLength = 16;
             this.nameToolStripTextBox1.Name = "nameToolStripTextBox1";
             this.nameToolStripTextBox1.ReadOnly = true;
             this.nameToolStripTextBox1.Size = new System.Drawing.Size(100, 20);
             this.nameToolStripTextBox1.Text = "Title ID";
+            this.nameToolStripTextBox1.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // installDLCToolStripMenuItem
             // 
