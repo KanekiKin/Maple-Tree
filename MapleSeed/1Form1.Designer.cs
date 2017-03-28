@@ -318,7 +318,7 @@
             this.deleteTitleToolStripMenuItem});
             this.titeListMenuStrip1.Name = "titeListMenuStrip1";
             this.titeListMenuStrip1.ShowImageMargin = false;
-            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 164);
+            this.titeListMenuStrip1.Size = new System.Drawing.Size(137, 142);
             // 
             // nameToolStripTextBox1
             // 
@@ -392,7 +392,7 @@
             this.progressOverlay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.progressOverlay.AutoSize = true;
             this.progressOverlay.BackColor = System.Drawing.Color.Transparent;
-            this.progressOverlay.Location = new System.Drawing.Point(12, 651);
+            this.progressOverlay.Location = new System.Drawing.Point(9, 639);
             this.progressOverlay.Name = "progressOverlay";
             this.progressOverlay.Size = new System.Drawing.Size(89, 13);
             this.progressOverlay.TabIndex = 23;
@@ -489,6 +489,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 701);
+            this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.titleName);
             this.Controls.Add(this.organizeBtn);
             this.Controls.Add(this.newdlbtn);
@@ -497,7 +498,6 @@
             this.Controls.Add(this.titleVersion);
             this.Controls.Add(this.cleanTitleBtn);
             this.Controls.Add(this.dlcBtn);
-            this.Controls.Add(this.progressOverlay);
             this.Controls.Add(this.cemu173Patch);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.playBtn);

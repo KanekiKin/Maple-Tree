@@ -228,25 +228,25 @@ namespace MapleSeed
             btn.Enabled = false;
 
             try {
-                if (MessageBox.Show(message, @"Confirm Content Download", MessageBoxButtons.OKCancel) == DialogResult.OK) {
-                    foreach (var item in titleList.SelectedItems) {
-                        var title = item as Title;
-                        if (title == null) continue;
+                foreach (var item in titleList.SelectedItems)
+                {
+                    var title = item as Title;
+                    if (title == null) continue;
 
-                        switch (contentType) {
-                            case "DLC":
-                                foreach (var _dlc in title.DLC)
-                                    await _dlc.DownloadContent();
-                                break;
+                    switch (contentType)
+                    {
+                        case "DLC":
+                            foreach (var _dlc in title.DLC)
+                                await _dlc.DownloadContent();
+                            break;
 
-                            case "Patch":
-                                await title.DownloadUpdate(version);
-                                break;
+                        case "Patch":
+                            await title.DownloadUpdate(version);
+                            break;
 
-                            case "eShop/Application":
-                                await title.DownloadContent(version);
-                                break;
-                        }
+                        case "eShop/Application":
+                            await title.DownloadContent(version);
+                            break;
                     }
                 }
             }
@@ -462,16 +462,13 @@ namespace MapleSeed
 
             nameToolStripTextBox1.Text = title.TitleID;
 
+            var titlePath = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
+
             installDLCToolStripMenuItem.Enabled = title.DLC.Any();
+            uninstallDLCToolStripMenuItem.Enabled = File.Exists(Path.Combine(titlePath, "aoc", "meta", "meta.xml"));
 
             installUpdateToolStripMenuItem.Enabled = title.Versions.Any();
-            installUpdateToolStripMenuItem.Text = $@"Install Update v{titleVersion.Text.Trim()}";
-
-            var path = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
-            uninstallDLCToolStripMenuItem.Enabled = Directory.Exists(Path.Combine(path, "aoc"));
-
-            uninstallUpdateToolStripMenuItem.Enabled = Directory.Exists(path);
-            uninstallUpdateToolStripMenuItem.Text = $@"Uninstall Update v{title.GetTitleVersion()}";
+            uninstallUpdateToolStripMenuItem.Enabled = File.Exists(Path.Combine(titlePath, "meta", "meta.xml"));
 
             titeListMenuStrip1.Show(MousePosition);
         }
