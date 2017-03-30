@@ -38,8 +38,6 @@ namespace MapleCake.Models
 
         public bool DownloadCommandEnabled { get; set; } = true;
 
-        public List<Title> TitleCache => MapleDictionary.JsonObj;
-
         public string TitleID {
             get { return _titleId; }
             set { _self.titleIdTextChanged(_titleId = value); }

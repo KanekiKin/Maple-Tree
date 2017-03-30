@@ -164,4 +164,16 @@ See the log window for sample outputs.</value>
     <value>This action will delete all content currently under
 '{0}'</value>
   </data>
+  <data name="eShopAndDiskTitles" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eShopAndDiskTitles.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="eShopTitleUpdates" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eShopTitleUpdates.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="eShopTitleDLC" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\eShopTitleDLC.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="wiiutdb" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wiiutdb.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

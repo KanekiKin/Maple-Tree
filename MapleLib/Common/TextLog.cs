@@ -25,7 +25,7 @@ namespace MapleLib.Common
         public void AddHistory(string text, Color color = default(Color))
         {
             index = LogHistory.Count;
-            LogHistory.Add(text, color);
+            LogHistory.Add(text);
         }
 
         private Task NewLine(string text, Color color = default(Color))

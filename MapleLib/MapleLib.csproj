@@ -118,8 +118,11 @@
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="Interfaces\ITitle.cs" />
+    <Compile Include="Media\MapleImage.cs" />
     <Compile Include="Network\Web\WebClient.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Structs\eShopTitle.cs" />
     <Compile Include="Structs\Title.cs" />
     <Compile Include="Common\TextLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -380,6 +383,7 @@
     <Compile Include="Common\Toolkit.cs" />
     <Compile Include="Common\Toolbelt.cs" />
     <Compile Include="Network\Web\AppUpdate.cs" />
+    <Compile Include="WiiU\Ticket.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ThirdParty\IniFileParser\Model\IniData.cs.rej" />
@@ -399,12 +403,16 @@
     <None Include="Resources\titles.txt" />
     <None Include="Resources\CDecrypt.exe" />
     <Content Include="Changelog.txt" />
+    <None Include="Resources\eShopAndDiskTitles.txt" />
+    <None Include="Resources\eShopTitleUpdates.txt" />
+    <None Include="Resources\eShopTitleDLC.txt" />
     <Content Include="Resources\images\Green_Light.ico" />
     <Content Include="Resources\images\Red_Light.ico" />
     <None Include="Resources\libeay32.dll" />
     <None Include="Resources\msvcr120d.dll" />
     <Content Include="Resources\Seed-icon.png" />
     <Content Include="Resources\Seed.ico" />
+    <None Include="Resources\wiiutdb.xml" />
     <Content Include="ThirdParty\AutoUpdater\Resources\clock_go.png" />
     <Content Include="ThirdParty\AutoUpdater\Resources\clock_go1.png" />
     <Content Include="ThirdParty\AutoUpdater\Resources\clock_go_32.png" />
@@ -441,6 +449,7 @@
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

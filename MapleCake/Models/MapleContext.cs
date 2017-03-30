@@ -26,9 +26,17 @@ namespace MapleCake.Models
                 return null;
 
             var vers = string.Join(", ", SelectedItem.Versions.ToArray());
-            var items = new List<ICommandItem> {new CommandItem {Text = SelectedItem.TitleID, ToolTip = vers}};
+            var items = new List<ICommandItem>
+            {
+                new CommandItem
+                {
+                    Text = SelectedItem.ID,
+                    ToolTip = "Copy title ID to clipboard",
+                    Command = Click.TitleIdToClipboard
+                }
+            };
 
-            if (SelectedItem.Versions.Any() || SelectedItem.DLC.Any())
+            if (SelectedItem.Versions.Any() || SelectedItem.HasDLC)
                 items.Add(new SeparatorCommandItem());
 
             CreateUpdateItems(items);
@@ -38,7 +46,8 @@ namespace MapleCake.Models
 
             CreateDlcItems(items);
 
-            //if (items.Any(x => x.Text.Contains("DLC"))) items.Add(new SeparatorCommandItem());
+            if (items.Any(x => x.Text.Contains("DLC")))
+                items.Add(new SeparatorCommandItem());
 
             return items;
         }
@@ -48,7 +57,7 @@ namespace MapleCake.Models
             if (SelectedItem.Versions.Any())
                 items.Add(new CommandItem {Text = "[+] Update", ToolTip = "Add Update", Command = Click.AddUpdate});
 
-            var dir = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits);
+            var dir = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits());
             var meta = Path.Combine(dir, "meta", "meta.xml");
 
             if (File.Exists(meta))
@@ -57,10 +66,10 @@ namespace MapleCake.Models
 
         private static void CreateDlcItems(ICollection<ICommandItem> items)
         {
-            if (SelectedItem.DLC.Any())
+            if (SelectedItem.HasDLC)
                 items.Add(new CommandItem {Text = "[+] DLC", ToolTip = "Add DLC", Command = Click.AddDLC});
 
-            var dir = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits, "aoc");
+            var dir = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits(), "aoc");
             var meta = Path.Combine(dir, "meta", "meta.xml");
 
             if (File.Exists(meta))

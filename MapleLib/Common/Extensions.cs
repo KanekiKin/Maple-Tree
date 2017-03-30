@@ -14,6 +14,19 @@ namespace MapleLib.Common
 {
     public static class Extensions
     {
+        public static int[] ToIntList(this string value, char delimiter)
+        {
+            var list = value.Split(delimiter);
+            var vers = new int[list.Length];
+
+            for (int i = 0; i < list.Length; i++)
+            {
+                int.TryParse(list[i].Replace("v", "").Trim(), out vers[i]);
+            }
+
+            return vers;
+        }
+
         public static void AppendText(this RichTextBox box, string text, Color color)
         {
             try {

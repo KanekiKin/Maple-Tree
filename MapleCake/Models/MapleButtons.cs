@@ -45,16 +45,15 @@ namespace MapleCake.Models
             if (string.IsNullOrEmpty(TitleID))
                 return;
 
-            var title = await MapleDictionary.BuildTitle(TitleID, string.Empty, true);
-            if (title == null)
-                return;
+            var title = Database.SearchById(TitleID);
+            if (title == null) return;
 
             MainWindowViewModel.Instance.Config.DownloadCommandEnabled = false;
             RaisePropertyChangedEvent("DownloadCommandEnabled");
 
-            await Database.DownloadTitle(title, title.FolderLocation, title.ContentType, "0");
+            await title.DownloadContent();
 
-            await Database.TitleDb.BuildDatabase(false);
+            MainWindowViewModel.Instance.Config.TitleList.Add(title);
 
             MainWindowViewModel.Instance.Config.DownloadCommandEnabled = true;
             RaisePropertyChangedEvent("DownloadCommandEnabled");
@@ -72,7 +71,7 @@ namespace MapleCake.Models
             if (SelectedItem == null) return;
 
             await Task.Run(() => {
-                var updatePath = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits);
+                var updatePath = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits());
                 var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
                     Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
 
@@ -92,7 +91,7 @@ namespace MapleCake.Models
         {
             if (SelectedItem == null) return;
 
-            var updatePath = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits);
+            var updatePath = Path.Combine(Settings.BasePatchDir, SelectedItem.Lower8Digits());
 
             var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, updatePath),
                 Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
@@ -103,7 +102,7 @@ namespace MapleCake.Models
 
         private static void TitleIdToClipboardButton()
         {
-            Clipboard.SetText(SelectedItem.TitleID);
+            Clipboard.SetText(SelectedItem.ID);
         }
 
         private static async Task DownloadContentClick(string contentType, string version = "0")
@@ -114,8 +113,8 @@ namespace MapleCake.Models
 
                 switch (contentType) {
                     case "DLC":
-                        foreach (var _dlc in SelectedItem.DLC)
-                            await _dlc.DownloadContent();
+                        if (SelectedItem.HasDLC)
+                            await SelectedItem.DownloadDLC();
                         break;
 
                     case "Patch":

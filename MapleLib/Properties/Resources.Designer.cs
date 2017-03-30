@@ -92,6 +92,149 @@ namespace MapleLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to == 00050000: eShop and disc titles ==
+        ///{| class=&quot;wikitable sortable&quot;
+        ///! Title ID
+        ///! Description
+        ///! Product Code (XXX-X-XXXX)
+        ///! Company Code
+        ///! Notes
+        ///! Versions
+        ///! Region
+        ///! Available on CDN?
+        ///|-
+        ///| 00050000-10013000
+        ///| Nintendo TVii
+        ///| WUP-X-HBCJ
+        ///| 
+        ///| 
+        ///| 
+        ///| JAP
+        ///| No TMD
+        ///|-
+        ///| 00050000-10100600
+        ///| 鉄拳タッグトーナメント2 Wii U EDITION
+        ///| WUP-N-AKNJ
+        ///| 00AF
+        ///| 
+        ///| v16
+        ///| JAP
+        ///| Yes
+        ///|-
+        ///| 00050000-10100D00
+        ///| Nintendo×JOYSOUND Wii カラオケ U
+        ///| WUP-N-WAHJ
+        ///| -
+        ///| 
+        ///| v112
+        ///| JAP
+        ///| Yes
+        ///|-
+        ///| 00050000-10101800
+        ///| Si [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string eShopAndDiskTitles {
+            get {
+                return ResourceManager.GetString("eShopAndDiskTitles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ==0005000C: eShop title DLC==
+        ///{| class=&quot;wikitable sortable&quot;
+        ///! Title ID
+        ///! Description
+        ///! Notes
+        ///! Versions
+        ///! Region
+        ///|-
+        ///| 0005000C-10101C00
+        ///| New SUPER MARIO BROS. U
+        ///| 
+        ///| 16
+        ///| JAP
+        ///|-
+        ///| 0005000C-10101D00
+        ///| New SUPER MARIO BROS. U
+        ///| -
+        ///| 64
+        ///| USA
+        ///|-
+        ///| 0005000C-10101E00
+        ///| New SUPER MARIO BROS. U
+        ///| -
+        ///| 80
+        ///| EUR
+        ///|-
+        ///| 0005000C-10106B00
+        ///| Assassin&amp;apos;s Creed® III
+        ///| -
+        ///| 80
+        ///| USA
+        ///|-
+        ///| 0005000C-1010AE00
+        ///| JUST DANCE 4
+        ///| -
+        ///| 32
+        ///| USA
+        ///|-
+        ///| 0005000C-1010AF00
+        ///| Marvel Avengers?:  Battl [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string eShopTitleDLC {
+            get {
+                return ResourceManager.GetString("eShopTitleDLC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ==0005000E: eShop title updates==
+        ///{| class=&quot;wikitable sortable&quot;
+        ///! Title ID
+        ///! Description
+        ///! Notes
+        ///! Versions
+        ///! Region
+        ///|-
+        ///|-
+        ///| 0005000E-10100600
+        ///| TEKKEN TAG TOURNAMENT 2Wii U EDITION
+        ///| 
+        ///| 16
+        ///| JAP
+        ///|-
+        ///| 0005000E-10101B00
+        ///| LEGO® CITY UNDERCOVER
+        ///| 
+        ///| 16
+        ///| EUR
+        ///|-
+        ///| 0005000E-10101C00
+        ///| New SUPER MARIO BROS. U
+        ///| 
+        ///| 32, 48, 65
+        ///| JAP
+        ///|-
+        ///| 0005000E-10101D00
+        ///| New SUPER MARIO BROS. U
+        ///| 
+        ///| 32, 48, 64
+        ///| USA
+        ///|-
+        ///| 0005000E-10101E00
+        ///| New SUPER MARIO BROS. U
+        ///| 
+        ///| 32, 48, 64, 80
+        ///| EUR
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string eShopTitleUpdates {
+            get {
+                return ResourceManager.GetString("eShopTitleUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         public static System.Drawing.Icon Green_Light {
@@ -195,6 +338,24 @@ namespace MapleLib.Properties {
         public static string updates {
             get {
                 return ResourceManager.GetString("updates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        ///&lt;datafile xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;wiiutdb.xsd&quot;&gt;
+        ///	&lt;WiiUTDB version=&quot;20170329123009&quot; games=&quot;2178&quot;/&gt;
+        ///	&lt;!--
+        /// GameTDB: WiiU, Database started in 2012 (http://www.gametdb.com)
+        /// Never modify this file manually, it will get overwritten when you update. You can add games and fixes on the website.
+        ///	--&gt;
+        ///	&lt;companies&gt;
+        ///		&lt;company code=&quot;01&quot; name=&quot;Nintendo&quot;/&gt;
+        ///		&lt;company co [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string wiiutdb {
+            get {
+                return ResourceManager.GetString("wiiutdb", resourceCulture);
             }
         }
         

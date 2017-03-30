@@ -6,6 +6,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -102,8 +103,7 @@ namespace MapleCake.ViewModels
 
         private void RegisterEvents()
         {
-            Config.TitleList.AddTitleEvent += MapleDictionaryOnAddTitle;
-            Config.TitleList.CompletedInitEvent += MapleDictionaryOnCompletedInit;
+            Config.TitleList.AddItemEvent += TitleListOnAddItemEvent;
 
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLogOnNewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLogOnNewLogEntryEventHandler;
@@ -119,10 +119,10 @@ namespace MapleCake.ViewModels
 
         public async void SetBackgroundImg(Title title)
         {
-            if (string.IsNullOrEmpty(title.Image))
-                await Task.Run(() => MapleDictionary.FindImage(title));
+            if (string.IsNullOrEmpty(title.ImageLocation))
+                await Task.Run(() => title.Image());
 
-            Config.BackgroundImage = title.Image;
+            Config.BackgroundImage = title.ImageLocation;
             Config.RaisePropertyChangedEvent("BackgroundImage");
         }
 
@@ -131,9 +131,7 @@ namespace MapleCake.ViewModels
             if (tid.Length != 16)
                 return;
 
-            var title =
-                MapleDictionary.JsonObj.Find(
-                    x => string.Equals(x.TitleID, tid, StringComparison.CurrentCultureIgnoreCase));
+            var title = Database.SearchById(tid);
             if (title == null) return;
 
             Config.SelectedItem = title;
@@ -152,7 +150,13 @@ namespace MapleCake.ViewModels
 
             CheckUpdate();
 
-            await Config.TitleList.Init();
+            Database.Load();
+
+            await Database.LoadLibrary(Settings.TitleDirectory);
+
+            Config.SelectedItem = Config.TitleList.First();
+
+            TextLog.MesgLog.WriteLog($"Game Directory [{Settings.TitleDirectory}]");
         }
 
         private void InstanceOnProgressChangedEventHandler(object sender, AppUpdate.ProgressChangedEventArgs e) {}
@@ -176,20 +180,15 @@ namespace MapleCake.ViewModels
             Config.RaisePropertyChangedEvent("Status");
         }
 
-        private void MapleDictionaryOnCompletedInit(object sender, EventArgs eventArgs)
+        private void TitleListOnAddItemEvent(object sender, AddItemEventArgs<Title> args)
         {
-            TextLog.MesgLog.WriteLog($"Game Directory [{Settings.TitleDirectory}]");
-        }
+            var title = args.item;
+            if (title == null) return;
 
-        private void MapleDictionaryOnAddTitle(object sender, Title title)
-        {
             if (Config.TitleList.Contains(title))
                 return;
 
             Config.TitleList.AddOnUI(title);
-
-            if (Config.SelectedItem != null) return;
-            Config.SelectedItem = title;
         }
     }
 }

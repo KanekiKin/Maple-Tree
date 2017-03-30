@@ -118,7 +118,7 @@ namespace MapleLib.Common
             return (ulong) new FileInfo(contentFile).Length == content.Size;
         }
 
-        public static async Task CDecrypt(string workingDir)
+        public static async Task<int> CDecrypt(string workingDir)
         {
             try {
                 var cdecrypt = Path.Combine(workingDir, "CDecrypt.exe");
@@ -138,7 +138,7 @@ namespace MapleLib.Common
                 foreach (var proc in processes) proc.Kill();
 
                 using (TextWriter writer = File.CreateText(Path.Combine(Settings.ConfigDirectory, "CDecrypt.log"))) {
-                    await StartProcess(cdecrypt, "tmd cetk", workingDir, null, true, false, writer);
+                    return await StartProcess(cdecrypt, "tmd cetk", workingDir, null, true, false, writer);
                 }
             }
             catch (TaskCanceledException) {
@@ -147,6 +147,7 @@ namespace MapleLib.Common
             catch (Exception ex) {
                 AppendLog("Error decrypting contents!\r\n" + ex.Message);
             }
+            return 1;
         }
 
         public static async Task<int> StartProcess(string filename, string arguments, string workingDirectory,

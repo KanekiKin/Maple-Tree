@@ -11,12 +11,17 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using libWiiSharp;
 using MapleLib.Collections;
 using MapleLib.Common;
+using MapleLib.Properties;
 using MapleLib.Structs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WebClient = MapleLib.Network.Web.WebClient;
 
 #endregion
@@ -27,12 +32,152 @@ namespace MapleLib
     {
         static Database()
         {
-            if (TitleDb == null)
+            if (TitleDb == null) {
                 TitleDb = new MapleDictionary(Settings.TitleDirectory);
+            }
         }
 
         public static MapleDictionary TitleDb { get; }
-        
+
+        private static MapleList<Title> _db;
+
+        public static void Load()
+        {
+            var dbFile = Path.GetFullPath(Path.Combine(Settings.ConfigDirectory, "database"));
+
+            if (!File.Exists(dbFile) || new FileInfo(dbFile).Length <= 4000) {
+                Create();
+            }
+            else {
+                var json = File.ReadAllText(dbFile);
+                _db = JsonConvert.DeserializeObject<MapleList<Title>>(json);
+            }
+        }
+
+        private static void Create()
+        {
+            var dbFile = Path.GetFullPath(Path.Combine(Settings.ConfigDirectory, "database"));
+            
+            var eShopTitlesStr = Resources.eShopAndDiskTitles; //index 12
+            var eShopTitleUpdates = Resources.eShopTitleUpdates; //index 9
+            var eShopTitleDLC = Resources.eShopTitleDLC; //index 8
+
+            _db = new MapleList<Title>();
+
+            var lines = eShopTitlesStr.Replace("|", "").Split('\n').ToList();
+            for (int i = 11; i < lines.Count; i++) {
+                var title = new Title
+                {
+                    ID = lines[i++].Replace("-", "").Trim(),
+                    Name = lines[i++].Trim(),
+                    ProductCode = lines[i++].Trim(),
+                    CompanyCode = lines[i++].Trim(),
+                    Notes = lines[i++].Trim(),
+                    Versions = lines[i++].ToIntList(','),
+                    Region = lines[i++].Trim()
+                };
+                
+                var row = WiiUTitleKey(title.ID);
+
+                if (row != null)
+                    title.Key = row["titleKey"]?.Value<string>();
+
+                int num = i++;
+                var line = lines[num].ToLower().Trim();
+
+                if (!line.Contains("yes") && !line.Contains("no"))
+                    continue;
+
+                title.AvailableOnCDN = lines[num].ToLower().Contains("yes");
+
+                _db.Add(title);
+            }
+
+            lines = eShopTitleUpdates.Replace("|", "").Split('\n').ToList();
+            for (int i = 9; i < lines.Count; i++) {
+                var line = lines[i].Trim();
+
+                if (!line.Contains("-10"))
+                    continue;
+
+                var versionStr = lines[i + 3].Trim();
+                var versions = versionStr.ToIntList(',');
+
+                var titleId = line.Replace("-", "").ToUpper();
+                var title = _db.ToList().Find(t => t.ID.Contains(titleId.Substring(8)));
+
+                if (title != null)
+                    title.Versions = versions;
+            }
+
+            lines = eShopTitleDLC.Replace("|", "").Split('\n').ToList();
+            for (int i = 9; i < lines.Count; i++) {
+                var line = lines[i].Trim();
+                if (!line.Contains("-10"))
+                    continue;
+
+                var titleId = line.Replace("-", "").ToUpper();
+                var title = _db.ToList().Find(t => t.ID.Contains(titleId.Substring(8)));
+
+                if (title != null)
+                    title.HasDLC = true;
+            }
+
+            var json = JsonConvert.SerializeObject(_db);
+            File.WriteAllText(dbFile, json);
+        }
+
+        public static Title SearchById(string title_id)
+        {
+            return _db.ToList().Find(x => x.ID.ToUpper() == title_id.ToUpper());
+        }
+
+        public static async void Image(this eShopTitle title, bool save = true)
+        {
+            if (title.ProductCode.Length <= 6)
+                return;
+
+            var code = title.ProductCode.Substring(6);
+
+            var doc = new XmlDocument();
+            doc.Load(new MemoryStream(Encoding.UTF8.GetBytes(Resources.wiiutdb)));
+
+            var values = doc.GetElementsByTagName("id").Cast<XmlNode>().ToList();
+            var value = values.Find(x => x.InnerText.Contains(code));
+            var imageCode = value.InnerText;
+
+            var cacheDir = Path.Combine(Settings.ConfigDirectory, "cache");
+
+            if (!Directory.Exists(cacheDir))
+                Directory.CreateDirectory(cacheDir);
+
+            var langCodes = "US,EN,DE,FR,JA".Split(',').ToList();
+
+            foreach (var langCode in langCodes) {
+                var cachedFile = Path.Combine(cacheDir, $"{imageCode}.jpg");
+
+                if (File.Exists(cachedFile)) {
+                    title.ImageLocation = cachedFile;
+                    break;
+                }
+
+                try {
+                    var url = $"http://art.gametdb.com/wiiu/coverHQ/{langCode}/{imageCode}.jpg";
+
+                    if (WebClient.UrlExists(url)) {
+                        title.ImageLocation = cachedFile;
+
+                        if (!save) return;
+                        var data = await WebClient.DownloadDataAsync(url);
+                        File.WriteAllBytes(title.ImageLocation, data);
+                    }
+                }
+                catch {
+                    TextLog.MesgLog.WriteLog($"Could not locate cover image for {title}");
+                }
+            }
+        }
+
         private static void CleanUpdate(string outputDir, TMD tmd)
         {
             try {
@@ -97,20 +242,16 @@ namespace MapleLib
             return tik;
         }
 
-        private static async Task<TMD> LoadTmd(Title title, string outputDir, string titleUrl, string version)
+        private static async Task<TMD> LoadTmd(string id, string key, string outputDir, string titleUrl, string version)
         {
             var tmdFile = Path.Combine(outputDir, "tmd");
 
-            if (string.IsNullOrEmpty(title.TitleID) || string.IsNullOrEmpty(title.TitleKey))
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(key))
                 return null;
 
             version = int.Parse(version) == 0 ? "" : $".{version}";
             if (await DownloadTmd(titleUrl + $"tmd{version}", tmdFile) == null) {
-                var titleId = title.TitleID.ToLower();
-                var titleKey = title.TitleKey.ToLower();
-                var address = "192.99.69.253";
-                var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tmd";
-
+                var url = $"http://192.99.69.253/?key={key.ToLower()}&title={id.ToLower()}&type=tmd";
                 await DownloadTmd(url, tmdFile);
             }
 
@@ -121,16 +262,12 @@ namespace MapleLib
             return TMD.Load(tmdFile);
         }
 
-        private static async Task<Ticket> LoadTicket(Title title, string outputDir, string titleUrl)
+        private static async Task<Ticket> LoadTicket(string id, string key, string outputDir, string titleUrl)
         {
             var cetkFile = Path.Combine(outputDir, "cetk");
 
             if (await DownloadTicket($"{titleUrl}cetk", cetkFile) == null) {
-                var titleId = title.TitleID.ToLower();
-                var titleKey = title.TitleKey.ToLower();
-                var address = "192.99.69.253";
-                var url = $"http://{address}/?key={titleKey}&title={titleId}&type=tik";
-
+                var url = $"http://192.99.69.253/?key={key.ToLower()}&title={id.ToLower()}&type=tik";
                 await DownloadTicket(url, cetkFile);
             }
 
@@ -141,18 +278,35 @@ namespace MapleLib
             return Ticket.Load(cetkFile);
         }
 
-        public static async Task DownloadTitle(Title title, string outputDir, string contentType, string version)
+        public static async Task DownloadTitle(string id, string outputDir, string contentType, string version)
         {
             #region Setup
 
-            var workingId = title.TitleID.ToLower();
+            var workingId = id.ToUpper();
 
             if (contentType == "Patch") {
-                workingId = $"0005000E{title.Lower8Digits}".ToLower();
+                workingId = $"0005000E{workingId.Substring(8)}";
 
                 if (Settings.Cemu173Patch)
-                    outputDir = Path.Combine(Settings.BasePatchDir, title.Lower8Digits);
+                    outputDir = Path.Combine(Settings.BasePatchDir, workingId.Substring(8));
             }
+
+            if (contentType == "DLC")
+            {
+                workingId = $"0005000C{workingId.Substring(8)}";
+
+                if (Settings.Cemu173Patch)
+                    outputDir = Path.Combine(Settings.BasePatchDir, workingId.Substring(8), "aoc");
+            }
+
+            var row = WiiUTitleKey(workingId);
+            if (row == null)
+                throw new Exception("Could not locate the title key");
+
+            var key = row["titleKey"].Value<string>();
+            var name = row["name"].Value<string>();
+
+            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(name)) return;
 
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
@@ -164,8 +318,8 @@ namespace MapleLib
                 "http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/"
             };
 
-            var str = $"Download '{title.Name}' {contentType} Content to the following location?\n\"{outputDir}\"";
-            var result = MessageBox.Show(str, @"Confirmation", MessageBoxButtons.YesNo);
+            var str = $"Download {contentType} content to the following location?\n\"{outputDir}\"";
+            var result = MessageBox.Show(str, name, MessageBoxButtons.YesNo);
 
             if (result != DialogResult.Yes)
                 return;
@@ -181,7 +335,7 @@ namespace MapleLib
 
             foreach (var nusUrl in nusUrls) {
                 string titleUrl = $"{nusUrl}{workingId}/";
-                tmd = await LoadTmd(title, outputDir, titleUrl, version);
+                tmd = await LoadTmd(id, key, outputDir, titleUrl, version);
 
                 if (tmd != null)
                     break;
@@ -201,7 +355,7 @@ namespace MapleLib
 
             foreach (var nusUrl in nusUrls) {
                 string titleUrl = $"{nusUrl}{workingId}/";
-                ticket = await LoadTicket(title, outputDir, titleUrl);
+                ticket = await LoadTicket(id, key, outputDir, titleUrl);
 
                 if (ticket != null)
                     break;
@@ -216,7 +370,7 @@ namespace MapleLib
 
             #region Content
 
-            Toolbelt.AppendLog($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion}");
+            Toolbelt.AppendLog($"[+] [{contentType}] {name} v{tmd.TitleVersion}");
             Toolbelt.SetStatus($"Output Directory: {outputDir}");
 
             foreach (var nusUrl in nusUrls) {
@@ -228,7 +382,13 @@ namespace MapleLib
                 Toolbelt.AppendLog("  - Decrypting Content");
                 Toolbelt.AppendLog("  + This may take a minute. Please wait...");
                 Toolbelt.SetStatus("Decrypting Content. This may take a minute. Please wait...", Color.OrangeRed);
-                await Toolbelt.CDecrypt(outputDir);
+
+                var code = await Toolbelt.CDecrypt(outputDir);
+                if (code != 0) {
+                    Toolbelt.AppendLog($"Error while decrypting {name}");
+                    return;
+                }
+
                 CleanUpdate(outputDir, tmd);
                 break;
             }
@@ -236,8 +396,8 @@ namespace MapleLib
             #endregion
 
             WebClient.ResetDownloadProgressChanged();
-            Toolbelt.AppendLog($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion} Finished.");
-            Toolbelt.SetStatus($"[+] [{contentType}] {title.Name} v{tmd.TitleVersion} Finished.");
+            Toolbelt.AppendLog($"[+] [{contentType}] {name} v{tmd.TitleVersion} Finished.");
+            Toolbelt.SetStatus($"[+] [{contentType}] {name} v{tmd.TitleVersion} Finished.");
         }
 
         private static async Task<int> DownloadContent(TMD tmd, string outputDir, string titleUrl)
@@ -269,6 +429,40 @@ namespace MapleLib
                     break;
             }
             return result;
+        }
+
+        public static Task LoadLibrary(string titleDirectory)
+        {
+            var xmlFiles = Directory.GetFiles(titleDirectory, "meta.xml", SearchOption.AllDirectories);
+
+            foreach (var xmlFile in xmlFiles) {
+                var rootDir = Path.GetFullPath(Path.Combine(xmlFile, "../../"));
+                var title_id = Helper.XmlGetStringByTag(xmlFile, "title_id");
+
+                var title = SearchById(title_id);
+                title.FolderLocation = rootDir;
+                title.MetaLocation = xmlFile;
+                TitleDb.Add(title);
+            }
+
+            return Task.Delay(0);
+        }
+
+        private static JObject WiiUTitleKey(string id)
+        {
+            var wLoc = Path.Combine(Settings.ConfigDirectory, "titlekeys");
+
+            string jsonStr;
+            if (File.Exists(wLoc)) {
+                jsonStr = File.ReadAllText(wLoc);
+            }
+            else {
+                jsonStr = WebClient.DownloadString("https://wiiu.titlekeys.com/json");
+                File.WriteAllText(wLoc, jsonStr);
+            }
+
+            var jsonTitles = JsonConvert.DeserializeObject<ICollection<JObject>>(jsonStr);
+            return jsonTitles.ToList().Find(x => x["titleID"].Value<string>().ToUpper() == id);
         }
     }
 }

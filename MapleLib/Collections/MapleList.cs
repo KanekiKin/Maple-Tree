@@ -4,34 +4,40 @@
 // 
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 
 namespace MapleLib.Collections
 {
-    public class MapleList<T> : List<T>
+    public class MapleList<T> : BindingList<T>
     {
-        public event EventHandler<OnAddItemEventArgs<T>> OnAddItem; 
-        
-        /// <inheritdoc />
-        public void Add(T item, Color color = default(Color))
+        public event EventHandler<AddItemEventArgs<T>> AddItemEvent;
+
+        public MapleList()
         {
-            OnAddItem?.Invoke(this, new OnAddItemEventArgs<T>(this, item, color));
-            base.Add(item);
+            AddItemEvent += OnAddItemEvent;
+        }
+
+        /// <inheritdoc />
+        public new void Add(T item)
+        {
+            AddItemEvent?.Invoke(this, new AddItemEventArgs<T>(this, item));
+        }
+
+        private void OnAddItemEvent(object sender, AddItemEventArgs<T> e)
+        {
+            base.Add(e.item);
         }
     }
 
-    public class OnAddItemEventArgs<T> : EventArgs
+    public class AddItemEventArgs<T> : EventArgs
     {
         public object sender;
         public readonly T item;
-        public readonly Color color;
 
-        public OnAddItemEventArgs(object sender, T item, Color color = default(Color))
+        public AddItemEventArgs(object sender, T item)
         {
             this.sender = sender;
             this.item = item;
-            this.color = color;
         }
     }
 }
