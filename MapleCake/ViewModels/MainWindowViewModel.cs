@@ -103,8 +103,6 @@ namespace MapleCake.ViewModels
 
         private void RegisterEvents()
         {
-            Config.TitleList.AddItemEvent += TitleListOnAddItemEvent;
-
             TextLog.MesgLog.NewLogEntryEventHandler += MesgLogOnNewLogEntryEventHandler;
             TextLog.StatusLog.NewLogEntryEventHandler += StatusLogOnNewLogEntryEventHandler;
             WebClient.DownloadProgressChangedEvent += WebClientOnDownloadProgressChangedEvent;
@@ -154,7 +152,7 @@ namespace MapleCake.ViewModels
 
             await Database.LoadLibrary(Settings.TitleDirectory);
 
-            Config.SelectedItem = Config.TitleList.First();
+            Config.SelectedItem = Config.TitleList.Random();
 
             TextLog.MesgLog.WriteLog($"Game Directory [{Settings.TitleDirectory}]");
         }
@@ -178,17 +176,6 @@ namespace MapleCake.ViewModels
             Config.LogBox += Config.Status = newLogEntryEvent.Entry;
             Config.RaisePropertyChangedEvent("LogBox");
             Config.RaisePropertyChangedEvent("Status");
-        }
-
-        private void TitleListOnAddItemEvent(object sender, AddItemEventArgs<Title> args)
-        {
-            var title = args.item;
-            if (title == null) return;
-
-            if (Config.TitleList.Contains(title))
-                return;
-
-            Config.TitleList.AddOnUI(title);
         }
     }
 }

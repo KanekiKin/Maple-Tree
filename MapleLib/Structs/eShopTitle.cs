@@ -16,13 +16,13 @@ namespace MapleLib.Structs
         public string ProductCode { get; set; }
         public string CompanyCode { get; set; }
         public string Notes { get; set; }
-        public int[] Versions { get; set; }
+        public int[] Versions { get; set; } = {0};
         public string Region { get; set; }
         public string ImageLocation { get; set; }
         public bool HasDLC { get; set; }
         public bool AvailableOnCDN { get; set; }
 
-        protected string ContentType {
+        public string ContentType {
             get {
                 switch (Upper8Digits()) {
                     case "00050010":

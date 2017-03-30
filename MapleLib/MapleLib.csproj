@@ -110,6 +110,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
+      <HintPath>..\packages\zlib.net.1.0.4.0\lib\zlib.net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\MapleDictionary.cs" />
@@ -383,9 +387,10 @@
     <Compile Include="Common\Toolkit.cs" />
     <Compile Include="Common\Toolbelt.cs" />
     <Compile Include="Network\Web\AppUpdate.cs" />
-    <Compile Include="WiiU\Ticket.cs" />
+    <Compile Include="WiiU\MapleTicket.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="ThirdParty\IniFileParser\Model\IniData.cs.rej" />
     <None Include="ThirdParty\Newtonsoft.Json\Dynamic.snk" />
     <None Include="ThirdParty\Newtonsoft.Json\Newtonsoft.Json.Dotnet.xproj" />

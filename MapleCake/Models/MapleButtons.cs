@@ -111,24 +111,38 @@ namespace MapleCake.Models
                 if (SelectedItem == null)
                     return;
 
+                string id;
+
                 switch (contentType) {
                     case "DLC":
-                        if (SelectedItem.HasDLC)
-                            await SelectedItem.DownloadDLC();
+                    {
+                        if (SelectedItem.HasDLC) {
+                            id = $"0005000C{SelectedItem.Lower8Digits()}";
+                            var title = Database.SearchById(id);
+                            await title.DownloadDLC();
+                        }
                         break;
+                    }
 
                     case "Patch":
+                    {
                         if (!SelectedItem.Versions.Any()) {
                             MessageBox.Show($@"Update for {SelectedItem.Name} is not available");
                             break;
                         }
 
-                        await SelectedItem.DownloadUpdate(version);
+                        id = $"0005000E{SelectedItem.Lower8Digits()}";
+                        var title = Database.SearchById(id);
+                        await title.DownloadUpdate(version);
+
                         break;
+                    }
 
                     case "eShop/Application":
+                    {
                         await SelectedItem.DownloadContent(version);
                         break;
+                    }
                 }
             }
             catch (Exception ex) {

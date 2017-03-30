@@ -4,8 +4,13 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 using MapleLib.Collections;
 using MapleLib.Structs;
 using Application = System.Windows.Application;
@@ -14,6 +19,51 @@ namespace MapleLib.Common
 {
     public static class Extensions
     {
+        public static T[] Slice<T>(this T[] source, int start, int end)
+        {
+            // Handles negative ends.
+            if (end < 0)
+            {
+                end = source.Length + end;
+            }
+            int len = end - start;
+
+            // Return new array.
+            T[] res = new T[len];
+            for (int i = 0; i < len; i++)
+            {
+                res[i] = source[i + start];
+            }
+            return res;
+        }
+
+        public static T Random<T>(this IList<T> value)
+        {
+            return value[new Random().Next(value.Count - 1)];
+        }
+
+        public static byte[] HexToBytes(this string hexEncodedBytes)
+        {
+            int start = 0;
+            int end = hexEncodedBytes.Length;
+
+            int length = end - start;
+            const string tagName = "hex";
+            string fakeXmlDocument = String.Format("<{1}>{0}</{1}>", hexEncodedBytes.Substring(start, length), tagName);
+            var stream = new MemoryStream(Encoding.ASCII.GetBytes(fakeXmlDocument));
+            XmlReader reader = XmlReader.Create(stream, new XmlReaderSettings());
+            int hexLength = length / 2;
+            byte[] result = new byte[hexLength];
+            reader.ReadStartElement(tagName);
+            reader.ReadContentAsBinHex(result, 0, hexLength);
+            return result;
+        }
+
+        public static byte[] ToBytes(this int i)
+        {
+            return BitConverter.GetBytes(i);
+        }
+
         public static int[] ToIntList(this string value, char delimiter)
         {
             var list = value.Split(delimiter);

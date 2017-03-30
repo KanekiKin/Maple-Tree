@@ -7,12 +7,17 @@ namespace MapleLib.Interfaces
     public interface ITitle
     {
         /// <summary>
-        /// The title ID
+        /// Used to identify a game title
         /// </summary>
         string ID { get; set; }
 
         /// <summary>
-        /// The title name
+        /// Required for content decryption
+        /// </summary>
+        string Key { get; set; }
+
+        /// <summary>
+        /// Human readable string for the game title
         /// </summary>
         string Name { get; set; }
     }
