@@ -238,20 +238,6 @@ namespace MapleLib
             return tmd;
         }
 
-        private static async Task<Ticket> DownloadTicket(string url, string saveTo)
-        {
-            var data = await DownloadData(url);
-            if (data.Length <= 0) return null;
-            var tik = Ticket.Load(data);
-
-            if (tik == null) return null;
-            Toolbelt.AppendLog("  - Parsing Ticket...");
-            Toolbelt.AppendLog($"    + Title Version: {tik.NumOfDLC}");
-
-            File.WriteAllBytes(saveTo, data);
-            return tik;
-        }
-
         private static async Task<TMD> LoadTmd(string id, string key, string outputDir, string titleUrl, string version)
         {
             var tmdFile = Path.Combine(outputDir, "tmd");
@@ -270,22 +256,6 @@ namespace MapleLib
                 return null;
 
             return TMD.Load(tmdFile);
-        }
-
-        private static async Task<Ticket> LoadTicket(string id, string key, string outputDir, string titleUrl)
-        {
-            var cetkFile = Path.Combine(outputDir, "cetk");
-
-            if (await DownloadTicket($"{titleUrl}cetk", cetkFile) == null) {
-                var url = $"http://192.99.69.253/?key={key.ToLower()}&title={id.ToLower()}&type=tik";
-                await DownloadTicket(url, cetkFile);
-            }
-
-            var file = new FileInfo(cetkFile);
-            if (!file.Exists || file.Length <= 0)
-                return null;
-
-            return Ticket.Load(cetkFile);
         }
 
         public static async Task DownloadTitle(string id, string outputDir, string contentType, string version)
@@ -319,13 +289,6 @@ namespace MapleLib
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 
-            var nusUrls = new List<string>
-            {
-                "http://ccs.cdn.wup.shop.nintendo.net/ccs/download/",
-                "http://nus.cdn.shop.wii.com/ccs/download/",
-                "http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/"
-            };
-
             var str = $"Download {contentType} content to the following location?\n\"{outputDir}\"";
             var result = MessageBox.Show(str, name, MessageBoxButtons.YesNo);
 
@@ -340,6 +303,13 @@ namespace MapleLib
 
             Toolbelt.AppendLog("  - Loading TMD...");
             TMD tmd = null;
+
+            var nusUrls = new List<string>
+            {
+                "http://ccs.cdn.wup.shop.nintendo.net/ccs/download/",
+                "http://nus.cdn.shop.wii.com/ccs/download/",
+                "http://ccs.cdn.c.shop.nintendowifi.net/ccs/download/"
+            };
 
             foreach (var nusUrl in nusUrls) {
                 string titleUrl = $"{nusUrl}{workingId}/";

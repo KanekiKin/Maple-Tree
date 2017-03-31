@@ -30,6 +30,7 @@ namespace MapleCake.Models
         public ICommand RemoveUpdate => new CommandHandler(RemoveUpdateButton);
         public ICommand AddDLC => new CommandHandler(AddDLCButton);
         public ICommand RemoveDLC => new CommandHandler(RemoveDLCButton);
+        public ICommand RemoveTitle => new CommandHandler(RemoveTitleButton);
         public ICommand TitleIdToClipboard => new CommandHandler(TitleIdToClipboardButton);
 
         private void LaunchCemuButton()
@@ -98,6 +99,12 @@ namespace MapleCake.Models
 
             if (result == DialogResult.OK)
                 SelectedItem.DeleteAddOnContent();
+        }
+        
+        private void RemoveTitleButton()
+        {
+            SelectedItem?.DeleteContent();
+            MainWindowViewModel.Instance.Config.TitleList.Remove(SelectedItem);
         }
 
         private static void TitleIdToClipboardButton()

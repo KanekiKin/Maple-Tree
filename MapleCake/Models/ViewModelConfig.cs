@@ -46,6 +46,7 @@ namespace MapleCake.Models
         public Title SelectedItem {
             get { return _selectedItem; }
             set {
+                if (value == null) return;
                 _self.WriteVersions(value);
                 _self.SetBackgroundImg(_selectedItem = value);
                 RaisePropertyChangedEvent("SelectedItem");

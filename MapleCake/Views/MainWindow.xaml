@@ -33,18 +33,17 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Log" Background="{x:Null}">
-                <Grid Background="{x:Null}">
-                    <ScrollViewer>
-                        <TextBlock Text="{Binding Config.LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
-                    </ScrollViewer>
-                    <ComboBox Visibility="Hidden" ItemsSource="{Binding Config.TitleCache}" DisplayMemberPath="Name" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" Margin="0,50,0,0" Width="329" VerticalAlignment="Top" IsEditable="True"/>
+            <TabItem Header="Options" Background="{x:Null}">
+                <Grid Background="#FFE5E5E5">
+                    <Button Content="Toggle Theme" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90"/>
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Options" Background="{x:Null}" Visibility="Hidden">
-                <Grid Background="#FFE5E5E5">
-                    <Button Content="Toggle Theme" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90"/>
+            <TabItem Header="Log" Background="{x:Null}">
+                <Grid Background="{x:Null}">
+                    <ScrollViewer CanContentScroll="True">
+                        <TextBlock Text="{Binding Config.LogBox, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Margin="10" Width="363"/>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
         </TabControl>

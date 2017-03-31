@@ -48,6 +48,13 @@ namespace MapleCake.Models
             if (items.Any(x => x.Text.Contains("DLC")))
                 items.Add(new SeparatorCommandItem());
 
+            items.Add(new CommandItem
+            {
+                Text = "Delete Title",
+                ToolTip = "Removes the title from your disk",
+                Command = Click.RemoveTitle
+            });
+
             return items;
         }
 

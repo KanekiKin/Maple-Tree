@@ -5,8 +5,10 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using MapleLib.Common;
 using MapleLib.Network.Web;
+using MapleLib.Properties;
 
 namespace MapleLib.Structs
 {
@@ -50,12 +52,13 @@ namespace MapleLib.Structs
 
         public void DeleteContent()
         {
-            var updatePath = Path.GetFullPath(FolderLocation);
+            var path = Path.GetFullPath(FolderLocation);
 
-            if (Directory.Exists(updatePath))
-                Directory.Delete(updatePath, true);
+            var result = MessageBox.Show(string.Format(Resources.ActionWillDeleteAllContent, path),
+                Resources.PleaseConfirmAction, MessageBoxButtons.OKCancel);
 
-            DeleteUpdateContent();
+            if (result == DialogResult.OK)
+                Directory.Delete(path, true);
         }
 
         public void DeleteUpdateContent()
