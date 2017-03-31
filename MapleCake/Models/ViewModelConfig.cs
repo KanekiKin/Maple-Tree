@@ -38,6 +38,14 @@ namespace MapleCake.Models
 
         public bool DownloadCommandEnabled { get; set; } = true;
 
+        public bool FullScreen {
+            get { return Settings.FullScreenMode; }
+            set {
+                Settings.FullScreenMode = value;
+                RaisePropertyChangedEvent("FullScreen");
+            }
+        }
+
         public string TitleID {
             get { return _titleId; }
             set { _self.titleIdTextChanged(_titleId = value); }
